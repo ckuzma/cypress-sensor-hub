@@ -1,0 +1,1105 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"PIR.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.comm	filterInit,1,1
+  18              		.global	PIRTriggerTimer
+  19              		.bss
+  20              		.align	1
+  21              		.type	PIRTriggerTimer, %object
+  22              		.size	PIRTriggerTimer, 2
+  23              	PIRTriggerTimer:
+  24 0000 0000     		.space	2
+  25              		.section	.text.PIRTask,"ax",%progbits
+  26              		.align	2
+  27              		.global	PIRTask
+  28              		.code	16
+  29              		.thumb_func
+  30              		.type	PIRTask, %function
+  31              	PIRTask:
+  32              	.LFB35:
+  33              		.file 1 "PIR.c"
+   1:PIR.c         **** /*******************************************************************************
+   2:PIR.c         **** * File Name: PIR.c
+   3:PIR.c         **** *
+   4:PIR.c         **** * Description:
+   5:PIR.c         **** * This is the source code file for PIR detection
+   6:PIR.c         **** *
+   7:PIR.c         **** * Code Tested With:
+   8:PIR.c         **** * 1. PSoC Creator 3.3 SP2 build 9598
+   9:PIR.c         **** *
+  10:PIR.c         **** ********************************************************************************
+  11:PIR.c         **** * Copyright (2015) , Cypress Semiconductor Corporation.
+  12:PIR.c         **** ********************************************************************************
+  13:PIR.c         **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  14:PIR.c         **** * protected by and subject to worldwide patent protection (United States and
+  15:PIR.c         **** * foreign), United States copyright laws and international treaty provisions.
+  16:PIR.c         **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  17:PIR.c         **** * license to copy, use, modify, create derivative works of, and compile the
+  18:PIR.c         **** * Cypress Source Code and derivative works for the sole purpose of creating
+  19:PIR.c         **** * custom software in support of licensee product to be used only in conjunction
+  20:PIR.c         **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  21:PIR.c         **** * Any reproduction, modification, translation, compilation, or representation of
+  22:PIR.c         **** * this software except as specified above is prohibited without the express
+  23:PIR.c         **** * written permission of Cypress.
+  24:PIR.c         **** *
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 2
+
+
+  25:PIR.c         **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  26:PIR.c         **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  27:PIR.c         **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  28:PIR.c         **** * Cypress reserves the right to make changes without further notice to the
+  29:PIR.c         **** * materials described herein. Cypress does not assume any liability arising out
+  30:PIR.c         **** * of the application or use of any product or circuit described herein. Cypress
+  31:PIR.c         **** * does not authorize its products for use as critical components in life-support
+  32:PIR.c         **** * systems where a malfunction or failure may reasonably be expected to result in
+  33:PIR.c         **** * significant injury to the user. The inclusion of Cypress' product in a life
+  34:PIR.c         **** * support systems application implies that the manufacturer assumes all risk of
+  35:PIR.c         **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  36:PIR.c         **** * limited by and subject to the applicable Cypress software license agreement.
+  37:PIR.c         **** *******************************************************************************/
+  38:PIR.c         **** 
+  39:PIR.c         **** #include <project.h>
+  40:PIR.c         **** #include <pir.h>
+  41:PIR.c         **** #include <main.h>
+  42:PIR.c         **** #include <filters.h>
+  43:PIR.c         **** 
+  44:PIR.c         **** uint16 PIRTriggerTimer = 0;
+  45:PIR.c         **** 
+  46:PIR.c         **** void PIRTask(void)
+  47:PIR.c         **** {
+  34              		.loc 1 47 0
+  35              		.cfi_startproc
+  36 0000 80B5     		push	{r7, lr}
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40 0002 00AF     		add	r7, sp, #0
+  41              		.cfi_def_cfa_register 7
+  48:PIR.c         ****     /* Read the ADC */
+  49:PIR.c         **** 	ProcessValues.PIRRaw = TO_SIGNED_12BIT(ADC_GetResult16(ADC_CHANNEL_PIR));
+  42              		.loc 1 49 0
+  43 0004 0520     		mov	r0, #5
+  44 0006 FFF7FEFF 		bl	ADC_GetResult16
+  45 000a 031C     		mov	r3, r0
+  46 000c 9BB2     		uxth	r3, r3
+  47 000e 1B4A     		ldr	r2, .L5
+  48 0010 9446     		mov	ip, r2
+  49 0012 6344     		add	r3, r3, ip
+  50 0014 9BB2     		uxth	r3, r3
+  51 0016 9AB2     		uxth	r2, r3
+  52 0018 194B     		ldr	r3, .L5+4
+  53 001a 9A81     		strh	r2, [r3, #12]
+  50:PIR.c         ****     
+  51:PIR.c         ****     if (filterInit == FALSE)
+  54              		.loc 1 51 0
+  55 001c 194B     		ldr	r3, .L5+8
+  56 001e 1B78     		ldrb	r3, [r3]
+  57 0020 002B     		cmp	r3, #0
+  58 0022 09D1     		bne	.L2
+  52:PIR.c         ****     {
+  53:PIR.c         ****         InitHighPassFilter(ProcessValues.PIRRaw);
+  59              		.loc 1 53 0
+  60 0024 164B     		ldr	r3, .L5+4
+  61 0026 9B89     		ldrh	r3, [r3, #12]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 3
+
+
+  62 0028 1BB2     		sxth	r3, r3
+  63 002a 181C     		mov	r0, r3
+  64 002c FFF7FEFF 		bl	InitHighPassFilter
+  54:PIR.c         ****         filterInit = TRUE;
+  65              		.loc 1 54 0
+  66 0030 144B     		ldr	r3, .L5+8
+  67 0032 0122     		mov	r2, #1
+  68 0034 1A70     		strb	r2, [r3]
+  55:PIR.c         ****         return;
+  69              		.loc 1 55 0
+  70 0036 1EE0     		b	.L1
+  71              	.L2:
+  56:PIR.c         ****     }
+  57:PIR.c         ****     
+  58:PIR.c         **** 	ProcessValues.PIRHpf = HighPassFilter(ProcessValues.PIRRaw);
+  72              		.loc 1 58 0
+  73 0038 114B     		ldr	r3, .L5+4
+  74 003a 9B89     		ldrh	r3, [r3, #12]
+  75 003c 1BB2     		sxth	r3, r3
+  76 003e 181C     		mov	r0, r3
+  77 0040 FFF7FEFF 		bl	HighPassFilter
+  78 0044 031C     		mov	r3, r0
+  79 0046 1A1C     		mov	r2, r3
+  80 0048 0D4B     		ldr	r3, .L5+4
+  81 004a DA81     		strh	r2, [r3, #14]
+  59:PIR.c         **** 	
+  60:PIR.c         **** 	/* Check the ADC result against the thresholds */
+  61:PIR.c         **** 	if((ProcessValues.PIRHpf > PIR_WINDOW_HIGH) || (ProcessValues.PIRHpf < PIR_WINDOW_LOW))
+  82              		.loc 1 61 0
+  83 004c 0C4B     		ldr	r3, .L5+4
+  84 004e DB89     		ldrh	r3, [r3, #14]
+  85 0050 1BB2     		sxth	r3, r3
+  86 0052 242B     		cmp	r3, #36
+  87 0054 04DC     		bgt	.L4
+  88              		.loc 1 61 0 is_stmt 0 discriminator 1
+  89 0056 0A4B     		ldr	r3, .L5+4
+  90 0058 DB89     		ldrh	r3, [r3, #14]
+  91 005a 1BB2     		sxth	r3, r3
+  92 005c 2433     		add	r3, r3, #36
+  93 005e 0ADA     		bge	.L1
+  94              	.L4:
+  62:PIR.c         **** 	{
+  63:PIR.c         ****         /* Once the motion is detected, the RGB LED is driven with RED color for 5s
+  64:PIR.c         ****            and the motion detected variable in I2C buffer is latched to '1' for 5s.
+  65:PIR.c         ****            If another motion is detected before 5s elapsed the timer is restarted 
+  66:PIR.c         ****            to maintain 5s time window */
+  67:PIR.c         ****        	
+  68:PIR.c         **** 		/* Stop the timer */
+  69:PIR.c         ****         Timebase5s_Stop();
+  95              		.loc 1 69 0 is_stmt 1
+  96 0060 FFF7FEFF 		bl	Timebase5s_Stop
+  70:PIR.c         **** 		
+  71:PIR.c         **** 		/* Reload the counter */
+  72:PIR.c         **** 		Timebase5s_WriteCounter(Timebase5s_TC_PERIOD_VALUE);
+  97              		.loc 1 72 0
+  98 0064 084B     		ldr	r3, .L5+12
+  99 0066 181C     		mov	r0, r3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 4
+
+
+ 100 0068 FFF7FEFF 		bl	Timebase5s_WriteCounter
+  73:PIR.c         **** 		
+  74:PIR.c         **** 		/* Start the 5s timer */
+  75:PIR.c         ****         Timebase5s_Start();
+ 101              		.loc 1 75 0
+ 102 006c FFF7FEFF 		bl	Timebase5s_Start
+  76:PIR.c         **** 		
+  77:PIR.c         **** 		/* Update the status of motion detection */
+  78:PIR.c         **** 		ProcessValues.PIRTrigger = TRIGGERED;
+ 103              		.loc 1 78 0
+ 104 0070 034B     		ldr	r3, .L5+4
+ 105 0072 0122     		mov	r2, #1
+ 106 0074 9A82     		strh	r2, [r3, #20]
+ 107              	.L1:
+  79:PIR.c         ****                       
+  80:PIR.c         **** 		#ifdef PIR_LED_ENABLED 
+  81:PIR.c         ****             LED_Blue_Write(LED_ON); 
+  82:PIR.c         ****         #endif
+  83:PIR.c         **** 	}
+  84:PIR.c         **** }
+ 108              		.loc 1 84 0
+ 109 0076 BD46     		mov	sp, r7
+ 110              		@ sp needed
+ 111 0078 80BD     		pop	{r7, pc}
+ 112              	.L6:
+ 113 007a C046     		.align	2
+ 114              	.L5:
+ 115 007c 01F8FFFF 		.word	-2047
+ 116 0080 00000000 		.word	ProcessValues
+ 117 0084 00000000 		.word	filterInit
+ 118 0088 87130000 		.word	4999
+ 119              		.cfi_endproc
+ 120              	.LFE35:
+ 121              		.size	PIRTask, .-PIRTask
+ 122              		.section	.text.PIR_Start,"ax",%progbits
+ 123              		.align	2
+ 124              		.global	PIR_Start
+ 125              		.code	16
+ 126              		.thumb_func
+ 127              		.type	PIR_Start, %function
+ 128              	PIR_Start:
+ 129              	.LFB36:
+  85:PIR.c         **** 
+  86:PIR.c         **** void PIR_Start(void)
+  87:PIR.c         **** {
+ 130              		.loc 1 87 0
+ 131              		.cfi_startproc
+ 132 0000 80B5     		push	{r7, lr}
+ 133              		.cfi_def_cfa_offset 8
+ 134              		.cfi_offset 7, -8
+ 135              		.cfi_offset 14, -4
+ 136 0002 00AF     		add	r7, sp, #0
+ 137              		.cfi_def_cfa_register 7
+  88:PIR.c         **** 	/* Start the first stage PIR amplifier */
+  89:PIR.c         **** 	PIRAmplifierStage1_Start();
+ 138              		.loc 1 89 0
+ 139 0004 FFF7FEFF 		bl	PIRAmplifierStage1_Start
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 5
+
+
+  90:PIR.c         **** 	
+  91:PIR.c         **** 	/* Update PIR window high and low thresholds */
+  92:PIR.c         **** 	ProcessValues.PIRWindowHigh = PIR_WINDOW_HIGH;
+ 140              		.loc 1 92 0
+ 141 0008 0D4B     		ldr	r3, .L8
+ 142 000a 2422     		mov	r2, #36
+ 143 000c 1A82     		strh	r2, [r3, #16]
+  93:PIR.c         **** 	ProcessValues.PIRWindowLow = PIR_WINDOW_LOW;
+ 144              		.loc 1 93 0
+ 145 000e 0C4B     		ldr	r3, .L8
+ 146 0010 2422     		mov	r2, #36
+ 147 0012 5242     		neg	r2, r2
+ 148 0014 5A82     		strh	r2, [r3, #18]
+  94:PIR.c         ****     
+  95:PIR.c         ****     /* Initialize PIR related process values to zero */
+  96:PIR.c         ****     ProcessValues.PIRRaw = 0;
+ 149              		.loc 1 96 0
+ 150 0016 0A4B     		ldr	r3, .L8
+ 151 0018 0022     		mov	r2, #0
+ 152 001a 9A81     		strh	r2, [r3, #12]
+  97:PIR.c         ****     ProcessValues.PIRHpf = 0;
+ 153              		.loc 1 97 0
+ 154 001c 084B     		ldr	r3, .L8
+ 155 001e 0022     		mov	r2, #0
+ 156 0020 DA81     		strh	r2, [r3, #14]
+  98:PIR.c         ****     ProcessValues.PIRTrigger = NOT_TRIGGERED;
+ 157              		.loc 1 98 0
+ 158 0022 074B     		ldr	r3, .L8
+ 159 0024 0022     		mov	r2, #0
+ 160 0026 9A82     		strh	r2, [r3, #20]
+  99:PIR.c         ****     
+ 100:PIR.c         ****     /* Enable timebase ISR */
+ 101:PIR.c         ****     isr_Timebase5s_Start();
+ 161              		.loc 1 101 0
+ 162 0028 FFF7FEFF 		bl	isr_Timebase5s_Start
+ 102:PIR.c         ****     isr_Timebase5s_StartEx(TIMEBASE_ISR); 
+ 163              		.loc 1 102 0
+ 164 002c 054B     		ldr	r3, .L8+4
+ 165 002e 181C     		mov	r0, r3
+ 166 0030 FFF7FEFF 		bl	isr_Timebase5s_StartEx
+ 103:PIR.c         ****     
+ 104:PIR.c         ****     /* Initialize high pass filter */
+ 105:PIR.c         ****     filterInit = FALSE;
+ 167              		.loc 1 105 0
+ 168 0034 044B     		ldr	r3, .L8+8
+ 169 0036 0022     		mov	r2, #0
+ 170 0038 1A70     		strb	r2, [r3]
+ 106:PIR.c         ****     
+ 107:PIR.c         ****     #ifdef PIR_LED_ENABLED 
+ 108:PIR.c         ****         LED_Blue_Write(LED_OFF); 
+ 109:PIR.c         ****     #endif
+ 110:PIR.c         **** }
+ 171              		.loc 1 110 0
+ 172 003a BD46     		mov	sp, r7
+ 173              		@ sp needed
+ 174 003c 80BD     		pop	{r7, pc}
+ 175              	.L9:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 6
+
+
+ 176 003e C046     		.align	2
+ 177              	.L8:
+ 178 0040 00000000 		.word	ProcessValues
+ 179 0044 00000000 		.word	TIMEBASE_ISR
+ 180 0048 00000000 		.word	filterInit
+ 181              		.cfi_endproc
+ 182              	.LFE36:
+ 183              		.size	PIR_Start, .-PIR_Start
+ 184              		.section	.text.PIR_Stop,"ax",%progbits
+ 185              		.align	2
+ 186              		.global	PIR_Stop
+ 187              		.code	16
+ 188              		.thumb_func
+ 189              		.type	PIR_Stop, %function
+ 190              	PIR_Stop:
+ 191              	.LFB37:
+ 111:PIR.c         **** 
+ 112:PIR.c         **** void PIR_Stop(void)
+ 113:PIR.c         **** {
+ 192              		.loc 1 113 0
+ 193              		.cfi_startproc
+ 194 0000 80B5     		push	{r7, lr}
+ 195              		.cfi_def_cfa_offset 8
+ 196              		.cfi_offset 7, -8
+ 197              		.cfi_offset 14, -4
+ 198 0002 00AF     		add	r7, sp, #0
+ 199              		.cfi_def_cfa_register 7
+ 114:PIR.c         **** 	/* Stop the first stage PIR amplifier */
+ 115:PIR.c         **** 	PIRAmplifierStage1_Start();
+ 200              		.loc 1 115 0
+ 201 0004 FFF7FEFF 		bl	PIRAmplifierStage1_Start
+ 116:PIR.c         ****     
+ 117:PIR.c         ****     /* Initialize PIR related process values to zero */
+ 118:PIR.c         ****     ProcessValues.PIRRaw = 0;
+ 202              		.loc 1 118 0
+ 203 0008 064B     		ldr	r3, .L11
+ 204 000a 0022     		mov	r2, #0
+ 205 000c 9A81     		strh	r2, [r3, #12]
+ 119:PIR.c         ****     ProcessValues.PIRHpf = 0;
+ 206              		.loc 1 119 0
+ 207 000e 054B     		ldr	r3, .L11
+ 208 0010 0022     		mov	r2, #0
+ 209 0012 DA81     		strh	r2, [r3, #14]
+ 120:PIR.c         ****     ProcessValues.PIRTrigger = NOT_TRIGGERED;
+ 210              		.loc 1 120 0
+ 211 0014 034B     		ldr	r3, .L11
+ 212 0016 0022     		mov	r2, #0
+ 213 0018 9A82     		strh	r2, [r3, #20]
+ 121:PIR.c         ****     
+ 122:PIR.c         ****     /* Reset high pass filter */
+ 123:PIR.c         ****     filterInit = FALSE;
+ 214              		.loc 1 123 0
+ 215 001a 034B     		ldr	r3, .L11+4
+ 216 001c 0022     		mov	r2, #0
+ 217 001e 1A70     		strb	r2, [r3]
+ 124:PIR.c         ****     
+ 125:PIR.c         ****     #ifdef PIR_LED_ENABLED 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 7
+
+
+ 126:PIR.c         ****         LED_Blue_Write(LED_OFF); 
+ 127:PIR.c         ****     #endif
+ 128:PIR.c         **** }
+ 218              		.loc 1 128 0
+ 219 0020 BD46     		mov	sp, r7
+ 220              		@ sp needed
+ 221 0022 80BD     		pop	{r7, pc}
+ 222              	.L12:
+ 223              		.align	2
+ 224              	.L11:
+ 225 0024 00000000 		.word	ProcessValues
+ 226 0028 00000000 		.word	filterInit
+ 227              		.cfi_endproc
+ 228              	.LFE37:
+ 229              		.size	PIR_Stop, .-PIR_Stop
+ 230              		.text
+ 231              	.Letext0:
+ 232              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 233              		.file 3 "./main.h"
+ 234              		.file 4 "./pir.h"
+ 235              		.section	.debug_info,"",%progbits
+ 236              	.Ldebug_info0:
+ 237 0000 1C020000 		.4byte	0x21c
+ 238 0004 0400     		.2byte	0x4
+ 239 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 240 000a 04       		.byte	0x4
+ 241 000b 01       		.uleb128 0x1
+ 242 000c 70010000 		.4byte	.LASF42
+ 243 0010 01       		.byte	0x1
+ 244 0011 F8000000 		.4byte	.LASF43
+ 245 0015 73000000 		.4byte	.LASF44
+ 246 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 247 001d 00000000 		.4byte	0
+ 248 0021 00000000 		.4byte	.Ldebug_line0
+ 249 0025 02       		.uleb128 0x2
+ 250 0026 01       		.byte	0x1
+ 251 0027 06       		.byte	0x6
+ 252 0028 AD020000 		.4byte	.LASF0
+ 253 002c 02       		.uleb128 0x2
+ 254 002d 01       		.byte	0x1
+ 255 002e 08       		.byte	0x8
+ 256 002f 0C010000 		.4byte	.LASF1
+ 257 0033 02       		.uleb128 0x2
+ 258 0034 02       		.byte	0x2
+ 259 0035 05       		.byte	0x5
+ 260 0036 67020000 		.4byte	.LASF2
+ 261 003a 02       		.uleb128 0x2
+ 262 003b 02       		.byte	0x2
+ 263 003c 07       		.byte	0x7
+ 264 003d B9020000 		.4byte	.LASF3
+ 265 0041 02       		.uleb128 0x2
+ 266 0042 04       		.byte	0x4
+ 267 0043 05       		.byte	0x5
+ 268 0044 A4020000 		.4byte	.LASF4
+ 269 0048 02       		.uleb128 0x2
+ 270 0049 04       		.byte	0x4
+ 271 004a 07       		.byte	0x7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 8
+
+
+ 272 004b E6000000 		.4byte	.LASF5
+ 273 004f 02       		.uleb128 0x2
+ 274 0050 08       		.byte	0x8
+ 275 0051 05       		.byte	0x5
+ 276 0052 26020000 		.4byte	.LASF6
+ 277 0056 02       		.uleb128 0x2
+ 278 0057 08       		.byte	0x8
+ 279 0058 07       		.byte	0x7
+ 280 0059 CC020000 		.4byte	.LASF7
+ 281 005d 03       		.uleb128 0x3
+ 282 005e 04       		.byte	0x4
+ 283 005f 05       		.byte	0x5
+ 284 0060 696E7400 		.ascii	"int\000"
+ 285 0064 02       		.uleb128 0x2
+ 286 0065 04       		.byte	0x4
+ 287 0066 07       		.byte	0x7
+ 288 0067 5E010000 		.4byte	.LASF8
+ 289 006b 04       		.uleb128 0x4
+ 290 006c 85020000 		.4byte	.LASF9
+ 291 0070 02       		.byte	0x2
+ 292 0071 9801     		.2byte	0x198
+ 293 0073 2C000000 		.4byte	0x2c
+ 294 0077 04       		.uleb128 0x4
+ 295 0078 37010000 		.4byte	.LASF10
+ 296 007c 02       		.byte	0x2
+ 297 007d 9901     		.2byte	0x199
+ 298 007f 3A000000 		.4byte	0x3a
+ 299 0083 04       		.uleb128 0x4
+ 300 0084 45010000 		.4byte	.LASF11
+ 301 0088 02       		.byte	0x2
+ 302 0089 9A01     		.2byte	0x19a
+ 303 008b 48000000 		.4byte	0x48
+ 304 008f 04       		.uleb128 0x4
+ 305 0090 E0000000 		.4byte	.LASF12
+ 306 0094 02       		.byte	0x2
+ 307 0095 9C01     		.2byte	0x19c
+ 308 0097 33000000 		.4byte	0x33
+ 309 009b 04       		.uleb128 0x4
+ 310 009c 17020000 		.4byte	.LASF13
+ 311 00a0 02       		.byte	0x2
+ 312 00a1 9D01     		.2byte	0x19d
+ 313 00a3 41000000 		.4byte	0x41
+ 314 00a7 02       		.uleb128 0x2
+ 315 00a8 04       		.byte	0x4
+ 316 00a9 04       		.byte	0x4
+ 317 00aa 64000000 		.4byte	.LASF14
+ 318 00ae 02       		.uleb128 0x2
+ 319 00af 08       		.byte	0x8
+ 320 00b0 04       		.byte	0x4
+ 321 00b1 25010000 		.4byte	.LASF15
+ 322 00b5 02       		.uleb128 0x2
+ 323 00b6 01       		.byte	0x1
+ 324 00b7 08       		.byte	0x8
+ 325 00b8 6B010000 		.4byte	.LASF16
+ 326 00bc 02       		.uleb128 0x2
+ 327 00bd 04       		.byte	0x4
+ 328 00be 07       		.byte	0x7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 9
+
+
+ 329 00bf 1D020000 		.4byte	.LASF17
+ 330 00c3 05       		.uleb128 0x5
+ 331 00c4 34020000 		.4byte	.LASF35
+ 332 00c8 26       		.byte	0x26
+ 333 00c9 03       		.byte	0x3
+ 334 00ca 5C       		.byte	0x5c
+ 335 00cb B4010000 		.4byte	0x1b4
+ 336 00cf 06       		.uleb128 0x6
+ 337 00d0 02020000 		.4byte	.LASF18
+ 338 00d4 03       		.byte	0x3
+ 339 00d5 5E       		.byte	0x5e
+ 340 00d6 77000000 		.4byte	0x77
+ 341 00da 00       		.byte	0
+ 342 00db 07       		.uleb128 0x7
+ 343 00dc 56746800 		.ascii	"Vth\000"
+ 344 00e0 03       		.byte	0x3
+ 345 00e1 5F       		.byte	0x5f
+ 346 00e2 77000000 		.4byte	0x77
+ 347 00e6 02       		.byte	0x2
+ 348 00e7 07       		.uleb128 0x7
+ 349 00e8 52746800 		.ascii	"Rth\000"
+ 350 00ec 03       		.byte	0x3
+ 351 00ed 60       		.byte	0x60
+ 352 00ee 77000000 		.4byte	0x77
+ 353 00f2 04       		.byte	0x4
+ 354 00f3 06       		.uleb128 0x6
+ 355 00f4 0B000000 		.4byte	.LASF19
+ 356 00f8 03       		.byte	0x3
+ 357 00f9 61       		.byte	0x61
+ 358 00fa 8F000000 		.4byte	0x8f
+ 359 00fe 06       		.byte	0x6
+ 360 00ff 06       		.uleb128 0x6
+ 361 0100 42000000 		.4byte	.LASF20
+ 362 0104 03       		.byte	0x3
+ 363 0105 62       		.byte	0x62
+ 364 0106 77000000 		.4byte	0x77
+ 365 010a 08       		.byte	0x8
+ 366 010b 06       		.uleb128 0x6
+ 367 010c 95020000 		.4byte	.LASF21
+ 368 0110 03       		.byte	0x3
+ 369 0111 63       		.byte	0x63
+ 370 0112 77000000 		.4byte	0x77
+ 371 0116 0A       		.byte	0xa
+ 372 0117 06       		.uleb128 0x6
+ 373 0118 5D000000 		.4byte	.LASF22
+ 374 011c 03       		.byte	0x3
+ 375 011d 64       		.byte	0x64
+ 376 011e 8F000000 		.4byte	0x8f
+ 377 0122 0C       		.byte	0xc
+ 378 0123 06       		.uleb128 0x6
+ 379 0124 3E010000 		.4byte	.LASF23
+ 380 0128 03       		.byte	0x3
+ 381 0129 65       		.byte	0x65
+ 382 012a 8F000000 		.4byte	0x8f
+ 383 012e 0E       		.byte	0xe
+ 384 012f 06       		.uleb128 0x6
+ 385 0130 34000000 		.4byte	.LASF24
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 10
+
+
+ 386 0134 03       		.byte	0x3
+ 387 0135 66       		.byte	0x66
+ 388 0136 8F000000 		.4byte	0x8f
+ 389 013a 10       		.byte	0x10
+ 390 013b 06       		.uleb128 0x6
+ 391 013c 17000000 		.4byte	.LASF25
+ 392 0140 03       		.byte	0x3
+ 393 0141 67       		.byte	0x67
+ 394 0142 8F000000 		.4byte	0x8f
+ 395 0146 12       		.byte	0x12
+ 396 0147 06       		.uleb128 0x6
+ 397 0148 00000000 		.4byte	.LASF26
+ 398 014c 03       		.byte	0x3
+ 399 014d 68       		.byte	0x68
+ 400 014e 8F000000 		.4byte	0x8f
+ 401 0152 14       		.byte	0x14
+ 402 0153 06       		.uleb128 0x6
+ 403 0154 0A020000 		.4byte	.LASF27
+ 404 0158 03       		.byte	0x3
+ 405 0159 69       		.byte	0x69
+ 406 015a 8F000000 		.4byte	0x8f
+ 407 015e 16       		.byte	0x16
+ 408 015f 06       		.uleb128 0x6
+ 409 0160 71020000 		.4byte	.LASF28
+ 410 0164 03       		.byte	0x3
+ 411 0165 6A       		.byte	0x6a
+ 412 0166 8F000000 		.4byte	0x8f
+ 413 016a 18       		.byte	0x18
+ 414 016b 06       		.uleb128 0x6
+ 415 016c 43020000 		.4byte	.LASF29
+ 416 0170 03       		.byte	0x3
+ 417 0171 6B       		.byte	0x6b
+ 418 0172 8F000000 		.4byte	0x8f
+ 419 0176 1A       		.byte	0x1a
+ 420 0177 06       		.uleb128 0x6
+ 421 0178 1A010000 		.4byte	.LASF30
+ 422 017c 03       		.byte	0x3
+ 423 017d 6C       		.byte	0x6c
+ 424 017e 77000000 		.4byte	0x77
+ 425 0182 1C       		.byte	0x1c
+ 426 0183 06       		.uleb128 0x6
+ 427 0184 4D000000 		.4byte	.LASF31
+ 428 0188 03       		.byte	0x3
+ 429 0189 6D       		.byte	0x6d
+ 430 018a 77000000 		.4byte	0x77
+ 431 018e 1E       		.byte	0x1e
+ 432 018f 06       		.uleb128 0x6
+ 433 0190 55020000 		.4byte	.LASF32
+ 434 0194 03       		.byte	0x3
+ 435 0195 6E       		.byte	0x6e
+ 436 0196 77000000 		.4byte	0x77
+ 437 019a 20       		.byte	0x20
+ 438 019b 06       		.uleb128 0x6
+ 439 019c 4C010000 		.4byte	.LASF33
+ 440 01a0 03       		.byte	0x3
+ 441 01a1 6F       		.byte	0x6f
+ 442 01a2 77000000 		.4byte	0x77
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 11
+
+
+ 443 01a6 22       		.byte	0x22
+ 444 01a7 06       		.uleb128 0x6
+ 445 01a8 E3020000 		.4byte	.LASF34
+ 446 01ac 03       		.byte	0x3
+ 447 01ad 70       		.byte	0x70
+ 448 01ae 77000000 		.4byte	0x77
+ 449 01b2 24       		.byte	0x24
+ 450 01b3 00       		.byte	0
+ 451 01b4 08       		.uleb128 0x8
+ 452 01b5 34020000 		.4byte	.LASF35
+ 453 01b9 03       		.byte	0x3
+ 454 01ba 71       		.byte	0x71
+ 455 01bb C3000000 		.4byte	0xc3
+ 456 01bf 09       		.uleb128 0x9
+ 457 01c0 D8000000 		.4byte	.LASF36
+ 458 01c4 01       		.byte	0x1
+ 459 01c5 2E       		.byte	0x2e
+ 460 01c6 00000000 		.4byte	.LFB35
+ 461 01ca 8C000000 		.4byte	.LFE35-.LFB35
+ 462 01ce 01       		.uleb128 0x1
+ 463 01cf 9C       		.byte	0x9c
+ 464 01d0 09       		.uleb128 0x9
+ 465 01d1 8B020000 		.4byte	.LASF37
+ 466 01d5 01       		.byte	0x1
+ 467 01d6 56       		.byte	0x56
+ 468 01d7 00000000 		.4byte	.LFB36
+ 469 01db 4C000000 		.4byte	.LFE36-.LFB36
+ 470 01df 01       		.uleb128 0x1
+ 471 01e0 9C       		.byte	0x9c
+ 472 01e1 09       		.uleb128 0x9
+ 473 01e2 6A000000 		.4byte	.LASF38
+ 474 01e6 01       		.byte	0x1
+ 475 01e7 70       		.byte	0x70
+ 476 01e8 00000000 		.4byte	.LFB37
+ 477 01ec 2C000000 		.4byte	.LFE37-.LFB37
+ 478 01f0 01       		.uleb128 0x1
+ 479 01f1 9C       		.byte	0x9c
+ 480 01f2 0A       		.uleb128 0xa
+ 481 01f3 2C010000 		.4byte	.LASF39
+ 482 01f7 04       		.byte	0x4
+ 483 01f8 30       		.byte	0x30
+ 484 01f9 6B000000 		.4byte	0x6b
+ 485 01fd 05       		.uleb128 0x5
+ 486 01fe 03       		.byte	0x3
+ 487 01ff 00000000 		.4byte	filterInit
+ 488 0203 0B       		.uleb128 0xb
+ 489 0204 FE000000 		.4byte	.LASF40
+ 490 0208 03       		.byte	0x3
+ 491 0209 78       		.byte	0x78
+ 492 020a B4010000 		.4byte	0x1b4
+ 493 020e 0A       		.uleb128 0xa
+ 494 020f 24000000 		.4byte	.LASF41
+ 495 0213 01       		.byte	0x1
+ 496 0214 2C       		.byte	0x2c
+ 497 0215 77000000 		.4byte	0x77
+ 498 0219 05       		.uleb128 0x5
+ 499 021a 03       		.byte	0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 12
+
+
+ 500 021b 00000000 		.4byte	PIRTriggerTimer
+ 501 021f 00       		.byte	0
+ 502              		.section	.debug_abbrev,"",%progbits
+ 503              	.Ldebug_abbrev0:
+ 504 0000 01       		.uleb128 0x1
+ 505 0001 11       		.uleb128 0x11
+ 506 0002 01       		.byte	0x1
+ 507 0003 25       		.uleb128 0x25
+ 508 0004 0E       		.uleb128 0xe
+ 509 0005 13       		.uleb128 0x13
+ 510 0006 0B       		.uleb128 0xb
+ 511 0007 03       		.uleb128 0x3
+ 512 0008 0E       		.uleb128 0xe
+ 513 0009 1B       		.uleb128 0x1b
+ 514 000a 0E       		.uleb128 0xe
+ 515 000b 55       		.uleb128 0x55
+ 516 000c 17       		.uleb128 0x17
+ 517 000d 11       		.uleb128 0x11
+ 518 000e 01       		.uleb128 0x1
+ 519 000f 10       		.uleb128 0x10
+ 520 0010 17       		.uleb128 0x17
+ 521 0011 00       		.byte	0
+ 522 0012 00       		.byte	0
+ 523 0013 02       		.uleb128 0x2
+ 524 0014 24       		.uleb128 0x24
+ 525 0015 00       		.byte	0
+ 526 0016 0B       		.uleb128 0xb
+ 527 0017 0B       		.uleb128 0xb
+ 528 0018 3E       		.uleb128 0x3e
+ 529 0019 0B       		.uleb128 0xb
+ 530 001a 03       		.uleb128 0x3
+ 531 001b 0E       		.uleb128 0xe
+ 532 001c 00       		.byte	0
+ 533 001d 00       		.byte	0
+ 534 001e 03       		.uleb128 0x3
+ 535 001f 24       		.uleb128 0x24
+ 536 0020 00       		.byte	0
+ 537 0021 0B       		.uleb128 0xb
+ 538 0022 0B       		.uleb128 0xb
+ 539 0023 3E       		.uleb128 0x3e
+ 540 0024 0B       		.uleb128 0xb
+ 541 0025 03       		.uleb128 0x3
+ 542 0026 08       		.uleb128 0x8
+ 543 0027 00       		.byte	0
+ 544 0028 00       		.byte	0
+ 545 0029 04       		.uleb128 0x4
+ 546 002a 16       		.uleb128 0x16
+ 547 002b 00       		.byte	0
+ 548 002c 03       		.uleb128 0x3
+ 549 002d 0E       		.uleb128 0xe
+ 550 002e 3A       		.uleb128 0x3a
+ 551 002f 0B       		.uleb128 0xb
+ 552 0030 3B       		.uleb128 0x3b
+ 553 0031 05       		.uleb128 0x5
+ 554 0032 49       		.uleb128 0x49
+ 555 0033 13       		.uleb128 0x13
+ 556 0034 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 13
+
+
+ 557 0035 00       		.byte	0
+ 558 0036 05       		.uleb128 0x5
+ 559 0037 13       		.uleb128 0x13
+ 560 0038 01       		.byte	0x1
+ 561 0039 03       		.uleb128 0x3
+ 562 003a 0E       		.uleb128 0xe
+ 563 003b 0B       		.uleb128 0xb
+ 564 003c 0B       		.uleb128 0xb
+ 565 003d 3A       		.uleb128 0x3a
+ 566 003e 0B       		.uleb128 0xb
+ 567 003f 3B       		.uleb128 0x3b
+ 568 0040 0B       		.uleb128 0xb
+ 569 0041 01       		.uleb128 0x1
+ 570 0042 13       		.uleb128 0x13
+ 571 0043 00       		.byte	0
+ 572 0044 00       		.byte	0
+ 573 0045 06       		.uleb128 0x6
+ 574 0046 0D       		.uleb128 0xd
+ 575 0047 00       		.byte	0
+ 576 0048 03       		.uleb128 0x3
+ 577 0049 0E       		.uleb128 0xe
+ 578 004a 3A       		.uleb128 0x3a
+ 579 004b 0B       		.uleb128 0xb
+ 580 004c 3B       		.uleb128 0x3b
+ 581 004d 0B       		.uleb128 0xb
+ 582 004e 49       		.uleb128 0x49
+ 583 004f 13       		.uleb128 0x13
+ 584 0050 38       		.uleb128 0x38
+ 585 0051 0B       		.uleb128 0xb
+ 586 0052 00       		.byte	0
+ 587 0053 00       		.byte	0
+ 588 0054 07       		.uleb128 0x7
+ 589 0055 0D       		.uleb128 0xd
+ 590 0056 00       		.byte	0
+ 591 0057 03       		.uleb128 0x3
+ 592 0058 08       		.uleb128 0x8
+ 593 0059 3A       		.uleb128 0x3a
+ 594 005a 0B       		.uleb128 0xb
+ 595 005b 3B       		.uleb128 0x3b
+ 596 005c 0B       		.uleb128 0xb
+ 597 005d 49       		.uleb128 0x49
+ 598 005e 13       		.uleb128 0x13
+ 599 005f 38       		.uleb128 0x38
+ 600 0060 0B       		.uleb128 0xb
+ 601 0061 00       		.byte	0
+ 602 0062 00       		.byte	0
+ 603 0063 08       		.uleb128 0x8
+ 604 0064 16       		.uleb128 0x16
+ 605 0065 00       		.byte	0
+ 606 0066 03       		.uleb128 0x3
+ 607 0067 0E       		.uleb128 0xe
+ 608 0068 3A       		.uleb128 0x3a
+ 609 0069 0B       		.uleb128 0xb
+ 610 006a 3B       		.uleb128 0x3b
+ 611 006b 0B       		.uleb128 0xb
+ 612 006c 49       		.uleb128 0x49
+ 613 006d 13       		.uleb128 0x13
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 14
+
+
+ 614 006e 00       		.byte	0
+ 615 006f 00       		.byte	0
+ 616 0070 09       		.uleb128 0x9
+ 617 0071 2E       		.uleb128 0x2e
+ 618 0072 00       		.byte	0
+ 619 0073 3F       		.uleb128 0x3f
+ 620 0074 19       		.uleb128 0x19
+ 621 0075 03       		.uleb128 0x3
+ 622 0076 0E       		.uleb128 0xe
+ 623 0077 3A       		.uleb128 0x3a
+ 624 0078 0B       		.uleb128 0xb
+ 625 0079 3B       		.uleb128 0x3b
+ 626 007a 0B       		.uleb128 0xb
+ 627 007b 27       		.uleb128 0x27
+ 628 007c 19       		.uleb128 0x19
+ 629 007d 11       		.uleb128 0x11
+ 630 007e 01       		.uleb128 0x1
+ 631 007f 12       		.uleb128 0x12
+ 632 0080 06       		.uleb128 0x6
+ 633 0081 40       		.uleb128 0x40
+ 634 0082 18       		.uleb128 0x18
+ 635 0083 9642     		.uleb128 0x2116
+ 636 0085 19       		.uleb128 0x19
+ 637 0086 00       		.byte	0
+ 638 0087 00       		.byte	0
+ 639 0088 0A       		.uleb128 0xa
+ 640 0089 34       		.uleb128 0x34
+ 641 008a 00       		.byte	0
+ 642 008b 03       		.uleb128 0x3
+ 643 008c 0E       		.uleb128 0xe
+ 644 008d 3A       		.uleb128 0x3a
+ 645 008e 0B       		.uleb128 0xb
+ 646 008f 3B       		.uleb128 0x3b
+ 647 0090 0B       		.uleb128 0xb
+ 648 0091 49       		.uleb128 0x49
+ 649 0092 13       		.uleb128 0x13
+ 650 0093 3F       		.uleb128 0x3f
+ 651 0094 19       		.uleb128 0x19
+ 652 0095 02       		.uleb128 0x2
+ 653 0096 18       		.uleb128 0x18
+ 654 0097 00       		.byte	0
+ 655 0098 00       		.byte	0
+ 656 0099 0B       		.uleb128 0xb
+ 657 009a 34       		.uleb128 0x34
+ 658 009b 00       		.byte	0
+ 659 009c 03       		.uleb128 0x3
+ 660 009d 0E       		.uleb128 0xe
+ 661 009e 3A       		.uleb128 0x3a
+ 662 009f 0B       		.uleb128 0xb
+ 663 00a0 3B       		.uleb128 0x3b
+ 664 00a1 0B       		.uleb128 0xb
+ 665 00a2 49       		.uleb128 0x49
+ 666 00a3 13       		.uleb128 0x13
+ 667 00a4 3F       		.uleb128 0x3f
+ 668 00a5 19       		.uleb128 0x19
+ 669 00a6 3C       		.uleb128 0x3c
+ 670 00a7 19       		.uleb128 0x19
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 15
+
+
+ 671 00a8 00       		.byte	0
+ 672 00a9 00       		.byte	0
+ 673 00aa 00       		.byte	0
+ 674              		.section	.debug_aranges,"",%progbits
+ 675 0000 2C000000 		.4byte	0x2c
+ 676 0004 0200     		.2byte	0x2
+ 677 0006 00000000 		.4byte	.Ldebug_info0
+ 678 000a 04       		.byte	0x4
+ 679 000b 00       		.byte	0
+ 680 000c 0000     		.2byte	0
+ 681 000e 0000     		.2byte	0
+ 682 0010 00000000 		.4byte	.LFB35
+ 683 0014 8C000000 		.4byte	.LFE35-.LFB35
+ 684 0018 00000000 		.4byte	.LFB36
+ 685 001c 4C000000 		.4byte	.LFE36-.LFB36
+ 686 0020 00000000 		.4byte	.LFB37
+ 687 0024 2C000000 		.4byte	.LFE37-.LFB37
+ 688 0028 00000000 		.4byte	0
+ 689 002c 00000000 		.4byte	0
+ 690              		.section	.debug_ranges,"",%progbits
+ 691              	.Ldebug_ranges0:
+ 692 0000 00000000 		.4byte	.LFB35
+ 693 0004 8C000000 		.4byte	.LFE35
+ 694 0008 00000000 		.4byte	.LFB36
+ 695 000c 4C000000 		.4byte	.LFE36
+ 696 0010 00000000 		.4byte	.LFB37
+ 697 0014 2C000000 		.4byte	.LFE37
+ 698 0018 00000000 		.4byte	0
+ 699 001c 00000000 		.4byte	0
+ 700              		.section	.debug_line,"",%progbits
+ 701              	.Ldebug_line0:
+ 702 0000 AF000000 		.section	.debug_str,"MS",%progbits,1
+ 702      02005700 
+ 702      00000201 
+ 702      FB0E0D00 
+ 702      01010101 
+ 703              	.LASF26:
+ 704 0000 50495254 		.ascii	"PIRTrigger\000"
+ 704      72696767 
+ 704      657200
+ 705              	.LASF19:
+ 706 000b 54656D70 		.ascii	"Temperature\000"
+ 706      65726174 
+ 706      75726500 
+ 707              	.LASF25:
+ 708 0017 50495257 		.ascii	"PIRWindowLow\000"
+ 708      696E646F 
+ 708      774C6F77 
+ 708      00
+ 709              	.LASF41:
+ 710 0024 50495254 		.ascii	"PIRTriggerTimer\000"
+ 710      72696767 
+ 710      65725469 
+ 710      6D657200 
+ 711              	.LASF24:
+ 712 0034 50495257 		.ascii	"PIRWindowHigh\000"
+ 712      696E646F 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 16
+
+
+ 712      77486967 
+ 712      6800
+ 713              	.LASF20:
+ 714 0042 414C5343 		.ascii	"ALSCurrent\000"
+ 714      75727265 
+ 714      6E7400
+ 715              	.LASF31:
+ 716 004d 52617743 		.ascii	"RawCountsRefCap\000"
+ 716      6F756E74 
+ 716      73526566 
+ 716      43617000 
+ 717              	.LASF22:
+ 718 005d 50495252 		.ascii	"PIRRaw\000"
+ 718      617700
+ 719              	.LASF14:
+ 720 0064 666C6F61 		.ascii	"float\000"
+ 720      7400
+ 721              	.LASF38:
+ 722 006a 5049525F 		.ascii	"PIR_Stop\000"
+ 722      53746F70 
+ 722      00
+ 723              	.LASF44:
+ 724 0073 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 724      73657273 
+ 724      5C436872 
+ 724      6973746F 
+ 724      70686572 
+ 725 00a2 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 725      456E7669 
+ 725      726F6E6D 
+ 725      656E7453 
+ 725      656E7369 
+ 726 00d3 7964736E 		.ascii	"ydsn\000"
+ 726      00
+ 727              	.LASF36:
+ 728 00d8 50495254 		.ascii	"PIRTask\000"
+ 728      61736B00 
+ 729              	.LASF12:
+ 730 00e0 696E7431 		.ascii	"int16\000"
+ 730      3600
+ 731              	.LASF5:
+ 732 00e6 6C6F6E67 		.ascii	"long unsigned int\000"
+ 732      20756E73 
+ 732      69676E65 
+ 732      6420696E 
+ 732      7400
+ 733              	.LASF43:
+ 734 00f8 5049522E 		.ascii	"PIR.c\000"
+ 734      6300
+ 735              	.LASF40:
+ 736 00fe 50726F63 		.ascii	"ProcessValues\000"
+ 736      65737356 
+ 736      616C7565 
+ 736      7300
+ 737              	.LASF1:
+ 738 010c 756E7369 		.ascii	"unsigned char\000"
+ 738      676E6564 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 17
+
+
+ 738      20636861 
+ 738      7200
+ 739              	.LASF30:
+ 740 011a 49505354 		.ascii	"IPSTrigger\000"
+ 740      72696767 
+ 740      657200
+ 741              	.LASF15:
+ 742 0125 646F7562 		.ascii	"double\000"
+ 742      6C6500
+ 743              	.LASF39:
+ 744 012c 66696C74 		.ascii	"filterInit\000"
+ 744      6572496E 
+ 744      697400
+ 745              	.LASF10:
+ 746 0137 75696E74 		.ascii	"uint16\000"
+ 746      313600
+ 747              	.LASF23:
+ 748 013e 50495248 		.ascii	"PIRHpf\000"
+ 748      706600
+ 749              	.LASF11:
+ 750 0145 75696E74 		.ascii	"uint32\000"
+ 750      333200
+ 751              	.LASF33:
+ 752 014c 53656E73 		.ascii	"SensorCapacitance\000"
+ 752      6F724361 
+ 752      70616369 
+ 752      74616E63 
+ 752      6500
+ 753              	.LASF8:
+ 754 015e 756E7369 		.ascii	"unsigned int\000"
+ 754      676E6564 
+ 754      20696E74 
+ 754      00
+ 755              	.LASF16:
+ 756 016b 63686172 		.ascii	"char\000"
+ 756      00
+ 757              	.LASF42:
+ 758 0170 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 758      4320342E 
+ 758      392E3320 
+ 758      32303135 
+ 758      30333033 
+ 759 01a3 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 759      20726576 
+ 759      6973696F 
+ 759      6E203232 
+ 759      31323230 
+ 760 01d6 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 760      30202D66 
+ 760      66756E63 
+ 760      74696F6E 
+ 760      2D736563 
+ 761              	.LASF18:
+ 762 0202 56657273 		.ascii	"Version\000"
+ 762      696F6E00 
+ 763              	.LASF27:
+ 764 020a 49505352 		.ascii	"IPSRawCounts\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 18
+
+
+ 764      6177436F 
+ 764      756E7473 
+ 764      00
+ 765              	.LASF13:
+ 766 0217 696E7433 		.ascii	"int32\000"
+ 766      3200
+ 767              	.LASF17:
+ 768 021d 73697A65 		.ascii	"sizetype\000"
+ 768      74797065 
+ 768      00
+ 769              	.LASF6:
+ 770 0226 6C6F6E67 		.ascii	"long long int\000"
+ 770      206C6F6E 
+ 770      6720696E 
+ 770      7400
+ 771              	.LASF35:
+ 772 0234 50524F43 		.ascii	"PROCESS_VALUES\000"
+ 772      4553535F 
+ 772      56414C55 
+ 772      455300
+ 773              	.LASF29:
+ 774 0243 49505342 		.ascii	"IPSBaselineCounts\000"
+ 774      6173656C 
+ 774      696E6543 
+ 774      6F756E74 
+ 774      7300
+ 775              	.LASF32:
+ 776 0255 52617743 		.ascii	"RawCountsHumidity\000"
+ 776      6F756E74 
+ 776      7348756D 
+ 776      69646974 
+ 776      7900
+ 777              	.LASF2:
+ 778 0267 73686F72 		.ascii	"short int\000"
+ 778      7420696E 
+ 778      7400
+ 779              	.LASF28:
+ 780 0271 49505344 		.ascii	"IPSDifferenceCounts\000"
+ 780      69666665 
+ 780      72656E63 
+ 780      65436F75 
+ 780      6E747300 
+ 781              	.LASF9:
+ 782 0285 75696E74 		.ascii	"uint8\000"
+ 782      3800
+ 783              	.LASF37:
+ 784 028b 5049525F 		.ascii	"PIR_Start\000"
+ 784      53746172 
+ 784      7400
+ 785              	.LASF21:
+ 786 0295 4C696768 		.ascii	"LightIntensity\000"
+ 786      74496E74 
+ 786      656E7369 
+ 786      747900
+ 787              	.LASF4:
+ 788 02a4 6C6F6E67 		.ascii	"long int\000"
+ 788      20696E74 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccQ8GQxa.s 			page 19
+
+
+ 788      00
+ 789              	.LASF0:
+ 790 02ad 7369676E 		.ascii	"signed char\000"
+ 790      65642063 
+ 790      68617200 
+ 791              	.LASF3:
+ 792 02b9 73686F72 		.ascii	"short unsigned int\000"
+ 792      7420756E 
+ 792      7369676E 
+ 792      65642069 
+ 792      6E7400
+ 793              	.LASF7:
+ 794 02cc 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 794      206C6F6E 
+ 794      6720756E 
+ 794      7369676E 
+ 794      65642069 
+ 795              	.LASF34:
+ 796 02e3 48756D69 		.ascii	"Humidity\000"
+ 796      64697479 
+ 796      00
+ 797              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

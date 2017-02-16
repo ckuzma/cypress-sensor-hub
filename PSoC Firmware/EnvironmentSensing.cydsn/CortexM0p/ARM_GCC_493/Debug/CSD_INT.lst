@@ -1,0 +1,3036 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"CSD_INT.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.CSD_CSDPostSingleScan,"ax",%progbits
+  18              		.align	2
+  19              		.global	CSD_CSDPostSingleScan
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	CSD_CSDPostSingleScan, %function
+  23              	CSD_CSDPostSingleScan:
+  24              	.LFB1:
+  25              		.file 1 "Generated_Source\\PSoC4\\CSD_INT.c"
+   1:Generated_Source\PSoC4/CSD_INT.c **** /***************************************************************************//**
+   2:Generated_Source\PSoC4/CSD_INT.c **** * \file CSD_INT.c
+   3:Generated_Source\PSoC4/CSD_INT.c **** * \version 3.0
+   4:Generated_Source\PSoC4/CSD_INT.c **** *
+   5:Generated_Source\PSoC4/CSD_INT.c **** * \brief
+   6:Generated_Source\PSoC4/CSD_INT.c **** *   This file contains the source code for implementation of the CapSense component
+   7:Generated_Source\PSoC4/CSD_INT.c **** *   Interrupt Service Routine (ISR).
+   8:Generated_Source\PSoC4/CSD_INT.c **** *
+   9:Generated_Source\PSoC4/CSD_INT.c **** * \see CapSense P4 v3.0 Datasheet
+  10:Generated_Source\PSoC4/CSD_INT.c **** *
+  11:Generated_Source\PSoC4/CSD_INT.c **** *//*****************************************************************************
+  12:Generated_Source\PSoC4/CSD_INT.c **** * Copyright (2016), Cypress Semiconductor Corporation.
+  13:Generated_Source\PSoC4/CSD_INT.c **** ********************************************************************************
+  14:Generated_Source\PSoC4/CSD_INT.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  15:Generated_Source\PSoC4/CSD_INT.c **** * protected by and subject to worldwide patent protection (United States and
+  16:Generated_Source\PSoC4/CSD_INT.c **** * foreign), United States copyright laws and international treaty provisions.
+  17:Generated_Source\PSoC4/CSD_INT.c **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  18:Generated_Source\PSoC4/CSD_INT.c **** * license to copy, use, modify, create derivative works of, and compile the
+  19:Generated_Source\PSoC4/CSD_INT.c **** * Cypress Source Code and derivative works for the sole purpose of creating
+  20:Generated_Source\PSoC4/CSD_INT.c **** * custom software in support of licensee product to be used only in conjunction
+  21:Generated_Source\PSoC4/CSD_INT.c **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  22:Generated_Source\PSoC4/CSD_INT.c **** * Any reproduction, modification, translation, compilation, or representation of
+  23:Generated_Source\PSoC4/CSD_INT.c **** * this software except as specified above is prohibited without the express
+  24:Generated_Source\PSoC4/CSD_INT.c **** * written permission of Cypress.
+  25:Generated_Source\PSoC4/CSD_INT.c **** *
+  26:Generated_Source\PSoC4/CSD_INT.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  27:Generated_Source\PSoC4/CSD_INT.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:Generated_Source\PSoC4/CSD_INT.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  29:Generated_Source\PSoC4/CSD_INT.c **** * Cypress reserves the right to make changes without further notice to the
+  30:Generated_Source\PSoC4/CSD_INT.c **** * materials described herein. Cypress does not assume any liability arising out
+  31:Generated_Source\PSoC4/CSD_INT.c **** * of the application or use of any product or circuit described herein. Cypress
+  32:Generated_Source\PSoC4/CSD_INT.c **** * does not authorize its products for use as critical components in life-support
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 2
+
+
+  33:Generated_Source\PSoC4/CSD_INT.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  34:Generated_Source\PSoC4/CSD_INT.c **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  35:Generated_Source\PSoC4/CSD_INT.c **** * support systems application implies that the manufacturer assumes all risk of
+  36:Generated_Source\PSoC4/CSD_INT.c **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  37:Generated_Source\PSoC4/CSD_INT.c **** * limited by and subject to the applicable Cypress software license agreement.
+  38:Generated_Source\PSoC4/CSD_INT.c **** *******************************************************************************/
+  39:Generated_Source\PSoC4/CSD_INT.c **** #include "cytypes.h"
+  40:Generated_Source\PSoC4/CSD_INT.c **** #include "cyfitter.h"
+  41:Generated_Source\PSoC4/CSD_INT.c **** #include "CSD_Sensing.h"
+  42:Generated_Source\PSoC4/CSD_INT.c **** 
+  43:Generated_Source\PSoC4/CSD_INT.c **** 
+  44:Generated_Source\PSoC4/CSD_INT.c **** /*******************************************************************************
+  45:Generated_Source\PSoC4/CSD_INT.c **** * Static Function Prototypes
+  46:Generated_Source\PSoC4/CSD_INT.c **** *******************************************************************************/
+  47:Generated_Source\PSoC4/CSD_INT.c **** /**
+  48:Generated_Source\PSoC4/CSD_INT.c **** * \if SECTION_CAPSENSE_INTERNAL
+  49:Generated_Source\PSoC4/CSD_INT.c **** * \addtogroup group_capsense_internal
+  50:Generated_Source\PSoC4/CSD_INT.c **** * \{
+  51:Generated_Source\PSoC4/CSD_INT.c **** */
+  52:Generated_Source\PSoC4/CSD_INT.c **** 
+  53:Generated_Source\PSoC4/CSD_INT.c **** #define CSD_CSD_EXTRA_CYCLES_NUMBER    (1Lu)
+  54:Generated_Source\PSoC4/CSD_INT.c **** 
+  55:Generated_Source\PSoC4/CSD_INT.c **** #if (((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN)) && \
+  56:Generated_Source\PSoC4/CSD_INT.c ****      (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN))
+  57:Generated_Source\PSoC4/CSD_INT.c ****     static void CSD_SsNextFrequencyScan(void);
+  58:Generated_Source\PSoC4/CSD_INT.c **** #endif /* (((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN)) && \
+  59:Generated_Source\PSoC4/CSD_INT.c ****             (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)) */
+  60:Generated_Source\PSoC4/CSD_INT.c **** 
+  61:Generated_Source\PSoC4/CSD_INT.c **** #if ((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN))
+  62:Generated_Source\PSoC4/CSD_INT.c ****     CY_INLINE static void CSD_SsCSDPostScan(void);
+  63:Generated_Source\PSoC4/CSD_INT.c ****     CY_INLINE static void CSD_SsInitNextScan(void);
+  64:Generated_Source\PSoC4/CSD_INT.c **** #endif /* ((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN)) */
+  65:Generated_Source\PSoC4/CSD_INT.c **** 
+  66:Generated_Source\PSoC4/CSD_INT.c **** /** \}
+  67:Generated_Source\PSoC4/CSD_INT.c **** * \endif */
+  68:Generated_Source\PSoC4/CSD_INT.c **** 
+  69:Generated_Source\PSoC4/CSD_INT.c **** 
+  70:Generated_Source\PSoC4/CSD_INT.c **** /**
+  71:Generated_Source\PSoC4/CSD_INT.c **** * \if SECTION_CAPSENSE_INTERRUPT
+  72:Generated_Source\PSoC4/CSD_INT.c **** * \addtogroup group_capsense_interrupt
+  73:Generated_Source\PSoC4/CSD_INT.c **** * \{
+  74:Generated_Source\PSoC4/CSD_INT.c **** */
+  75:Generated_Source\PSoC4/CSD_INT.c **** 
+  76:Generated_Source\PSoC4/CSD_INT.c **** 
+  77:Generated_Source\PSoC4/CSD_INT.c **** #if ((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN))
+  78:Generated_Source\PSoC4/CSD_INT.c **** 
+  79:Generated_Source\PSoC4/CSD_INT.c **** #if (CSD_ENABLE == CSD_CSDV2)
+  80:Generated_Source\PSoC4/CSD_INT.c ****     /*  CSDv2 HW IP block part */
+  81:Generated_Source\PSoC4/CSD_INT.c **** 
+  82:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+  83:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostSingleScan
+  84:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+  85:Generated_Source\PSoC4/CSD_INT.c ****     *
+  86:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+  87:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for single-sensor scanning implementation.
+  88:Generated_Source\PSoC4/CSD_INT.c ****     *
+  89:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 3
+
+
+  90:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+  91:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_CSDScanExt() function.
+  92:Generated_Source\PSoC4/CSD_INT.c ****     *
+  93:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed for CSDv1 HW IP block:
+  94:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+  95:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+  96:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+  97:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Update the Scan Counter
+  98:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Reset the BUSY flag
+  99:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Enable the CSD interrupt.
+ 100:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 101:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed for CSDv2 HW IP block:
+ 102:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Check if the raw data is not noisy
+ 103:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 104:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Configure and start the scan for the next frequency if the
+ 105:Generated_Source\PSoC4/CSD_INT.c ****     *      multi-frequency is enabled
+ 106:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Update the Scan Counter
+ 107:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Reset the BUSY flag
+ 108:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Enable the CSD interrupt.
+ 109:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 110:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes IMO and initializes scanning for the next frequency
+ 111:Generated_Source\PSoC4/CSD_INT.c ****     *  channels when multi-frequency scanning is enabled.
+ 112:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 113:Generated_Source\PSoC4/CSD_INT.c **** 	*  This function has two Macro Callbacks that allow calling the user code
+ 114:Generated_Source\PSoC4/CSD_INT.c ****     *  from macros specified in a component's generated code. Refer to the 
+ 115:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 116:Generated_Source\PSoC4/CSD_INT.c ****     *  for details. 
+ 117:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 118:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ 119:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostSingleScan)
+ 120:Generated_Source\PSoC4/CSD_INT.c ****     {
+  26              		.loc 1 120 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              		.cfi_def_cfa_offset 8
+  30              		.cfi_offset 7, -8
+  31              		.cfi_offset 14, -4
+  32 0002 00AF     		add	r7, sp, #0
+  33              		.cfi_def_cfa_register 7
+ 121:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 122:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 123:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 124:Generated_Source\PSoC4/CSD_INT.c **** 
+ 125:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 126:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+  34              		.loc 1 126 0
+  35 0004 094B     		ldr	r3, .L2
+  36 0006 8322     		mov	r2, #131
+  37 0008 5200     		lsl	r2, r2, #1
+  38 000a 1A60     		str	r2, [r3]
+ 127:Generated_Source\PSoC4/CSD_INT.c **** 
+ 128:Generated_Source\PSoC4/CSD_INT.c ****     #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 129:Generated_Source\PSoC4/CSD_INT.c ****         if ((CSD_CSD_NOISE_METRIC_TH < ((CY_GET_REG32(CSD_RESULT_VAL1_PTR) &
+ 130:Generated_Source\PSoC4/CSD_INT.c ****                                                     CSD_RESULT_VAL1_BAD_CONVS_MASK) >>
+ 131:Generated_Source\PSoC4/CSD_INT.c ****                                                     CSD_RESULT_VAL1_BAD_CONVS_SHIFT)) &&
+ 132:Generated_Source\PSoC4/CSD_INT.c ****                                                     (0u < CSD_badConversionsNum))
+ 133:Generated_Source\PSoC4/CSD_INT.c ****         {
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 4
+
+
+ 134:Generated_Source\PSoC4/CSD_INT.c ****             /* Decrement bad conversions number */
+ 135:Generated_Source\PSoC4/CSD_INT.c ****             CSD_badConversionsNum--;
+ 136:Generated_Source\PSoC4/CSD_INT.c **** 
+ 137:Generated_Source\PSoC4/CSD_INT.c ****             /* Start the re-scan */
+ 138:Generated_Source\PSoC4/CSD_INT.c ****             CY_SET_REG32(CSD_SEQ_START_PTR, CSD_SEQ_START_AZ0_SKIP_MASK |
+ 139:Generated_Source\PSoC4/CSD_INT.c ****                                                          CSD_SEQ_START_AZ1_SKIP_MASK |
+ 140:Generated_Source\PSoC4/CSD_INT.c ****                                                          CSD_SEQ_START_START_MASK);
+ 141:Generated_Source\PSoC4/CSD_INT.c ****         }
+ 142:Generated_Source\PSoC4/CSD_INT.c ****         else
+ 143:Generated_Source\PSoC4/CSD_INT.c ****         {
+ 144:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 145:Generated_Source\PSoC4/CSD_INT.c **** 
+ 146:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsCSDPostScan();
+  39              		.loc 1 146 0
+  40 000c FFF7FEFF 		bl	CSD_SsCSDPostScan
+ 147:Generated_Source\PSoC4/CSD_INT.c **** 
+ 148:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 149:Generated_Source\PSoC4/CSD_INT.c ****                 if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 150:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 151:Generated_Source\PSoC4/CSD_INT.c ****                     /* Scan the next channel */
+ 152:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsNextFrequencyScan();
+ 153:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 154:Generated_Source\PSoC4/CSD_INT.c ****                 else
+ 155:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 156:Generated_Source\PSoC4/CSD_INT.c ****                     /* All channels are scanned. Set IMO to zero channel */
+ 157:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 158:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 159:Generated_Source\PSoC4/CSD_INT.c **** 
+ 160:Generated_Source\PSoC4/CSD_INT.c ****                     #if (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN)
+ 161:Generated_Source\PSoC4/CSD_INT.c ****                         /*  Disable CSDv2 block */
+ 162:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd);
+ 163:Generated_Source\PSoC4/CSD_INT.c ****                     #endif /* (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN) */
+ 164:Generated_Source\PSoC4/CSD_INT.c **** 
+ 165:Generated_Source\PSoC4/CSD_INT.c ****                     /* Update Scan Counter */
+ 166:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_dsRam.scanCounter++;
+ 167:Generated_Source\PSoC4/CSD_INT.c **** 
+ 168:Generated_Source\PSoC4/CSD_INT.c ****                     /* Sensor is totally scanned. Reset BUSY flag */
+ 169:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_dsRam.status &= ~(CSD_SW_STS_BUSY | CSD_WDGT_SW_STS_BUSY);
+ 170:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 171:Generated_Source\PSoC4/CSD_INT.c ****             #else
+ 172:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 173:Generated_Source\PSoC4/CSD_INT.c ****                     #if (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN)
+ 174:Generated_Source\PSoC4/CSD_INT.c ****                         /*  Disable CSDv2 block */
+ 175:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd);
+ 176:Generated_Source\PSoC4/CSD_INT.c ****                     #endif /* (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN) */
+ 177:Generated_Source\PSoC4/CSD_INT.c **** 
+ 178:Generated_Source\PSoC4/CSD_INT.c ****                     /* Update Scan Counter */
+ 179:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_dsRam.scanCounter++;
+  41              		.loc 1 179 0
+  42 0010 074B     		ldr	r3, .L2+4
+  43 0012 DB88     		ldrh	r3, [r3, #6]
+  44 0014 0133     		add	r3, r3, #1
+  45 0016 9AB2     		uxth	r2, r3
+  46 0018 054B     		ldr	r3, .L2+4
+  47 001a DA80     		strh	r2, [r3, #6]
+ 180:Generated_Source\PSoC4/CSD_INT.c **** 
+ 181:Generated_Source\PSoC4/CSD_INT.c ****                     /* Sensor is totally scanned. Reset BUSY flag */
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 5
+
+
+ 182:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_dsRam.status &= ~(CSD_SW_STS_BUSY | CSD_WDGT_SW_STS_BUSY);
+  48              		.loc 1 182 0
+  49 001c 044B     		ldr	r3, .L2+4
+  50 001e 9B68     		ldr	r3, [r3, #8]
+  51 0020 044A     		ldr	r2, .L2+8
+  52 0022 1A40     		and	r2, r3
+  53 0024 024B     		ldr	r3, .L2+4
+  54 0026 9A60     		str	r2, [r3, #8]
+ 183:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 184:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 185:Generated_Source\PSoC4/CSD_INT.c ****     #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 186:Generated_Source\PSoC4/CSD_INT.c ****         }
+ 187:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 188:Generated_Source\PSoC4/CSD_INT.c **** 
+ 189:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 190:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 191:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 192:Generated_Source\PSoC4/CSD_INT.c ****     }
+  55              		.loc 1 192 0
+  56 0028 BD46     		mov	sp, r7
+  57              		@ sp needed
+  58 002a 80BD     		pop	{r7, pc}
+  59              	.L3:
+  60              		.align	2
+  61              	.L2:
+  62 002c F0000C40 		.word	1074528496
+  63 0030 00000000 		.word	CSD_dsRam
+  64 0034 7FFFFEFF 		.word	-65665
+  65              		.cfi_endproc
+  66              	.LFE1:
+  67              		.size	CSD_CSDPostSingleScan, .-CSD_CSDPostSingleScan
+  68              		.section	.text.CSD_CSDPostMultiScan,"ax",%progbits
+  69              		.align	2
+  70              		.global	CSD_CSDPostMultiScan
+  71              		.code	16
+  72              		.thumb_func
+  73              		.type	CSD_CSDPostMultiScan, %function
+  74              	CSD_CSDPostMultiScan:
+  75              	.LFB2:
+ 193:Generated_Source\PSoC4/CSD_INT.c **** 
+ 194:Generated_Source\PSoC4/CSD_INT.c **** 
+ 195:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+ 196:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostMultiScan
+ 197:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+ 198:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 199:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+ 200:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for multiple sensor-scanning 
+ 201:Generated_Source\PSoC4/CSD_INT.c ****     *  implementation.
+ 202:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 203:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ 204:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+ 205:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_Scan() or CSD_ScanAllWidgets() APIs.
+ 206:Generated_Source\PSoC4/CSD_INT.c ****     *  
+ 207:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed:
+ 208:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+ 209:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 210:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 6
+
+
+ 211:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Disable the CSD block (after the widget has been scanned)
+ 212:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Update Scan Counter
+ 213:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Reset the BUSY flag
+ 214:Generated_Source\PSoC4/CSD_INT.c ****     *    7. Enable the CSD interrupt.
+ 215:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 216:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the previous sensor when the 
+ 217:Generated_Source\PSoC4/CSD_INT.c ****     *  widget has more than one sensor.
+ 218:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the next widget when the
+ 219:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() APIs are called and the project has
+ 220:Generated_Source\PSoC4/CSD_INT.c ****     *  more than one widget.
+ 221:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes the IMO and initializes scanning for the next
+ 222:Generated_Source\PSoC4/CSD_INT.c ****     *  frequency channels when multi-frequency scanning is enabled.
+ 223:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 224:Generated_Source\PSoC4/CSD_INT.c ****     *  This function has two Macro Callbacks that allow calling the user 
+ 225:Generated_Source\PSoC4/CSD_INT.c ****     *  code from macros specified in a component's generated code. Refer to the 
+ 226:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 227:Generated_Source\PSoC4/CSD_INT.c ****     *  for details.
+ 228:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 229:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ 230:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostMultiScan)
+ 231:Generated_Source\PSoC4/CSD_INT.c ****     {
+  76              		.loc 1 231 0
+  77              		.cfi_startproc
+  78 0000 80B5     		push	{r7, lr}
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 82B0     		sub	sp, sp, #8
+  83              		.cfi_def_cfa_offset 16
+  84 0004 00AF     		add	r7, sp, #0
+  85              		.cfi_def_cfa_register 7
+ 232:Generated_Source\PSoC4/CSD_INT.c ****         /*  Declare and initialise ptr to sensor IO structure to appropriate address        */
+ 233:Generated_Source\PSoC4/CSD_INT.c ****         CSD_FLASH_IO_STRUCT const *curSnsIOPtr = (CSD_FLASH_IO_STRUCT const *)
+  86              		.loc 1 233 0
+  87 0006 114B     		ldr	r3, .L5
+  88 0008 1B78     		ldrb	r3, [r3]
+  89 000a DBB2     		uxtb	r3, r3
+  90 000c 191C     		mov	r1, r3
+ 234:Generated_Source\PSoC4/CSD_INT.c ****                                                           CSD_dsFlash.wdgtArray[CSD_widgetIndex].pt
+  91              		.loc 1 234 0
+  92 000e 104A     		ldr	r2, .L5+4
+  93 0010 0B1C     		mov	r3, r1
+  94 0012 DB00     		lsl	r3, r3, #3
+  95 0014 5B1A     		sub	r3, r3, r1
+  96 0016 9B00     		lsl	r3, r3, #2
+  97 0018 9A58     		ldr	r2, [r3, r2]
+ 235:Generated_Source\PSoC4/CSD_INT.c ****                                                           + CSD_sensorIndex;
+  98              		.loc 1 235 0
+  99 001a 0E4B     		ldr	r3, .L5+8
+ 100 001c 1B78     		ldrb	r3, [r3]
+ 101 001e DBB2     		uxtb	r3, r3
+ 102 0020 191C     		mov	r1, r3
+ 103 0022 0B1C     		mov	r3, r1
+ 104 0024 DB00     		lsl	r3, r3, #3
+ 105 0026 5B1A     		sub	r3, r3, r1
+ 106 0028 9B00     		lsl	r3, r3, #2
+ 233:Generated_Source\PSoC4/CSD_INT.c ****                                                           CSD_dsFlash.wdgtArray[CSD_widgetIndex].pt
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 7
+
+
+ 107              		.loc 1 233 0
+ 108 002a D318     		add	r3, r2, r3
+ 109 002c 7B60     		str	r3, [r7, #4]
+ 236:Generated_Source\PSoC4/CSD_INT.c **** 
+ 237:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 238:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 239:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 240:Generated_Source\PSoC4/CSD_INT.c **** 
+ 241:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 242:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+ 110              		.loc 1 242 0
+ 111 002e 0A4B     		ldr	r3, .L5+12
+ 112 0030 8322     		mov	r2, #131
+ 113 0032 5200     		lsl	r2, r2, #1
+ 114 0034 1A60     		str	r2, [r3]
+ 243:Generated_Source\PSoC4/CSD_INT.c **** 
+ 244:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 245:Generated_Source\PSoC4/CSD_INT.c ****             if ((CSD_CSD_NOISE_METRIC_TH < ((CY_GET_REG32(CSD_RESULT_VAL1_PTR) &
+ 246:Generated_Source\PSoC4/CSD_INT.c ****                                                       CSD_RESULT_VAL1_BAD_CONVS_MASK) >>
+ 247:Generated_Source\PSoC4/CSD_INT.c ****                                                       CSD_RESULT_VAL1_BAD_CONVS_SHIFT)) &&
+ 248:Generated_Source\PSoC4/CSD_INT.c ****                                                       (0u < CSD_badConversionsNum))
+ 249:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 250:Generated_Source\PSoC4/CSD_INT.c ****                 /* Decrement bad conversions number */
+ 251:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_badConversionsNum--;
+ 252:Generated_Source\PSoC4/CSD_INT.c **** 
+ 253:Generated_Source\PSoC4/CSD_INT.c ****                 /* Start the re-scan */
+ 254:Generated_Source\PSoC4/CSD_INT.c ****                 CY_SET_REG32(CSD_SEQ_START_PTR, CSD_SEQ_START_AZ0_SKIP_MASK |
+ 255:Generated_Source\PSoC4/CSD_INT.c ****                                                              CSD_SEQ_START_AZ1_SKIP_MASK |
+ 256:Generated_Source\PSoC4/CSD_INT.c ****                                                              CSD_SEQ_START_START_MASK);
+ 257:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 258:Generated_Source\PSoC4/CSD_INT.c ****             else
+ 259:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 260:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 261:Generated_Source\PSoC4/CSD_INT.c **** 
+ 262:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsCSDPostScan();
+ 115              		.loc 1 262 0
+ 116 0036 FFF7FEFF 		bl	CSD_SsCSDPostScan
+ 263:Generated_Source\PSoC4/CSD_INT.c **** 
+ 264:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 265:Generated_Source\PSoC4/CSD_INT.c ****                 /* Disable sensor when all frequency channels are scanned */
+ 266:Generated_Source\PSoC4/CSD_INT.c ****                 if (CSD_FREQ_CHANNEL_2 == CSD_scanFreqIndex)
+ 267:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 268:Generated_Source\PSoC4/CSD_INT.c ****                     /* Disable sensor */
+ 269:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_CSDDisconnectSns(curSnsIOPtr);
+ 270:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 271:Generated_Source\PSoC4/CSD_INT.c ****             #else
+ 272:Generated_Source\PSoC4/CSD_INT.c ****                 /* Disable sensor */
+ 273:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_CSDDisconnectSns(curSnsIOPtr);
+ 117              		.loc 1 273 0
+ 118 003a 7B68     		ldr	r3, [r7, #4]
+ 119 003c 181C     		mov	r0, r3
+ 120 003e FFF7FEFF 		bl	CSD_CSDDisconnectSns
+ 274:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 275:Generated_Source\PSoC4/CSD_INT.c **** 
+ 276:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 277:Generated_Source\PSoC4/CSD_INT.c ****                 if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 278:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 8
+
+
+ 279:Generated_Source\PSoC4/CSD_INT.c ****                      /* Scan the next channel */
+ 280:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsNextFrequencyScan();
+ 281:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 282:Generated_Source\PSoC4/CSD_INT.c ****                 else
+ 283:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 284:Generated_Source\PSoC4/CSD_INT.c ****                      /* All channels are scanned. Set IMO to zero channel */
+ 285:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 286:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 287:Generated_Source\PSoC4/CSD_INT.c **** 
+ 288:Generated_Source\PSoC4/CSD_INT.c ****                      /* Scan the next sensor */
+ 289:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsInitNextScan();
+ 290:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 291:Generated_Source\PSoC4/CSD_INT.c ****             #else
+ 292:Generated_Source\PSoC4/CSD_INT.c ****                 /* Scan the next sensor */
+ 293:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsInitNextScan();
+ 121              		.loc 1 293 0
+ 122 0042 FFF7FEFF 		bl	CSD_SsInitNextScan
+ 294:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 295:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 296:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 297:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 298:Generated_Source\PSoC4/CSD_INT.c **** 
+ 299:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 300:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 301:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 302:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 123              		.loc 1 302 0
+ 124 0046 BD46     		mov	sp, r7
+ 125 0048 02B0     		add	sp, sp, #8
+ 126              		@ sp needed
+ 127 004a 80BD     		pop	{r7, pc}
+ 128              	.L6:
+ 129              		.align	2
+ 130              	.L5:
+ 131 004c 00000000 		.word	CSD_widgetIndex
+ 132 0050 00000000 		.word	CSD_dsFlash
+ 133 0054 00000000 		.word	CSD_sensorIndex
+ 134 0058 F0000C40 		.word	1074528496
+ 135              		.cfi_endproc
+ 136              	.LFE2:
+ 137              		.size	CSD_CSDPostMultiScan, .-CSD_CSDPostMultiScan
+ 138              		.section	.text.CSD_SsCSDPostScan,"ax",%progbits
+ 139              		.align	2
+ 140              		.code	16
+ 141              		.thumb_func
+ 142              		.type	CSD_SsCSDPostScan, %function
+ 143              	CSD_SsCSDPostScan:
+ 144              	.LFB3:
+ 303:Generated_Source\PSoC4/CSD_INT.c **** 
+ 304:Generated_Source\PSoC4/CSD_INT.c **** 
+ 305:Generated_Source\PSoC4/CSD_INT.c ****     #if (CSD_ENABLE == CSD_CSD_GANGED_SNS_EN)
+ 306:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+ 307:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostMultiScanGanged
+ 308:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+ 309:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 310:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+ 311:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for multiple sensor scanning 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 9
+
+
+ 312:Generated_Source\PSoC4/CSD_INT.c ****     *  implementation for ganged sensors.
+ 313:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 314:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ 315:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+ 316:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_Scan() API for a ganged sensor or the
+ 317:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() API in the project with ganged sensors.
+ 318:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 319:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed:
+ 320:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+ 321:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 322:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+ 323:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Disable the CSD block (after the widget has been scanned)
+ 324:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Update Scan Counter
+ 325:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Reset the BUSY flag
+ 326:Generated_Source\PSoC4/CSD_INT.c ****     *    7. Enable the CSD interrupt.
+ 327:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 328:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the previous sensor when the
+ 329:Generated_Source\PSoC4/CSD_INT.c ****     *  widget has more than one sensor.
+ 330:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the next widget when the
+ 331:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() APIs are called and the project has 
+ 332:Generated_Source\PSoC4/CSD_INT.c ****     *  more than one widget.
+ 333:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes the IMO and initializes scanning for the next 
+ 334:Generated_Source\PSoC4/CSD_INT.c ****     *  frequency channels when multi-frequency scanning is enabled.
+ 335:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 336:Generated_Source\PSoC4/CSD_INT.c ****     *  This function has two Macro Callbacks that allow calling the user 
+ 337:Generated_Source\PSoC4/CSD_INT.c ****     *  code from macros specified in a component's generated code. Refer to the 
+ 338:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 339:Generated_Source\PSoC4/CSD_INT.c ****     *  for details.
+ 340:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 341:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ 342:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostMultiScanGanged)
+ 343:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 344:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 345:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 346:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 347:Generated_Source\PSoC4/CSD_INT.c **** 
+ 348:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 349:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+ 350:Generated_Source\PSoC4/CSD_INT.c **** 
+ 351:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 352:Generated_Source\PSoC4/CSD_INT.c ****             if ((CSD_CSD_NOISE_METRIC_TH < ((CY_GET_REG32(CSD_RESULT_VAL1_PTR) &
+ 353:Generated_Source\PSoC4/CSD_INT.c ****                                                       CSD_RESULT_VAL1_BAD_CONVS_MASK) >>
+ 354:Generated_Source\PSoC4/CSD_INT.c ****                                                       CSD_RESULT_VAL1_BAD_CONVS_SHIFT)) &&
+ 355:Generated_Source\PSoC4/CSD_INT.c ****                                                       (0u < CSD_badConversionsNum))
+ 356:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 357:Generated_Source\PSoC4/CSD_INT.c ****                 /* Decrement bad conversions number */
+ 358:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_badConversionsNum--;
+ 359:Generated_Source\PSoC4/CSD_INT.c **** 
+ 360:Generated_Source\PSoC4/CSD_INT.c ****                 /* Start the re-scan */
+ 361:Generated_Source\PSoC4/CSD_INT.c ****                 CY_SET_REG32(CSD_SEQ_START_PTR, CSD_SEQ_START_AZ0_SKIP_MASK |
+ 362:Generated_Source\PSoC4/CSD_INT.c ****                                                              CSD_SEQ_START_AZ1_SKIP_MASK |
+ 363:Generated_Source\PSoC4/CSD_INT.c ****                                                              CSD_SEQ_START_START_MASK);
+ 364:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 365:Generated_Source\PSoC4/CSD_INT.c ****             else
+ 366:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 367:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 368:Generated_Source\PSoC4/CSD_INT.c **** 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 10
+
+
+ 369:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsCSDPostScan();
+ 370:Generated_Source\PSoC4/CSD_INT.c **** 
+ 371:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 372:Generated_Source\PSoC4/CSD_INT.c ****                 if (CSD_FREQ_CHANNEL_2 == CSD_scanFreqIndex)
+ 373:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 374:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsCSDDisconnectSnsExt((uint32)CSD_widgetIndex, (uint32)CSD_sensorIndex);
+ 375:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 376:Generated_Source\PSoC4/CSD_INT.c ****             #else
+ 377:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsCSDDisconnectSnsExt((uint32)CSD_widgetIndex, (uint32)CSD_sensorIndex);
+ 378:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 379:Generated_Source\PSoC4/CSD_INT.c **** 
+ 380:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 381:Generated_Source\PSoC4/CSD_INT.c ****                 if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 382:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 383:Generated_Source\PSoC4/CSD_INT.c ****                      /* Scan the next channel */
+ 384:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsNextFrequencyScan();
+ 385:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 386:Generated_Source\PSoC4/CSD_INT.c ****                 else
+ 387:Generated_Source\PSoC4/CSD_INT.c ****                 {
+ 388:Generated_Source\PSoC4/CSD_INT.c ****                     /* All channels are scanned. Set IMO to zero channel */
+ 389:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 390:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 391:Generated_Source\PSoC4/CSD_INT.c **** 
+ 392:Generated_Source\PSoC4/CSD_INT.c ****                      /* Scan the next sensor */
+ 393:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsInitNextScan();
+ 394:Generated_Source\PSoC4/CSD_INT.c ****                 }
+ 395:Generated_Source\PSoC4/CSD_INT.c ****             #else
+ 396:Generated_Source\PSoC4/CSD_INT.c ****                  /* Scan the next sensor */
+ 397:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsInitNextScan();
+ 398:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 399:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 400:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 401:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 402:Generated_Source\PSoC4/CSD_INT.c **** 
+ 403:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 404:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 405:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 406:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 407:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* (CSD_ENABLE == CSD_CSD_GANGED_SNS_EN) */
+ 408:Generated_Source\PSoC4/CSD_INT.c **** 
+ 409:Generated_Source\PSoC4/CSD_INT.c **** #else
+ 410:Generated_Source\PSoC4/CSD_INT.c ****     /* CSDv1 part */
+ 411:Generated_Source\PSoC4/CSD_INT.c **** 
+ 412:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+ 413:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostSingleScan
+ 414:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+ 415:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 416:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+ 417:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for single-sensor scanning implementation.
+ 418:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 419:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ 420:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+ 421:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_CSDScanExt() function.
+ 422:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 423:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed for CSDv1 HW IP block:
+ 424:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+ 425:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 11
+
+
+ 426:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+ 427:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Update the Scan Counter
+ 428:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Reset the BUSY flag
+ 429:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Enable the CSD interrupt.
+ 430:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 431:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed for CSDv2 HW IP block:
+ 432:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Check if the raw data is not noisy
+ 433:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 434:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Configure and start the scan for the next frequency if the
+ 435:Generated_Source\PSoC4/CSD_INT.c ****     *      multi-frequency is enabled
+ 436:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Update the Scan Counter
+ 437:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Reset the BUSY flag
+ 438:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Enable the CSD interrupt.
+ 439:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 440:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes IMO and initializes scanning for the next frequency
+ 441:Generated_Source\PSoC4/CSD_INT.c ****     *  channels when multi-frequency scanning is enabled.
+ 442:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 443:Generated_Source\PSoC4/CSD_INT.c **** 	*  This function has two Macro Callbacks that allow calling the user code
+ 444:Generated_Source\PSoC4/CSD_INT.c ****     *  from macros specified in a component's generated code. Refer to the 
+ 445:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 446:Generated_Source\PSoC4/CSD_INT.c ****     *  for details. 
+ 447:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 448:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ 449:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostSingleScan)
+ 450:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 451:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 452:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 453:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 454:Generated_Source\PSoC4/CSD_INT.c **** 
+ 455:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 456:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+ 457:Generated_Source\PSoC4/CSD_INT.c **** 
+ 458:Generated_Source\PSoC4/CSD_INT.c ****         /* Read Rawdata */
+ 459:Generated_Source\PSoC4/CSD_INT.c ****         CSD_SsCSDPostScan();
+ 460:Generated_Source\PSoC4/CSD_INT.c **** 
+ 461:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 462:Generated_Source\PSoC4/CSD_INT.c ****             if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 463:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 464:Generated_Source\PSoC4/CSD_INT.c ****                 /*  Connect Vref Buffer to AMUX bus. CSDv1 block is enabled */
+ 465:Generated_Source\PSoC4/CSD_INT.c ****                 CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG_CSD_EN);
+ 466:Generated_Source\PSoC4/CSD_INT.c **** 
+ 467:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsNextFrequencyScan();
+ 468:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 469:Generated_Source\PSoC4/CSD_INT.c ****             else
+ 470:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 471:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 472:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 473:Generated_Source\PSoC4/CSD_INT.c **** 
+ 474:Generated_Source\PSoC4/CSD_INT.c ****                 #if (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN)
+ 475:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Disable CSDv1 block. Connect Vref Buffer to AMUX bus */
+ 476:Generated_Source\PSoC4/CSD_INT.c ****                     #if ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 477:Generated_Source\PSoC4/CSD_INT.c ****                          (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN))
+ 478:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CMOD_PRECHARGE_CONFIG);
+ 479:Generated_Source\PSoC4/CSD_INT.c ****                     #else
+ 480:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG);
+ 481:Generated_Source\PSoC4/CSD_INT.c ****                     #endif /* ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 482:Generated_Source\PSoC4/CSD_INT.c ****                                (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN)) */
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 12
+
+
+ 483:Generated_Source\PSoC4/CSD_INT.c ****                 #else
+ 484:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Connect Vref Buffer to AMUX bus. CSDv1 block is enabled */
+ 485:Generated_Source\PSoC4/CSD_INT.c ****                     CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG_CSD_EN)
+ 486:Generated_Source\PSoC4/CSD_INT.c ****                 #endif /* (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN) */
+ 487:Generated_Source\PSoC4/CSD_INT.c **** 
+ 488:Generated_Source\PSoC4/CSD_INT.c ****                 /* Update Scan Counter */
+ 489:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_dsRam.scanCounter++;
+ 490:Generated_Source\PSoC4/CSD_INT.c **** 
+ 491:Generated_Source\PSoC4/CSD_INT.c ****                 /* Sensor is totally scanned. Reset BUSY flag */
+ 492:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_dsRam.status &= ~(CSD_SW_STS_BUSY | CSD_WDGT_SW_STS_BUSY);
+ 493:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 494:Generated_Source\PSoC4/CSD_INT.c ****         #else
+ 495:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 496:Generated_Source\PSoC4/CSD_INT.c ****                 #if (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN)
+ 497:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Disable CSDv1 block. Connect Vref Buffer to AMUX bus */
+ 498:Generated_Source\PSoC4/CSD_INT.c ****                     #if ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 499:Generated_Source\PSoC4/CSD_INT.c ****                          (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN))
+ 500:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CMOD_PRECHARGE_CONFIG);
+ 501:Generated_Source\PSoC4/CSD_INT.c ****                     #else
+ 502:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG);
+ 503:Generated_Source\PSoC4/CSD_INT.c ****                     #endif /* ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 504:Generated_Source\PSoC4/CSD_INT.c ****                                (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN)) */
+ 505:Generated_Source\PSoC4/CSD_INT.c ****                 #else
+ 506:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Connect Vref Buffer to AMUX bus. CSDv1 block is enabled */
+ 507:Generated_Source\PSoC4/CSD_INT.c ****                     CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG_CSD_EN)
+ 508:Generated_Source\PSoC4/CSD_INT.c ****                 #endif /* (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN) */
+ 509:Generated_Source\PSoC4/CSD_INT.c **** 
+ 510:Generated_Source\PSoC4/CSD_INT.c ****                 /* Update Scan Counter */
+ 511:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_dsRam.scanCounter++;
+ 512:Generated_Source\PSoC4/CSD_INT.c **** 
+ 513:Generated_Source\PSoC4/CSD_INT.c ****                 /* Sensor is totally scanned. Reset BUSY flag */
+ 514:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_dsRam.status &= ~(CSD_SW_STS_BUSY | CSD_WDGT_SW_STS_BUSY);
+ 515:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 516:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 517:Generated_Source\PSoC4/CSD_INT.c **** 
+ 518:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 519:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 520:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 521:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 522:Generated_Source\PSoC4/CSD_INT.c **** 
+ 523:Generated_Source\PSoC4/CSD_INT.c **** 
+ 524:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+ 525:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostMultiScan
+ 526:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+ 527:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 528:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+ 529:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for multiple sensor-scanning 
+ 530:Generated_Source\PSoC4/CSD_INT.c ****     *  implementation.
+ 531:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 532:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ 533:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+ 534:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_Scan() or CSD_ScanAllWidgets() APIs.
+ 535:Generated_Source\PSoC4/CSD_INT.c ****     *  
+ 536:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed:
+ 537:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+ 538:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 539:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 13
+
+
+ 540:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Disable the CSD block (after the widget has been scanned)
+ 541:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Update Scan Counter
+ 542:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Reset the BUSY flag
+ 543:Generated_Source\PSoC4/CSD_INT.c ****     *    7. Enable the CSD interrupt.
+ 544:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 545:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the previous sensor when the 
+ 546:Generated_Source\PSoC4/CSD_INT.c ****     *  widget has more than one sensor.
+ 547:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the next widget when the
+ 548:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() APIs are called and the project has
+ 549:Generated_Source\PSoC4/CSD_INT.c ****     *  more than one widget.
+ 550:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes the IMO and initializes scanning for the next
+ 551:Generated_Source\PSoC4/CSD_INT.c ****     *  frequency channels when multi-frequency scanning is enabled.
+ 552:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 553:Generated_Source\PSoC4/CSD_INT.c ****     *  This function has two Macro Callbacks that allow calling the user 
+ 554:Generated_Source\PSoC4/CSD_INT.c ****     *  code from macros specified in a component's generated code. Refer to the 
+ 555:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 556:Generated_Source\PSoC4/CSD_INT.c ****     *  for details.
+ 557:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 558:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ 559:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostMultiScan)
+ 560:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 561:Generated_Source\PSoC4/CSD_INT.c ****         /*  Declare and initialise ptr to sensor IO structure to appropriate address        */
+ 562:Generated_Source\PSoC4/CSD_INT.c ****         CSD_FLASH_IO_STRUCT const *curSnsIOPtr = (CSD_FLASH_IO_STRUCT const *)
+ 563:Generated_Source\PSoC4/CSD_INT.c ****                                                           CSD_dsFlash.wdgtArray[CSD_widgetIndex].pt
+ 564:Generated_Source\PSoC4/CSD_INT.c ****                                                           + CSD_sensorIndex;
+ 565:Generated_Source\PSoC4/CSD_INT.c **** 
+ 566:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 567:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 568:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 569:Generated_Source\PSoC4/CSD_INT.c **** 
+ 570:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 571:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+ 572:Generated_Source\PSoC4/CSD_INT.c **** 
+ 573:Generated_Source\PSoC4/CSD_INT.c ****          /* Read Rawdata */
+ 574:Generated_Source\PSoC4/CSD_INT.c ****         CSD_SsCSDPostScan();
+ 575:Generated_Source\PSoC4/CSD_INT.c **** 
+ 576:Generated_Source\PSoC4/CSD_INT.c ****         /*  Connect Vref Buffer to AMUX bus */
+ 577:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG_CSD_EN);
+ 578:Generated_Source\PSoC4/CSD_INT.c **** 
+ 579:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 580:Generated_Source\PSoC4/CSD_INT.c ****             /* Disable sensor when all frequency channels are scanned */
+ 581:Generated_Source\PSoC4/CSD_INT.c ****             if (CSD_FREQ_CHANNEL_2 == CSD_scanFreqIndex)
+ 582:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 583:Generated_Source\PSoC4/CSD_INT.c ****                 /* Disable sensor */
+ 584:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_CSDDisconnectSns(curSnsIOPtr);
+ 585:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 586:Generated_Source\PSoC4/CSD_INT.c ****         #else
+ 587:Generated_Source\PSoC4/CSD_INT.c ****             /* Disable sensor */
+ 588:Generated_Source\PSoC4/CSD_INT.c ****             CSD_CSDDisconnectSns(curSnsIOPtr);
+ 589:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 590:Generated_Source\PSoC4/CSD_INT.c **** 
+ 591:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 592:Generated_Source\PSoC4/CSD_INT.c ****             if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 593:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 594:Generated_Source\PSoC4/CSD_INT.c ****                  /* Scan the next channel */
+ 595:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsNextFrequencyScan();
+ 596:Generated_Source\PSoC4/CSD_INT.c ****             }
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 14
+
+
+ 597:Generated_Source\PSoC4/CSD_INT.c ****             else
+ 598:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 599:Generated_Source\PSoC4/CSD_INT.c ****                  /* All channels are scanned. Set IMO to zero channel */
+ 600:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 601:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 602:Generated_Source\PSoC4/CSD_INT.c **** 
+ 603:Generated_Source\PSoC4/CSD_INT.c ****                  /* Scan the next sensor */
+ 604:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsInitNextScan();
+ 605:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 606:Generated_Source\PSoC4/CSD_INT.c ****         #else
+ 607:Generated_Source\PSoC4/CSD_INT.c ****             /* Scan the next sensor */
+ 608:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsInitNextScan();
+ 609:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 610:Generated_Source\PSoC4/CSD_INT.c **** 
+ 611:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 612:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 613:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 614:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 615:Generated_Source\PSoC4/CSD_INT.c **** 
+ 616:Generated_Source\PSoC4/CSD_INT.c **** 
+ 617:Generated_Source\PSoC4/CSD_INT.c ****     #if (CSD_ENABLE == CSD_CSD_GANGED_SNS_EN)
+ 618:Generated_Source\PSoC4/CSD_INT.c ****     /*******************************************************************************
+ 619:Generated_Source\PSoC4/CSD_INT.c ****     * Function Name: CSD_CSDPostMultiScanGanged
+ 620:Generated_Source\PSoC4/CSD_INT.c ****     ****************************************************************************//**
+ 621:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 622:Generated_Source\PSoC4/CSD_INT.c ****     * \brief
+ 623:Generated_Source\PSoC4/CSD_INT.c ****     *  This is an internal ISR function for multiple sensor scanning 
+ 624:Generated_Source\PSoC4/CSD_INT.c ****     *  implementation for ganged sensors.
+ 625:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 626:Generated_Source\PSoC4/CSD_INT.c ****     * \details
+ 627:Generated_Source\PSoC4/CSD_INT.c ****     *  This ISR handler is triggered when the user calls the
+ 628:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_Scan() API for a ganged sensor or the
+ 629:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() API in the project with ganged sensors.
+ 630:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 631:Generated_Source\PSoC4/CSD_INT.c ****     *  The following tasks are performed:
+ 632:Generated_Source\PSoC4/CSD_INT.c ****     *    1. Disable the CSD interrupt
+ 633:Generated_Source\PSoC4/CSD_INT.c ****     *    2. Read the Counter register and update the data structure with raw data
+ 634:Generated_Source\PSoC4/CSD_INT.c ****     *    3. Connect the Vref buffer to the AMUX bus
+ 635:Generated_Source\PSoC4/CSD_INT.c ****     *    4. Disable the CSD block (after the widget has been scanned)
+ 636:Generated_Source\PSoC4/CSD_INT.c ****     *    5. Update Scan Counter
+ 637:Generated_Source\PSoC4/CSD_INT.c ****     *    6. Reset the BUSY flag
+ 638:Generated_Source\PSoC4/CSD_INT.c ****     *    7. Enable the CSD interrupt.
+ 639:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 640:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the previous sensor when the
+ 641:Generated_Source\PSoC4/CSD_INT.c ****     *  widget has more than one sensor.
+ 642:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler initializes scanning for the next widget when the
+ 643:Generated_Source\PSoC4/CSD_INT.c ****     *  CSD_ScanAllWidgets() APIs are called and the project has 
+ 644:Generated_Source\PSoC4/CSD_INT.c ****     *  more than one widget.
+ 645:Generated_Source\PSoC4/CSD_INT.c ****     *  The ISR handler changes the IMO and initializes scanning for the next 
+ 646:Generated_Source\PSoC4/CSD_INT.c ****     *  frequency channels when multi-frequency scanning is enabled.
+ 647:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 648:Generated_Source\PSoC4/CSD_INT.c ****     *  This function has two Macro Callbacks that allow calling the user 
+ 649:Generated_Source\PSoC4/CSD_INT.c ****     *  code from macros specified in a component's generated code. Refer to the 
+ 650:Generated_Source\PSoC4/CSD_INT.c ****     *  \ref group_capsense_macrocallbacks section of PSoC Creator User Guide 
+ 651:Generated_Source\PSoC4/CSD_INT.c ****     *  for details.
+ 652:Generated_Source\PSoC4/CSD_INT.c ****     *
+ 653:Generated_Source\PSoC4/CSD_INT.c ****     *******************************************************************************/
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 15
+
+
+ 654:Generated_Source\PSoC4/CSD_INT.c ****     CY_ISR(CSD_CSDPostMultiScanGanged)
+ 655:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 656:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_ENTRY_CALLBACK
+ 657:Generated_Source\PSoC4/CSD_INT.c ****             CSD_EntryCallback();
+ 658:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_ENTRY_CALLBACK */
+ 659:Generated_Source\PSoC4/CSD_INT.c **** 
+ 660:Generated_Source\PSoC4/CSD_INT.c ****         /* Clear pending interrupt */
+ 661:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_INTR_PTR, CSD_INTR_SET_MASK);
+ 662:Generated_Source\PSoC4/CSD_INT.c **** 
+ 663:Generated_Source\PSoC4/CSD_INT.c ****          /* Read Rawdata */
+ 664:Generated_Source\PSoC4/CSD_INT.c ****         CSD_SsCSDPostScan();
+ 665:Generated_Source\PSoC4/CSD_INT.c **** 
+ 666:Generated_Source\PSoC4/CSD_INT.c ****         /*  Connect Vref Buffer to AMUX bus */
+ 667:Generated_Source\PSoC4/CSD_INT.c ****         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG_CSD_EN);
+ 668:Generated_Source\PSoC4/CSD_INT.c **** 
+ 669:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 670:Generated_Source\PSoC4/CSD_INT.c ****             if (CSD_FREQ_CHANNEL_2 == CSD_scanFreqIndex)
+ 671:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 672:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsCSDDisconnectSnsExt((uint32)CSD_widgetIndex, (uint32)CSD_sensorIndex);
+ 673:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 674:Generated_Source\PSoC4/CSD_INT.c ****         #else
+ 675:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsCSDDisconnectSnsExt((uint32)CSD_widgetIndex, (uint32)CSD_sensorIndex);
+ 676:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 677:Generated_Source\PSoC4/CSD_INT.c **** 
+ 678:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN)
+ 679:Generated_Source\PSoC4/CSD_INT.c ****             if (CSD_FREQ_CHANNEL_2 > CSD_scanFreqIndex)
+ 680:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 681:Generated_Source\PSoC4/CSD_INT.c ****                  /* Scan the next channel */
+ 682:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsNextFrequencyScan();
+ 683:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 684:Generated_Source\PSoC4/CSD_INT.c ****             else
+ 685:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 686:Generated_Source\PSoC4/CSD_INT.c ****                 /* All channels are scanned. Set IMO to zero channel */
+ 687:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_scanFreqIndex = CSD_FREQ_CHANNEL_0;
+ 688:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsChangeImoFreq(CSD_FREQ_CHANNEL_0);
+ 689:Generated_Source\PSoC4/CSD_INT.c **** 
+ 690:Generated_Source\PSoC4/CSD_INT.c ****                  /* Scan the next sensor */
+ 691:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsInitNextScan();
+ 692:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 693:Generated_Source\PSoC4/CSD_INT.c ****         #else
+ 694:Generated_Source\PSoC4/CSD_INT.c ****              /* Scan the next sensor */
+ 695:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsInitNextScan();
+ 696:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_MULTI_FREQ_SCAN_EN) */
+ 697:Generated_Source\PSoC4/CSD_INT.c **** 
+ 698:Generated_Source\PSoC4/CSD_INT.c ****         #ifdef CSD_EXIT_CALLBACK
+ 699:Generated_Source\PSoC4/CSD_INT.c ****             CSD_ExitCallback();
+ 700:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* CSD_EXIT_CALLBACK */
+ 701:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 702:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* (CSD_ENABLE == CSD_CSD_GANGED_SNS_EN) */
+ 703:Generated_Source\PSoC4/CSD_INT.c **** 
+ 704:Generated_Source\PSoC4/CSD_INT.c **** #endif /* (CSD_ENABLE == CSD_CSDV2) */
+ 705:Generated_Source\PSoC4/CSD_INT.c **** #endif /* ((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN)) */
+ 706:Generated_Source\PSoC4/CSD_INT.c **** 
+ 707:Generated_Source\PSoC4/CSD_INT.c **** /** \}
+ 708:Generated_Source\PSoC4/CSD_INT.c ****  * \endif */
+ 709:Generated_Source\PSoC4/CSD_INT.c **** 
+ 710:Generated_Source\PSoC4/CSD_INT.c **** 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 16
+
+
+ 711:Generated_Source\PSoC4/CSD_INT.c **** #if ((CSD_ENABLE == CSD_CSD_EN) || (CSD_ENABLE == CSD_CSD_CSX_EN))
+ 712:Generated_Source\PSoC4/CSD_INT.c **** 
+ 713:Generated_Source\PSoC4/CSD_INT.c **** /*******************************************************************************
+ 714:Generated_Source\PSoC4/CSD_INT.c **** * Function Name: CSD_SsCSDPostScan
+ 715:Generated_Source\PSoC4/CSD_INT.c **** ****************************************************************************//**
+ 716:Generated_Source\PSoC4/CSD_INT.c **** *
+ 717:Generated_Source\PSoC4/CSD_INT.c **** * \brief
+ 718:Generated_Source\PSoC4/CSD_INT.c **** *   This function reads rawdata and releases required HW resources after scan.
+ 719:Generated_Source\PSoC4/CSD_INT.c **** *
+ 720:Generated_Source\PSoC4/CSD_INT.c **** * \details
+ 721:Generated_Source\PSoC4/CSD_INT.c **** *   This function performs following tasks after scan:
+ 722:Generated_Source\PSoC4/CSD_INT.c **** *   - Reads SlotResult from Raw Counter;
+ 723:Generated_Source\PSoC4/CSD_INT.c **** *   - Inits bad Conversions number;
+ 724:Generated_Source\PSoC4/CSD_INT.c **** *   - Disconnects Vrefhi from AMUBUF positive input;
+ 725:Generated_Source\PSoC4/CSD_INT.c **** *   - Disconnects AMUBUF output from CSDBUSB with sych PHI2+HSCMP;
+ 726:Generated_Source\PSoC4/CSD_INT.c **** *   - Opens HCBV and HCBG switches.
+ 727:Generated_Source\PSoC4/CSD_INT.c **** *
+ 728:Generated_Source\PSoC4/CSD_INT.c **** *******************************************************************************/
+ 729:Generated_Source\PSoC4/CSD_INT.c **** CY_INLINE static void CSD_SsCSDPostScan(void)
+ 730:Generated_Source\PSoC4/CSD_INT.c **** {
+ 145              		.loc 1 730 0
+ 146              		.cfi_startproc
+ 147 0000 80B5     		push	{r7, lr}
+ 148              		.cfi_def_cfa_offset 8
+ 149              		.cfi_offset 7, -8
+ 150              		.cfi_offset 14, -4
+ 151 0002 84B0     		sub	sp, sp, #16
+ 152              		.cfi_def_cfa_offset 24
+ 153 0004 00AF     		add	r7, sp, #0
+ 154              		.cfi_def_cfa_register 7
+ 731:Generated_Source\PSoC4/CSD_INT.c ****     #if (CSD_ENABLE == CSD_CSDV2)
+ 732:Generated_Source\PSoC4/CSD_INT.c **** 
+ 733:Generated_Source\PSoC4/CSD_INT.c ****         uint32 tmpRawData;
+ 734:Generated_Source\PSoC4/CSD_INT.c ****         uint32 tmpMaxCount;
+ 735:Generated_Source\PSoC4/CSD_INT.c ****         CSD_RAM_WD_BASE_STRUCT const *ptrWdgt = (CSD_RAM_WD_BASE_STRUCT *)
+ 736:Generated_Source\PSoC4/CSD_INT.c ****                                             CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2WdgtRam;
+ 155              		.loc 1 736 0
+ 156 0006 184B     		ldr	r3, .L10
+ 157 0008 1B78     		ldrb	r3, [r3]
+ 158 000a DBB2     		uxtb	r3, r3
+ 159 000c 191C     		mov	r1, r3
+ 735:Generated_Source\PSoC4/CSD_INT.c ****                                             CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2WdgtRam;
+ 160              		.loc 1 735 0
+ 161 000e 174A     		ldr	r2, .L10+4
+ 162 0010 0B1C     		mov	r3, r1
+ 163 0012 DB00     		lsl	r3, r3, #3
+ 164 0014 5B1A     		sub	r3, r3, r1
+ 165 0016 9B00     		lsl	r3, r3, #2
+ 166 0018 D318     		add	r3, r2, r3
+ 167 001a 5B68     		ldr	r3, [r3, #4]
+ 168 001c FB60     		str	r3, [r7, #12]
+ 737:Generated_Source\PSoC4/CSD_INT.c **** 
+ 738:Generated_Source\PSoC4/CSD_INT.c ****         /* Read SlotResult from Raw Counter */
+ 739:Generated_Source\PSoC4/CSD_INT.c ****         tmpRawData = CSD_RESULT_VAL1_VALUE_MASK & CY_GET_REG32(CSD_COUNTER_PTR);
+ 169              		.loc 1 739 0
+ 170 001e 144B     		ldr	r3, .L10+8
+ 171 0020 1B68     		ldr	r3, [r3]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 17
+
+
+ 172 0022 1B04     		lsl	r3, r3, #16
+ 173 0024 1B0C     		lsr	r3, r3, #16
+ 174 0026 BB60     		str	r3, [r7, #8]
+ 740:Generated_Source\PSoC4/CSD_INT.c **** 
+ 741:Generated_Source\PSoC4/CSD_INT.c ****         tmpMaxCount = ((1uL << ptrWdgt->resolution) - 1uL);
+ 175              		.loc 1 741 0
+ 176 0028 FB68     		ldr	r3, [r7, #12]
+ 177 002a 1B88     		ldrh	r3, [r3]
+ 178 002c 1A1C     		mov	r2, r3
+ 179 002e 0123     		mov	r3, #1
+ 180 0030 9340     		lsl	r3, r3, r2
+ 181 0032 013B     		sub	r3, r3, #1
+ 182 0034 7B60     		str	r3, [r7, #4]
+ 742:Generated_Source\PSoC4/CSD_INT.c ****         if(tmpRawData < tmpMaxCount)
+ 183              		.loc 1 742 0
+ 184 0036 BA68     		ldr	r2, [r7, #8]
+ 185 0038 7B68     		ldr	r3, [r7, #4]
+ 186 003a 9A42     		cmp	r2, r3
+ 187 003c 08D2     		bcs	.L8
+ 743:Generated_Source\PSoC4/CSD_INT.c ****         {
+ 744:Generated_Source\PSoC4/CSD_INT.c ****             CSD_curRamSnsPtr->raw[CSD_scanFreqIndex] = LO16(tmpRawData);
+ 188              		.loc 1 744 0
+ 189 003e 0D4B     		ldr	r3, .L10+12
+ 190 0040 1B68     		ldr	r3, [r3]
+ 191 0042 0D4A     		ldr	r2, .L10+16
+ 192 0044 1278     		ldrb	r2, [r2]
+ 193 0046 B968     		ldr	r1, [r7, #8]
+ 194 0048 89B2     		uxth	r1, r1
+ 195 004a 5200     		lsl	r2, r2, #1
+ 196 004c D152     		strh	r1, [r2, r3]
+ 197 004e 07E0     		b	.L7
+ 198              	.L8:
+ 745:Generated_Source\PSoC4/CSD_INT.c ****         }
+ 746:Generated_Source\PSoC4/CSD_INT.c ****         else
+ 747:Generated_Source\PSoC4/CSD_INT.c ****         {
+ 748:Generated_Source\PSoC4/CSD_INT.c ****             CSD_curRamSnsPtr->raw[CSD_scanFreqIndex] = LO16(tmpMaxCount);
+ 199              		.loc 1 748 0
+ 200 0050 084B     		ldr	r3, .L10+12
+ 201 0052 1B68     		ldr	r3, [r3]
+ 202 0054 084A     		ldr	r2, .L10+16
+ 203 0056 1278     		ldrb	r2, [r2]
+ 204 0058 7968     		ldr	r1, [r7, #4]
+ 205 005a 89B2     		uxth	r1, r1
+ 206 005c 5200     		lsl	r2, r2, #1
+ 207 005e D152     		strh	r1, [r2, r3]
+ 208              	.L7:
+ 749:Generated_Source\PSoC4/CSD_INT.c ****         }
+ 750:Generated_Source\PSoC4/CSD_INT.c **** 
+ 751:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN)
+ 752:Generated_Source\PSoC4/CSD_INT.c ****             /*  Init bad Conversions number */
+ 753:Generated_Source\PSoC4/CSD_INT.c ****             CSD_badConversionsNum = CSD_BAD_CONVERSIONS_NUM;
+ 754:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_NOISE_METRIC_EN) */
+ 755:Generated_Source\PSoC4/CSD_INT.c **** 
+ 756:Generated_Source\PSoC4/CSD_INT.c ****         #if ((CSD_ENABLE == CSD_CSD_SHIELD_EN) && \
+ 757:Generated_Source\PSoC4/CSD_INT.c ****              (CSD_2000_MV <= CSD_CYDEV_VDDA_MV))
+ 758:Generated_Source\PSoC4/CSD_INT.c ****             /*  Disconnect Vrefhi from AMUBUF positive input. Disconnect AMUBUF output from CSDBUSB
+ 759:Generated_Source\PSoC4/CSD_INT.c ****             CY_SET_REG32(CSD_SW_AMUXBUF_SEL_PTR, CSD_SW_AMUXBUF_SEL_SW_DEFAULT);
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 18
+
+
+ 760:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* ((CSD_ENABLE == CSD_CSD_SHIELD_EN) && \
+ 761:Generated_Source\PSoC4/CSD_INT.c ****                    (CSD_2000_MV <= CSD_CYDEV_VDDA_MV)) */
+ 762:Generated_Source\PSoC4/CSD_INT.c **** 
+ 763:Generated_Source\PSoC4/CSD_INT.c ****         #if (CSD_ENABLE == CSD_CSD_SHIELD_EN)
+ 764:Generated_Source\PSoC4/CSD_INT.c ****             /* Open HCBV and HCBG switches */
+ 765:Generated_Source\PSoC4/CSD_INT.c ****             CY_SET_REG32(CSD_SW_SHIELD_SEL_PTR, CSD_SW_SHIELD_SEL_SW_HCBV_STATIC_OPEN |
+ 766:Generated_Source\PSoC4/CSD_INT.c ****                                                              CSD_SW_SHIELD_SEL_SW_HCBG_STATIC_OPEN)
+ 767:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* (CSD_ENABLE == CSD_CSD_SHIELD_EN) */
+ 768:Generated_Source\PSoC4/CSD_INT.c **** 
+ 769:Generated_Source\PSoC4/CSD_INT.c ****     #else
+ 770:Generated_Source\PSoC4/CSD_INT.c **** 
+ 771:Generated_Source\PSoC4/CSD_INT.c ****         /* Read SlotResult from Raw Counter */
+ 772:Generated_Source\PSoC4/CSD_INT.c ****        CSD_curRamSnsPtr->raw[CSD_scanFreqIndex] = (uint16)CY_GET_REG32(CSD_COUNTER_PTR);
+ 773:Generated_Source\PSoC4/CSD_INT.c **** 
+ 774:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* (CSD_ENABLE == CSD_CSDV2) */
+ 775:Generated_Source\PSoC4/CSD_INT.c **** }
+ 209              		.loc 1 775 0
+ 210 0060 BD46     		mov	sp, r7
+ 211 0062 04B0     		add	sp, sp, #16
+ 212              		@ sp needed
+ 213 0064 80BD     		pop	{r7, pc}
+ 214              	.L11:
+ 215 0066 C046     		.align	2
+ 216              	.L10:
+ 217 0068 00000000 		.word	CSD_widgetIndex
+ 218 006c 00000000 		.word	CSD_dsFlash
+ 219 0070 D0000C40 		.word	1074528464
+ 220 0074 00000000 		.word	CSD_curRamSnsPtr
+ 221 0078 00000000 		.word	CSD_scanFreqIndex
+ 222              		.cfi_endproc
+ 223              	.LFE3:
+ 224              		.size	CSD_SsCSDPostScan, .-CSD_SsCSDPostScan
+ 225              		.section	.text.CSD_SsInitNextScan,"ax",%progbits
+ 226              		.align	2
+ 227              		.code	16
+ 228              		.thumb_func
+ 229              		.type	CSD_SsInitNextScan, %function
+ 230              	CSD_SsInitNextScan:
+ 231              	.LFB4:
+ 776:Generated_Source\PSoC4/CSD_INT.c **** 
+ 777:Generated_Source\PSoC4/CSD_INT.c **** 
+ 778:Generated_Source\PSoC4/CSD_INT.c **** /*******************************************************************************
+ 779:Generated_Source\PSoC4/CSD_INT.c **** * Function Name: CSD_SsInitNextScan
+ 780:Generated_Source\PSoC4/CSD_INT.c **** ****************************************************************************//**
+ 781:Generated_Source\PSoC4/CSD_INT.c **** *
+ 782:Generated_Source\PSoC4/CSD_INT.c **** * \brief
+ 783:Generated_Source\PSoC4/CSD_INT.c **** *   This function initializes the next sensor scan.
+ 784:Generated_Source\PSoC4/CSD_INT.c **** *
+ 785:Generated_Source\PSoC4/CSD_INT.c **** * \details
+ 786:Generated_Source\PSoC4/CSD_INT.c **** *   The function decrements the sensor index, updates sense clock for matrix
+ 787:Generated_Source\PSoC4/CSD_INT.c **** *   or touchpad widgets only, sets up Compensation IDAC, enables the sensor and
+ 788:Generated_Source\PSoC4/CSD_INT.c **** *   scans it. When all sensors are scanned it continues to set up the next widget
+ 789:Generated_Source\PSoC4/CSD_INT.c **** *   until all widgets are scanned. The CSD block is disabled when all widgets are
+ 790:Generated_Source\PSoC4/CSD_INT.c **** *   scanned.
+ 791:Generated_Source\PSoC4/CSD_INT.c **** *
+ 792:Generated_Source\PSoC4/CSD_INT.c **** *******************************************************************************/
+ 793:Generated_Source\PSoC4/CSD_INT.c **** CY_INLINE static void CSD_SsInitNextScan(void)
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 19
+
+
+ 794:Generated_Source\PSoC4/CSD_INT.c **** {
+ 232              		.loc 1 794 0
+ 233              		.cfi_startproc
+ 234 0000 80B5     		push	{r7, lr}
+ 235              		.cfi_def_cfa_offset 8
+ 236              		.cfi_offset 7, -8
+ 237              		.cfi_offset 14, -4
+ 238 0002 82B0     		sub	sp, sp, #8
+ 239              		.cfi_def_cfa_offset 16
+ 240 0004 00AF     		add	r7, sp, #0
+ 241              		.cfi_def_cfa_register 7
+ 795:Generated_Source\PSoC4/CSD_INT.c ****     /*  Declare and initialise ptr to widget and sensor structures to appropriate address */
+ 796:Generated_Source\PSoC4/CSD_INT.c ****     #if (((CSD_ENABLE == CSD_CSD_IDAC_COMP_EN) || \
+ 797:Generated_Source\PSoC4/CSD_INT.c ****              (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN))) || \
+ 798:Generated_Source\PSoC4/CSD_INT.c ****          (((CSD_DISABLE == CSD_CSD_COMMON_SNS_CLK_EN) && \
+ 799:Generated_Source\PSoC4/CSD_INT.c ****            (CSD_ENABLE == CSD_CSDV2) && \
+ 800:Generated_Source\PSoC4/CSD_INT.c ****           (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))))
+ 801:Generated_Source\PSoC4/CSD_INT.c ****         CSD_RAM_WD_BASE_STRUCT *ptrWdgt = (CSD_RAM_WD_BASE_STRUCT *)
+ 802:Generated_Source\PSoC4/CSD_INT.c ****                                                         CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2
+ 242              		.loc 1 802 0
+ 243 0006 374B     		ldr	r3, .L16
+ 244 0008 1B78     		ldrb	r3, [r3]
+ 245 000a DBB2     		uxtb	r3, r3
+ 246 000c 191C     		mov	r1, r3
+ 801:Generated_Source\PSoC4/CSD_INT.c ****                                                         CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2
+ 247              		.loc 1 801 0
+ 248 000e 364A     		ldr	r2, .L16+4
+ 249 0010 0B1C     		mov	r3, r1
+ 250 0012 DB00     		lsl	r3, r3, #3
+ 251 0014 5B1A     		sub	r3, r3, r1
+ 252 0016 9B00     		lsl	r3, r3, #2
+ 253 0018 D318     		add	r3, r2, r3
+ 254 001a 5B68     		ldr	r3, [r3, #4]
+ 255 001c 7B60     		str	r3, [r7, #4]
+ 803:Generated_Source\PSoC4/CSD_INT.c ****     #endif /* ((((CSD_ENABLE == CSD_CSD_IDAC_COMP_EN) && \
+ 804:Generated_Source\PSoC4/CSD_INT.c ****                (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))) || \
+ 805:Generated_Source\PSoC4/CSD_INT.c ****                (((CSD_DISABLE == CSD_CSD_COMMON_SNS_CLK_EN) && \
+ 806:Generated_Source\PSoC4/CSD_INT.c ****                (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN))) && \
+ 807:Generated_Source\PSoC4/CSD_INT.c ****                (CSD_CLK_SOURCE_DIRECT == CSD_CSD_SNS_CLK_SOURCE))) */
+ 808:Generated_Source\PSoC4/CSD_INT.c **** 
+ 809:Generated_Source\PSoC4/CSD_INT.c ****     /* Check if all sensors are scanned in widget */
+ 810:Generated_Source\PSoC4/CSD_INT.c ****     if (((uint8)CSD_dsFlash.wdgtArray[(CSD_widgetIndex)].totalNumSns - 1u) > CSD_sensorIndex)
+ 256              		.loc 1 810 0
+ 257 001e 314B     		ldr	r3, .L16
+ 258 0020 1B78     		ldrb	r3, [r3]
+ 259 0022 DBB2     		uxtb	r3, r3
+ 260 0024 191C     		mov	r1, r3
+ 261 0026 304A     		ldr	r2, .L16+4
+ 262 0028 0B1C     		mov	r3, r1
+ 263 002a DB00     		lsl	r3, r3, #3
+ 264 002c 5B1A     		sub	r3, r3, r1
+ 265 002e 9B00     		lsl	r3, r3, #2
+ 266 0030 D318     		add	r3, r2, r3
+ 267 0032 1033     		add	r3, r3, #16
+ 268 0034 DB88     		ldrh	r3, [r3, #6]
+ 269 0036 DBB2     		uxtb	r3, r3
+ 270 0038 013B     		sub	r3, r3, #1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 20
+
+
+ 271 003a 2C4A     		ldr	r2, .L16+8
+ 272 003c 1278     		ldrb	r2, [r2]
+ 273 003e D2B2     		uxtb	r2, r2
+ 274 0040 9342     		cmp	r3, r2
+ 275 0042 2FD9     		bls	.L13
+ 811:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 812:Generated_Source\PSoC4/CSD_INT.c ****         /*  Decrement snsIndex to configure next sensor in widget */
+ 813:Generated_Source\PSoC4/CSD_INT.c ****         CSD_sensorIndex++;
+ 276              		.loc 1 813 0
+ 277 0044 294B     		ldr	r3, .L16+8
+ 278 0046 1B78     		ldrb	r3, [r3]
+ 279 0048 DBB2     		uxtb	r3, r3
+ 280 004a 0133     		add	r3, r3, #1
+ 281 004c DAB2     		uxtb	r2, r3
+ 282 004e 274B     		ldr	r3, .L16+8
+ 283 0050 1A70     		strb	r2, [r3]
+ 814:Generated_Source\PSoC4/CSD_INT.c **** 
+ 815:Generated_Source\PSoC4/CSD_INT.c ****         /*  Update global pointer to CSD_RAM_SNS_STRUCT to current sensor  */
+ 816:Generated_Source\PSoC4/CSD_INT.c ****         CSD_curRamSnsPtr = (CSD_RAM_SNS_STRUCT *)
+ 817:Generated_Source\PSoC4/CSD_INT.c ****                                                   CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2SnsRam
+ 284              		.loc 1 817 0
+ 285 0052 244B     		ldr	r3, .L16
+ 286 0054 1B78     		ldrb	r3, [r3]
+ 287 0056 DBB2     		uxtb	r3, r3
+ 288 0058 191C     		mov	r1, r3
+ 289 005a 234A     		ldr	r2, .L16+4
+ 290 005c 0B1C     		mov	r3, r1
+ 291 005e DB00     		lsl	r3, r3, #3
+ 292 0060 5B1A     		sub	r3, r3, r1
+ 293 0062 9B00     		lsl	r3, r3, #2
+ 294 0064 D318     		add	r3, r2, r3
+ 295 0066 0833     		add	r3, r3, #8
+ 296 0068 1A68     		ldr	r2, [r3]
+ 818:Generated_Source\PSoC4/CSD_INT.c ****                                                   + CSD_sensorIndex;
+ 297              		.loc 1 818 0
+ 298 006a 204B     		ldr	r3, .L16+8
+ 299 006c 1B78     		ldrb	r3, [r3]
+ 300 006e DBB2     		uxtb	r3, r3
+ 301 0070 191C     		mov	r1, r3
+ 302 0072 0B1C     		mov	r3, r1
+ 303 0074 9B00     		lsl	r3, r3, #2
+ 304 0076 5B18     		add	r3, r3, r1
+ 305 0078 5B00     		lsl	r3, r3, #1
+ 306 007a D218     		add	r2, r2, r3
+ 816:Generated_Source\PSoC4/CSD_INT.c ****                                                   CSD_dsFlash.wdgtArray[CSD_widgetIndex].ptr2SnsRam
+ 307              		.loc 1 816 0
+ 308 007c 1C4B     		ldr	r3, .L16+12
+ 309 007e 1A60     		str	r2, [r3]
+ 819:Generated_Source\PSoC4/CSD_INT.c **** 
+ 820:Generated_Source\PSoC4/CSD_INT.c ****         /* Configure clock divider to row or column */
+ 821:Generated_Source\PSoC4/CSD_INT.c ****         #if ((CSD_DISABLE == CSD_CSD_COMMON_SNS_CLK_EN) && \
+ 822:Generated_Source\PSoC4/CSD_INT.c ****              (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))
+ 823:Generated_Source\PSoC4/CSD_INT.c ****             if ((CSD_WD_TOUCHPAD_E == (CSD_WD_TYPE_ENUM)CSD_dsFlash.wdgtArray[(CSD_widgetIndex)].wd
+ 824:Generated_Source\PSoC4/CSD_INT.c ****                 (CSD_WD_MATRIX_BUTTON_E == (CSD_WD_TYPE_ENUM)CSD_dsFlash.wdgtArray[(CSD_widgetIndex
+ 825:Generated_Source\PSoC4/CSD_INT.c ****             {
+ 826:Generated_Source\PSoC4/CSD_INT.c ****                 CSD_SsCSDConfigClock();
+ 827:Generated_Source\PSoC4/CSD_INT.c **** 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 21
+
+
+ 828:Generated_Source\PSoC4/CSD_INT.c ****                 #if (CSD_ENABLE == CSD_CSDV2)
+ 829:Generated_Source\PSoC4/CSD_INT.c ****                      /* Set up scanning resolution */
+ 830:Generated_Source\PSoC4/CSD_INT.c ****                     CSD_SsCSDCalculateScanDuration(ptrWdgt);
+ 831:Generated_Source\PSoC4/CSD_INT.c ****                 #endif /* (CSD_ENABLE == CSD_CSDV2) */
+ 832:Generated_Source\PSoC4/CSD_INT.c ****             }
+ 833:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* ((CSD_DISABLE == CSD_CSD_COMMON_SNS_CLK_EN) && \
+ 834:Generated_Source\PSoC4/CSD_INT.c ****                    (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))) */
+ 835:Generated_Source\PSoC4/CSD_INT.c **** 
+ 836:Generated_Source\PSoC4/CSD_INT.c ****         /* Setup Compensation IDAC for next sensor in widget */
+ 837:Generated_Source\PSoC4/CSD_INT.c ****         #if ((CSD_ENABLE == CSD_CSD_IDAC_COMP_EN) || \
+ 838:Generated_Source\PSoC4/CSD_INT.c ****              (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))
+ 839:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsCSDSetUpIdacs(ptrWdgt);
+ 310              		.loc 1 839 0
+ 311 0080 7B68     		ldr	r3, [r7, #4]
+ 312 0082 181C     		mov	r0, r3
+ 313 0084 FFF7FEFF 		bl	CSD_SsCSDSetUpIdacs
+ 840:Generated_Source\PSoC4/CSD_INT.c ****         #endif /* ((CSD_ENABLE == CSD_CSD_IDAC_COMP_EN) || \
+ 841:Generated_Source\PSoC4/CSD_INT.c ****              (CSD_ENABLE == (CSD_CSD_MATRIX_WIDGET_EN | CSD_CSD_TOUCHPAD_WIDGET_EN)))*/
+ 842:Generated_Source\PSoC4/CSD_INT.c **** 
+ 843:Generated_Source\PSoC4/CSD_INT.c ****         /* Enable sensor */
+ 844:Generated_Source\PSoC4/CSD_INT.c ****         CSD_SsCSDConnectSensorExt((uint32)CSD_widgetIndex, (uint32)CSD_sensorIndex);
+ 314              		.loc 1 844 0
+ 315 0088 164B     		ldr	r3, .L16
+ 316 008a 1B78     		ldrb	r3, [r3]
+ 317 008c DBB2     		uxtb	r3, r3
+ 318 008e 1A1C     		mov	r2, r3
+ 319 0090 164B     		ldr	r3, .L16+8
+ 320 0092 1B78     		ldrb	r3, [r3]
+ 321 0094 DBB2     		uxtb	r3, r3
+ 322 0096 101C     		mov	r0, r2
+ 323 0098 191C     		mov	r1, r3
+ 324 009a FFF7FEFF 		bl	CSD_SsCSDConnectSensorExt
+ 845:Generated_Source\PSoC4/CSD_INT.c **** 
+ 846:Generated_Source\PSoC4/CSD_INT.c ****         /* Proceed scanning */
+ 847:Generated_Source\PSoC4/CSD_INT.c ****         CSD_SsCSDStartSample();
+ 325              		.loc 1 847 0
+ 326 009e FFF7FEFF 		bl	CSD_SsCSDStartSample
+ 327 00a2 1CE0     		b	.L12
+ 328              	.L13:
+ 848:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 849:Generated_Source\PSoC4/CSD_INT.c ****     /*    Call scan next widget API if requested, if not, complete the scan  */
+ 850:Generated_Source\PSoC4/CSD_INT.c ****     else
+ 851:Generated_Source\PSoC4/CSD_INT.c ****     {
+ 852:Generated_Source\PSoC4/CSD_INT.c ****         CSD_sensorIndex = 0u;
+ 329              		.loc 1 852 0
+ 330 00a4 114B     		ldr	r3, .L16+8
+ 331 00a6 0022     		mov	r2, #0
+ 332 00a8 1A70     		strb	r2, [r3]
+ 853:Generated_Source\PSoC4/CSD_INT.c **** 
+ 854:Generated_Source\PSoC4/CSD_INT.c ****         /* Current widget is totally scanned. Reset WIDGET BUSY flag */
+ 855:Generated_Source\PSoC4/CSD_INT.c ****         CSD_dsRam.status &= ~CSD_WDGT_SW_STS_BUSY;
+ 333              		.loc 1 855 0
+ 334 00aa 124B     		ldr	r3, .L16+16
+ 335 00ac 9B68     		ldr	r3, [r3, #8]
+ 336 00ae 124A     		ldr	r2, .L16+20
+ 337 00b0 1A40     		and	r2, r3
+ 338 00b2 104B     		ldr	r3, .L16+16
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 22
+
+
+ 339 00b4 9A60     		str	r2, [r3, #8]
+ 856:Generated_Source\PSoC4/CSD_INT.c **** 
+ 857:Generated_Source\PSoC4/CSD_INT.c ****         /* Check if all widgets have been scanned */
+ 858:Generated_Source\PSoC4/CSD_INT.c ****         if (CSD_ENABLE == CSD_requestScanAllWidget)
+ 340              		.loc 1 858 0
+ 341 00b6 114B     		ldr	r3, .L16+24
+ 342 00b8 1B78     		ldrb	r3, [r3]
+ 343 00ba 012B     		cmp	r3, #1
+ 344 00bc 02D1     		bne	.L15
+ 859:Generated_Source\PSoC4/CSD_INT.c ****         {
+ 860:Generated_Source\PSoC4/CSD_INT.c ****             /* Configure and begin scanning next widget */
+ 861:Generated_Source\PSoC4/CSD_INT.c ****             CSD_SsPostAllWidgetsScan();
+ 345              		.loc 1 861 0
+ 346 00be FFF7FEFF 		bl	CSD_SsPostAllWidgetsScan
+ 347 00c2 0CE0     		b	.L12
+ 348              	.L15:
+ 862:Generated_Source\PSoC4/CSD_INT.c ****         }
+ 863:Generated_Source\PSoC4/CSD_INT.c ****         else
+ 864:Generated_Source\PSoC4/CSD_INT.c ****         {
+ 865:Generated_Source\PSoC4/CSD_INT.c ****             #if (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN)
+ 866:Generated_Source\PSoC4/CSD_INT.c ****                 #if (CSD_ENABLE == CSD_CSDV2)
+ 867:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Disable the CSD block */
+ 868:Generated_Source\PSoC4/CSD_INT.c ****                     CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd);
+ 869:Generated_Source\PSoC4/CSD_INT.c ****                 #else
+ 870:Generated_Source\PSoC4/CSD_INT.c ****                     /*  Disable the CSD block. Connect Vref Buffer to AMUX bus */
+ 871:Generated_Source\PSoC4/CSD_INT.c ****                     #if ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 872:Generated_Source\PSoC4/CSD_INT.c ****                          (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN))
+ 873:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CMOD_PRECHARGE_CONFIG);
+ 874:Generated_Source\PSoC4/CSD_INT.c ****                     #else
+ 875:Generated_Source\PSoC4/CSD_INT.c ****                         CY_SET_REG32(CSD_CONFIG_PTR, CSD_configCsd | CSD_CTANK_PRECHARGE_CONFIG);
+ 876:Generated_Source\PSoC4/CSD_INT.c ****                     #endif /* ((CSD_CSH_PRECHARGE_IO_BUF == CSD_CSD_CSH_PRECHARGE_SRC) &&\
+ 877:Generated_Source\PSoC4/CSD_INT.c ****                                (CSD_ENABLE == CSD_CSD_SHIELD_TANK_EN)) */
+ 878:Generated_Source\PSoC4/CSD_INT.c ****                 #endif /* (CSD_ENABLE == CSD_CSDV2) */
+ 879:Generated_Source\PSoC4/CSD_INT.c ****             #endif /* (CSD_ENABLE == CSD_BLOCK_OFF_AFTER_SCAN_EN) */
+ 880:Generated_Source\PSoC4/CSD_INT.c **** 
+ 881:Generated_Source\PSoC4/CSD_INT.c ****             /* All widgets are totally scanned. Reset BUSY flag */
+ 882:Generated_Source\PSoC4/CSD_INT.c ****             CSD_dsRam.status &= ~CSD_SW_STS_BUSY;
+ 349              		.loc 1 882 0
+ 350 00c4 0B4B     		ldr	r3, .L16+16
+ 351 00c6 9B68     		ldr	r3, [r3, #8]
+ 352 00c8 8022     		mov	r2, #128
+ 353 00ca 9343     		bic	r3, r2
+ 354 00cc 1A1C     		mov	r2, r3
+ 355 00ce 094B     		ldr	r3, .L16+16
+ 356 00d0 9A60     		str	r2, [r3, #8]
+ 883:Generated_Source\PSoC4/CSD_INT.c **** 
+ 884:Generated_Source\PSoC4/CSD_INT.c ****             /* Update scan Counter */
+ 885:Generated_Source\PSoC4/CSD_INT.c ****             CSD_dsRam.scanCounter++;
+ 357              		.loc 1 885 0
+ 358 00d2 084B     		ldr	r3, .L16+16
+ 359 00d4 DB88     		ldrh	r3, [r3, #6]
+ 360 00d6 0133     		add	r3, r3, #1
+ 361 00d8 9AB2     		uxth	r2, r3
+ 362 00da 064B     		ldr	r3, .L16+16
+ 363 00dc DA80     		strh	r2, [r3, #6]
+ 364              	.L12:
+ 886:Generated_Source\PSoC4/CSD_INT.c ****         }
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 23
+
+
+ 887:Generated_Source\PSoC4/CSD_INT.c ****     }
+ 888:Generated_Source\PSoC4/CSD_INT.c **** 
+ 889:Generated_Source\PSoC4/CSD_INT.c **** }
+ 365              		.loc 1 889 0
+ 366 00de BD46     		mov	sp, r7
+ 367 00e0 02B0     		add	sp, sp, #8
+ 368              		@ sp needed
+ 369 00e2 80BD     		pop	{r7, pc}
+ 370              	.L17:
+ 371              		.align	2
+ 372              	.L16:
+ 373 00e4 00000000 		.word	CSD_widgetIndex
+ 374 00e8 00000000 		.word	CSD_dsFlash
+ 375 00ec 00000000 		.word	CSD_sensorIndex
+ 376 00f0 00000000 		.word	CSD_curRamSnsPtr
+ 377 00f4 00000000 		.word	CSD_dsRam
+ 378 00f8 FFFFFEFF 		.word	-65537
+ 379 00fc 00000000 		.word	CSD_requestScanAllWidget
+ 380              		.cfi_endproc
+ 381              	.LFE4:
+ 382              		.size	CSD_SsInitNextScan, .-CSD_SsInitNextScan
+ 383              		.text
+ 384              	.Letext0:
+ 385              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 386              		.file 3 "Generated_Source\\PSoC4\\CSD_Configuration.h"
+ 387              		.file 4 "Generated_Source\\PSoC4\\CSD_Structure.h"
+ 388              		.file 5 "Generated_Source\\PSoC4\\CSD_Sensing.h"
+ 389              		.section	.debug_info,"",%progbits
+ 390              	.Ldebug_info0:
+ 391 0000 61060000 		.4byte	0x661
+ 392 0004 0400     		.2byte	0x4
+ 393 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 394 000a 04       		.byte	0x4
+ 395 000b 01       		.uleb128 0x1
+ 396 000c F8010000 		.4byte	.LASF93
+ 397 0010 01       		.byte	0x1
+ 398 0011 58050000 		.4byte	.LASF94
+ 399 0015 7D010000 		.4byte	.LASF95
+ 400 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 401 001d 00000000 		.4byte	0
+ 402 0021 00000000 		.4byte	.Ldebug_line0
+ 403 0025 02       		.uleb128 0x2
+ 404 0026 01       		.byte	0x1
+ 405 0027 06       		.byte	0x6
+ 406 0028 9F000000 		.4byte	.LASF0
+ 407 002c 02       		.uleb128 0x2
+ 408 002d 01       		.byte	0x1
+ 409 002e 08       		.byte	0x8
+ 410 002f DE030000 		.4byte	.LASF1
+ 411 0033 02       		.uleb128 0x2
+ 412 0034 02       		.byte	0x2
+ 413 0035 05       		.byte	0x5
+ 414 0036 03040000 		.4byte	.LASF2
+ 415 003a 02       		.uleb128 0x2
+ 416 003b 02       		.byte	0x2
+ 417 003c 07       		.byte	0x7
+ 418 003d A8020000 		.4byte	.LASF3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 24
+
+
+ 419 0041 02       		.uleb128 0x2
+ 420 0042 04       		.byte	0x4
+ 421 0043 05       		.byte	0x5
+ 422 0044 BD000000 		.4byte	.LASF4
+ 423 0048 02       		.uleb128 0x2
+ 424 0049 04       		.byte	0x4
+ 425 004a 07       		.byte	0x7
+ 426 004b 74040000 		.4byte	.LASF5
+ 427 004f 02       		.uleb128 0x2
+ 428 0050 08       		.byte	0x8
+ 429 0051 05       		.byte	0x5
+ 430 0052 91000000 		.4byte	.LASF6
+ 431 0056 02       		.uleb128 0x2
+ 432 0057 08       		.byte	0x8
+ 433 0058 07       		.byte	0x7
+ 434 0059 3A000000 		.4byte	.LASF7
+ 435 005d 03       		.uleb128 0x3
+ 436 005e 04       		.byte	0x4
+ 437 005f 05       		.byte	0x5
+ 438 0060 696E7400 		.ascii	"int\000"
+ 439 0064 02       		.uleb128 0x2
+ 440 0065 04       		.byte	0x4
+ 441 0066 07       		.byte	0x7
+ 442 0067 60010000 		.4byte	.LASF8
+ 443 006b 04       		.uleb128 0x4
+ 444 006c E1000000 		.4byte	.LASF9
+ 445 0070 02       		.byte	0x2
+ 446 0071 9801     		.2byte	0x198
+ 447 0073 2C000000 		.4byte	0x2c
+ 448 0077 04       		.uleb128 0x4
+ 449 0078 00000000 		.4byte	.LASF10
+ 450 007c 02       		.byte	0x2
+ 451 007d 9901     		.2byte	0x199
+ 452 007f 3A000000 		.4byte	0x3a
+ 453 0083 04       		.uleb128 0x4
+ 454 0084 1F010000 		.4byte	.LASF11
+ 455 0088 02       		.byte	0x2
+ 456 0089 9A01     		.2byte	0x19a
+ 457 008b 48000000 		.4byte	0x48
+ 458 008f 02       		.uleb128 0x2
+ 459 0090 04       		.byte	0x4
+ 460 0091 04       		.byte	0x4
+ 461 0092 77030000 		.4byte	.LASF12
+ 462 0096 02       		.uleb128 0x2
+ 463 0097 08       		.byte	0x8
+ 464 0098 04       		.byte	0x4
+ 465 0099 FA000000 		.4byte	.LASF13
+ 466 009d 02       		.uleb128 0x2
+ 467 009e 01       		.byte	0x1
+ 468 009f 08       		.byte	0x8
+ 469 00a0 86040000 		.4byte	.LASF14
+ 470 00a4 05       		.uleb128 0x5
+ 471 00a5 6B000000 		.4byte	0x6b
+ 472 00a9 04       		.uleb128 0x4
+ 473 00aa 03030000 		.4byte	.LASF15
+ 474 00ae 02       		.byte	0x2
+ 475 00af 4402     		.2byte	0x244
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 25
+
+
+ 476 00b1 B5000000 		.4byte	0xb5
+ 477 00b5 05       		.uleb128 0x5
+ 478 00b6 83000000 		.4byte	0x83
+ 479 00ba 02       		.uleb128 0x2
+ 480 00bb 04       		.byte	0x4
+ 481 00bc 07       		.byte	0x7
+ 482 00bd 2A030000 		.4byte	.LASF16
+ 483 00c1 06       		.uleb128 0x6
+ 484 00c2 04       		.byte	0x4
+ 485 00c3 07       		.uleb128 0x7
+ 486 00c4 26010000 		.4byte	.LASF17
+ 487 00c8 03       		.byte	0x3
+ 488 00c9 D8       		.byte	0xd8
+ 489 00ca 77000000 		.4byte	0x77
+ 490 00ce 07       		.uleb128 0x7
+ 491 00cf E2010000 		.4byte	.LASF18
+ 492 00d3 03       		.byte	0x3
+ 493 00d4 DC       		.byte	0xdc
+ 494 00d5 6B000000 		.4byte	0x6b
+ 495 00d9 08       		.uleb128 0x8
+ 496 00da 0E       		.byte	0xe
+ 497 00db 04       		.byte	0x4
+ 498 00dc 7B       		.byte	0x7b
+ 499 00dd 66010000 		.4byte	0x166
+ 500 00e1 09       		.uleb128 0x9
+ 501 00e2 48040000 		.4byte	.LASF19
+ 502 00e6 04       		.byte	0x4
+ 503 00e7 81       		.byte	0x81
+ 504 00e8 77000000 		.4byte	0x77
+ 505 00ec 00       		.byte	0
+ 506 00ed 09       		.uleb128 0x9
+ 507 00ee 4F050000 		.4byte	.LASF20
+ 508 00f2 04       		.byte	0x4
+ 509 00f3 86       		.byte	0x86
+ 510 00f4 C3000000 		.4byte	0xc3
+ 511 00f8 02       		.byte	0x2
+ 512 00f9 09       		.uleb128 0x9
+ 513 00fa A8050000 		.4byte	.LASF21
+ 514 00fe 04       		.byte	0x4
+ 515 00ff 8B       		.byte	0x8b
+ 516 0100 6B000000 		.4byte	0x6b
+ 517 0104 04       		.byte	0x4
+ 518 0105 09       		.uleb128 0x9
+ 519 0106 40030000 		.4byte	.LASF22
+ 520 010a 04       		.byte	0x4
+ 521 010b 90       		.byte	0x90
+ 522 010c 6B000000 		.4byte	0x6b
+ 523 0110 05       		.byte	0x5
+ 524 0111 09       		.uleb128 0x9
+ 525 0112 D3030000 		.4byte	.LASF23
+ 526 0116 04       		.byte	0x4
+ 527 0117 95       		.byte	0x95
+ 528 0118 6B000000 		.4byte	0x6b
+ 529 011c 06       		.byte	0x6
+ 530 011d 09       		.uleb128 0x9
+ 531 011e AA040000 		.4byte	.LASF24
+ 532 0122 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 26
+
+
+ 533 0123 9A       		.byte	0x9a
+ 534 0124 6B000000 		.4byte	0x6b
+ 535 0128 07       		.byte	0x7
+ 536 0129 09       		.uleb128 0x9
+ 537 012a 95020000 		.4byte	.LASF25
+ 538 012e 04       		.byte	0x4
+ 539 012f A0       		.byte	0xa0
+ 540 0130 CE000000 		.4byte	0xce
+ 541 0134 08       		.byte	0x8
+ 542 0135 09       		.uleb128 0x9
+ 543 0136 B0030000 		.4byte	.LASF26
+ 544 013a 04       		.byte	0x4
+ 545 013b A5       		.byte	0xa5
+ 546 013c 6B000000 		.4byte	0x6b
+ 547 0140 09       		.byte	0x9
+ 548 0141 09       		.uleb128 0x9
+ 549 0142 1A030000 		.4byte	.LASF27
+ 550 0146 04       		.byte	0x4
+ 551 0147 AC       		.byte	0xac
+ 552 0148 66010000 		.4byte	0x166
+ 553 014c 0A       		.byte	0xa
+ 554 014d 09       		.uleb128 0x9
+ 555 014e A3040000 		.4byte	.LASF28
+ 556 0152 04       		.byte	0x4
+ 557 0153 B3       		.byte	0xb3
+ 558 0154 6B000000 		.4byte	0x6b
+ 559 0158 0B       		.byte	0xb
+ 560 0159 09       		.uleb128 0x9
+ 561 015a 30050000 		.4byte	.LASF29
+ 562 015e 04       		.byte	0x4
+ 563 015f B8       		.byte	0xb8
+ 564 0160 6B000000 		.4byte	0x6b
+ 565 0164 0C       		.byte	0xc
+ 566 0165 00       		.byte	0
+ 567 0166 0A       		.uleb128 0xa
+ 568 0167 6B000000 		.4byte	0x6b
+ 569 016b 76010000 		.4byte	0x176
+ 570 016f 0B       		.uleb128 0xb
+ 571 0170 BA000000 		.4byte	0xba
+ 572 0174 00       		.byte	0
+ 573 0175 00       		.byte	0
+ 574 0176 07       		.uleb128 0x7
+ 575 0177 EC020000 		.4byte	.LASF30
+ 576 017b 04       		.byte	0x4
+ 577 017c B9       		.byte	0xb9
+ 578 017d D9000000 		.4byte	0xd9
+ 579 0181 08       		.uleb128 0x8
+ 580 0182 0E       		.byte	0xe
+ 581 0183 04       		.byte	0x4
+ 582 0184 BE       		.byte	0xbe
+ 583 0185 0E020000 		.4byte	0x20e
+ 584 0189 09       		.uleb128 0x9
+ 585 018a 48040000 		.4byte	.LASF19
+ 586 018e 04       		.byte	0x4
+ 587 018f C4       		.byte	0xc4
+ 588 0190 77000000 		.4byte	0x77
+ 589 0194 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 27
+
+
+ 590 0195 09       		.uleb128 0x9
+ 591 0196 4F050000 		.4byte	.LASF20
+ 592 019a 04       		.byte	0x4
+ 593 019b C9       		.byte	0xc9
+ 594 019c C3000000 		.4byte	0xc3
+ 595 01a0 02       		.byte	0x2
+ 596 01a1 09       		.uleb128 0x9
+ 597 01a2 A8050000 		.4byte	.LASF21
+ 598 01a6 04       		.byte	0x4
+ 599 01a7 CE       		.byte	0xce
+ 600 01a8 6B000000 		.4byte	0x6b
+ 601 01ac 04       		.byte	0x4
+ 602 01ad 09       		.uleb128 0x9
+ 603 01ae 40030000 		.4byte	.LASF22
+ 604 01b2 04       		.byte	0x4
+ 605 01b3 D3       		.byte	0xd3
+ 606 01b4 6B000000 		.4byte	0x6b
+ 607 01b8 05       		.byte	0x5
+ 608 01b9 09       		.uleb128 0x9
+ 609 01ba D3030000 		.4byte	.LASF23
+ 610 01be 04       		.byte	0x4
+ 611 01bf D8       		.byte	0xd8
+ 612 01c0 6B000000 		.4byte	0x6b
+ 613 01c4 06       		.byte	0x6
+ 614 01c5 09       		.uleb128 0x9
+ 615 01c6 AA040000 		.4byte	.LASF24
+ 616 01ca 04       		.byte	0x4
+ 617 01cb DD       		.byte	0xdd
+ 618 01cc 6B000000 		.4byte	0x6b
+ 619 01d0 07       		.byte	0x7
+ 620 01d1 09       		.uleb128 0x9
+ 621 01d2 95020000 		.4byte	.LASF25
+ 622 01d6 04       		.byte	0x4
+ 623 01d7 E3       		.byte	0xe3
+ 624 01d8 CE000000 		.4byte	0xce
+ 625 01dc 08       		.byte	0x8
+ 626 01dd 09       		.uleb128 0x9
+ 627 01de B0030000 		.4byte	.LASF26
+ 628 01e2 04       		.byte	0x4
+ 629 01e3 E8       		.byte	0xe8
+ 630 01e4 6B000000 		.4byte	0x6b
+ 631 01e8 09       		.byte	0x9
+ 632 01e9 09       		.uleb128 0x9
+ 633 01ea 1A030000 		.4byte	.LASF27
+ 634 01ee 04       		.byte	0x4
+ 635 01ef EF       		.byte	0xef
+ 636 01f0 66010000 		.4byte	0x166
+ 637 01f4 0A       		.byte	0xa
+ 638 01f5 09       		.uleb128 0x9
+ 639 01f6 A3040000 		.4byte	.LASF28
+ 640 01fa 04       		.byte	0x4
+ 641 01fb F6       		.byte	0xf6
+ 642 01fc 6B000000 		.4byte	0x6b
+ 643 0200 0B       		.byte	0xb
+ 644 0201 09       		.uleb128 0x9
+ 645 0202 30050000 		.4byte	.LASF29
+ 646 0206 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 28
+
+
+ 647 0207 FB       		.byte	0xfb
+ 648 0208 6B000000 		.4byte	0x6b
+ 649 020c 0C       		.byte	0xc
+ 650 020d 00       		.byte	0
+ 651 020e 07       		.uleb128 0x7
+ 652 020f B5040000 		.4byte	.LASF31
+ 653 0213 04       		.byte	0x4
+ 654 0214 FC       		.byte	0xfc
+ 655 0215 81010000 		.4byte	0x181
+ 656 0219 0C       		.uleb128 0xc
+ 657 021a 0E       		.byte	0xe
+ 658 021b 04       		.byte	0x4
+ 659 021c 0201     		.2byte	0x102
+ 660 021e 30020000 		.4byte	0x230
+ 661 0222 0D       		.uleb128 0xd
+ 662 0223 AB000000 		.4byte	.LASF32
+ 663 0227 04       		.byte	0x4
+ 664 0228 0701     		.2byte	0x107
+ 665 022a 0E020000 		.4byte	0x20e
+ 666 022e 00       		.byte	0
+ 667 022f 00       		.byte	0
+ 668 0230 04       		.uleb128 0x4
+ 669 0231 EC030000 		.4byte	.LASF33
+ 670 0235 04       		.byte	0x4
+ 671 0236 0801     		.2byte	0x108
+ 672 0238 19020000 		.4byte	0x219
+ 673 023c 0C       		.uleb128 0xc
+ 674 023d 0A       		.byte	0xa
+ 675 023e 04       		.byte	0x4
+ 676 023f 0E01     		.2byte	0x10e
+ 677 0241 94020000 		.4byte	0x294
+ 678 0245 0E       		.uleb128 0xe
+ 679 0246 72617700 		.ascii	"raw\000"
+ 680 024a 04       		.byte	0x4
+ 681 024b 1301     		.2byte	0x113
+ 682 024d 94020000 		.4byte	0x294
+ 683 0251 00       		.byte	0
+ 684 0252 0D       		.uleb128 0xd
+ 685 0253 5B010000 		.4byte	.LASF34
+ 686 0257 04       		.byte	0x4
+ 687 0258 1801     		.2byte	0x118
+ 688 025a 94020000 		.4byte	0x294
+ 689 025e 02       		.byte	0x2
+ 690 025f 0D       		.uleb128 0xd
+ 691 0260 3E010000 		.4byte	.LASF35
+ 692 0264 04       		.byte	0x4
+ 693 0265 1E01     		.2byte	0x11e
+ 694 0267 66010000 		.4byte	0x166
+ 695 026b 04       		.byte	0x4
+ 696 026c 0D       		.uleb128 0xd
+ 697 026d CE040000 		.4byte	.LASF36
+ 698 0271 04       		.byte	0x4
+ 699 0272 2401     		.2byte	0x124
+ 700 0274 66010000 		.4byte	0x166
+ 701 0278 05       		.byte	0x5
+ 702 0279 0D       		.uleb128 0xd
+ 703 027a 5E000000 		.4byte	.LASF37
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 29
+
+
+ 704 027e 04       		.byte	0x4
+ 705 027f 2901     		.2byte	0x129
+ 706 0281 C3000000 		.4byte	0xc3
+ 707 0285 06       		.byte	0x6
+ 708 0286 0D       		.uleb128 0xd
+ 709 0287 D7040000 		.4byte	.LASF38
+ 710 028b 04       		.byte	0x4
+ 711 028c 2E01     		.2byte	0x12e
+ 712 028e A4020000 		.4byte	0x2a4
+ 713 0292 08       		.byte	0x8
+ 714 0293 00       		.byte	0
+ 715 0294 0A       		.uleb128 0xa
+ 716 0295 77000000 		.4byte	0x77
+ 717 0299 A4020000 		.4byte	0x2a4
+ 718 029d 0B       		.uleb128 0xb
+ 719 029e BA000000 		.4byte	0xba
+ 720 02a2 00       		.byte	0
+ 721 02a3 00       		.byte	0
+ 722 02a4 0A       		.uleb128 0xa
+ 723 02a5 CE000000 		.4byte	0xce
+ 724 02a9 B4020000 		.4byte	0x2b4
+ 725 02ad 0B       		.uleb128 0xb
+ 726 02ae BA000000 		.4byte	0xba
+ 727 02b2 00       		.byte	0
+ 728 02b3 00       		.byte	0
+ 729 02b4 04       		.uleb128 0x4
+ 730 02b5 E7000000 		.4byte	.LASF39
+ 731 02b9 04       		.byte	0x4
+ 732 02ba 2F01     		.2byte	0x12f
+ 733 02bc 3C020000 		.4byte	0x23c
+ 734 02c0 0C       		.uleb128 0xc
+ 735 02c1 14       		.byte	0x14
+ 736 02c2 04       		.byte	0x4
+ 737 02c3 3501     		.2byte	0x135
+ 738 02c5 D7020000 		.4byte	0x2d7
+ 739 02c9 0D       		.uleb128 0xd
+ 740 02ca AB000000 		.4byte	.LASF32
+ 741 02ce 04       		.byte	0x4
+ 742 02cf 3A01     		.2byte	0x13a
+ 743 02d1 D7020000 		.4byte	0x2d7
+ 744 02d5 00       		.byte	0
+ 745 02d6 00       		.byte	0
+ 746 02d7 0A       		.uleb128 0xa
+ 747 02d8 B4020000 		.4byte	0x2b4
+ 748 02dc E7020000 		.4byte	0x2e7
+ 749 02e0 0B       		.uleb128 0xb
+ 750 02e1 BA000000 		.4byte	0xba
+ 751 02e5 01       		.byte	0x1
+ 752 02e6 00       		.byte	0
+ 753 02e7 04       		.uleb128 0x4
+ 754 02e8 5C040000 		.4byte	.LASF40
+ 755 02ec 04       		.byte	0x4
+ 756 02ed 3B01     		.2byte	0x13b
+ 757 02ef C0020000 		.4byte	0x2c0
+ 758 02f3 0C       		.uleb128 0xc
+ 759 02f4 44       		.byte	0x44
+ 760 02f5 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 30
+
+
+ 761 02f6 4101     		.2byte	0x141
+ 762 02f8 CD030000 		.4byte	0x3cd
+ 763 02fc 0D       		.uleb128 0xd
+ 764 02fd C3020000 		.4byte	.LASF41
+ 765 0301 04       		.byte	0x4
+ 766 0302 4701     		.2byte	0x147
+ 767 0304 77000000 		.4byte	0x77
+ 768 0308 00       		.byte	0
+ 769 0309 0D       		.uleb128 0xd
+ 770 030a E3020000 		.4byte	.LASF42
+ 771 030e 04       		.byte	0x4
+ 772 030f 4C01     		.2byte	0x14c
+ 773 0311 77000000 		.4byte	0x77
+ 774 0315 02       		.byte	0x2
+ 775 0316 0D       		.uleb128 0xd
+ 776 0317 6E030000 		.4byte	.LASF43
+ 777 031b 04       		.byte	0x4
+ 778 031c 5201     		.2byte	0x152
+ 779 031e 77000000 		.4byte	0x77
+ 780 0322 04       		.byte	0x4
+ 781 0323 0D       		.uleb128 0xd
+ 782 0324 52030000 		.4byte	.LASF44
+ 783 0328 04       		.byte	0x4
+ 784 0329 5701     		.2byte	0x157
+ 785 032b 77000000 		.4byte	0x77
+ 786 032f 06       		.byte	0x6
+ 787 0330 0D       		.uleb128 0xd
+ 788 0331 01050000 		.4byte	.LASF45
+ 789 0335 04       		.byte	0x4
+ 790 0336 5C01     		.2byte	0x15c
+ 791 0338 83000000 		.4byte	0x83
+ 792 033c 08       		.byte	0x8
+ 793 033d 0D       		.uleb128 0xd
+ 794 033e 19050000 		.4byte	.LASF46
+ 795 0342 04       		.byte	0x4
+ 796 0343 6101     		.2byte	0x161
+ 797 0345 CD030000 		.4byte	0x3cd
+ 798 0349 0C       		.byte	0xc
+ 799 034a 0D       		.uleb128 0xd
+ 800 034b 46010000 		.4byte	.LASF47
+ 801 034f 04       		.byte	0x4
+ 802 0350 6601     		.2byte	0x166
+ 803 0352 CD030000 		.4byte	0x3cd
+ 804 0356 10       		.byte	0x10
+ 805 0357 0D       		.uleb128 0xd
+ 806 0358 B3000000 		.4byte	.LASF48
+ 807 035c 04       		.byte	0x4
+ 808 035d 7401     		.2byte	0x174
+ 809 035f 66010000 		.4byte	0x166
+ 810 0363 14       		.byte	0x14
+ 811 0364 0D       		.uleb128 0xd
+ 812 0365 CC020000 		.4byte	.LASF49
+ 813 0369 04       		.byte	0x4
+ 814 036a 7901     		.2byte	0x179
+ 815 036c 77000000 		.4byte	0x77
+ 816 0370 16       		.byte	0x16
+ 817 0371 0D       		.uleb128 0xd
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 31
+
+
+ 818 0372 C6000000 		.4byte	.LASF50
+ 819 0376 04       		.byte	0x4
+ 820 0377 7E01     		.2byte	0x17e
+ 821 0379 6B000000 		.4byte	0x6b
+ 822 037d 18       		.byte	0x18
+ 823 037e 0D       		.uleb128 0xd
+ 824 037f 53040000 		.4byte	.LASF51
+ 825 0383 04       		.byte	0x4
+ 826 0384 8301     		.2byte	0x183
+ 827 0386 30020000 		.4byte	0x230
+ 828 038a 1A       		.byte	0x1a
+ 829 038b 0D       		.uleb128 0xd
+ 830 038c BB020000 		.4byte	.LASF52
+ 831 0390 04       		.byte	0x4
+ 832 0391 8801     		.2byte	0x188
+ 833 0393 E7020000 		.4byte	0x2e7
+ 834 0397 28       		.byte	0x28
+ 835 0398 0D       		.uleb128 0xd
+ 836 0399 6D010000 		.4byte	.LASF53
+ 837 039d 04       		.byte	0x4
+ 838 039e 8D01     		.2byte	0x18d
+ 839 03a0 6B000000 		.4byte	0x6b
+ 840 03a4 3C       		.byte	0x3c
+ 841 03a5 0D       		.uleb128 0xd
+ 842 03a6 6C000000 		.4byte	.LASF54
+ 843 03aa 04       		.byte	0x4
+ 844 03ab 9201     		.2byte	0x192
+ 845 03ad 6B000000 		.4byte	0x6b
+ 846 03b1 3D       		.byte	0x3d
+ 847 03b2 0D       		.uleb128 0xd
+ 848 03b3 7F050000 		.4byte	.LASF55
+ 849 03b7 04       		.byte	0x4
+ 850 03b8 9701     		.2byte	0x197
+ 851 03ba 77000000 		.4byte	0x77
+ 852 03be 3E       		.byte	0x3e
+ 853 03bf 0D       		.uleb128 0xd
+ 854 03c0 01010000 		.4byte	.LASF56
+ 855 03c4 04       		.byte	0x4
+ 856 03c5 9C01     		.2byte	0x19c
+ 857 03c7 94020000 		.4byte	0x294
+ 858 03cb 40       		.byte	0x40
+ 859 03cc 00       		.byte	0
+ 860 03cd 0A       		.uleb128 0xa
+ 861 03ce 83000000 		.4byte	0x83
+ 862 03d2 DD030000 		.4byte	0x3dd
+ 863 03d6 0B       		.uleb128 0xb
+ 864 03d7 BA000000 		.4byte	0xba
+ 865 03db 00       		.byte	0
+ 866 03dc 00       		.byte	0
+ 867 03dd 04       		.uleb128 0x4
+ 868 03de 7D030000 		.4byte	.LASF57
+ 869 03e2 04       		.byte	0x4
+ 870 03e3 9D01     		.2byte	0x19d
+ 871 03e5 F3020000 		.4byte	0x2f3
+ 872 03e9 0C       		.uleb128 0xc
+ 873 03ea 1C       		.byte	0x1c
+ 874 03eb 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 32
+
+
+ 875 03ec A301     		.2byte	0x1a3
+ 876 03ee 68040000 		.4byte	0x468
+ 877 03f2 0D       		.uleb128 0xd
+ 878 03f3 63000000 		.4byte	.LASF58
+ 879 03f7 04       		.byte	0x4
+ 880 03f8 A801     		.2byte	0x1a8
+ 881 03fa 68040000 		.4byte	0x468
+ 882 03fe 00       		.byte	0
+ 883 03ff 0D       		.uleb128 0xd
+ 884 0400 79050000 		.4byte	.LASF59
+ 885 0404 04       		.byte	0x4
+ 886 0405 AD01     		.2byte	0x1ad
+ 887 0407 68040000 		.4byte	0x468
+ 888 040b 04       		.byte	0x4
+ 889 040c 0D       		.uleb128 0xd
+ 890 040d 9D040000 		.4byte	.LASF60
+ 891 0411 04       		.byte	0x4
+ 892 0412 B201     		.2byte	0x1b2
+ 893 0414 68040000 		.4byte	0x468
+ 894 0418 08       		.byte	0x8
+ 895 0419 0D       		.uleb128 0xd
+ 896 041a DB000000 		.4byte	.LASF61
+ 897 041e 04       		.byte	0x4
+ 898 041f B701     		.2byte	0x1b7
+ 899 0421 68040000 		.4byte	0x468
+ 900 0425 0C       		.byte	0xc
+ 901 0426 0D       		.uleb128 0xd
+ 902 0427 92050000 		.4byte	.LASF62
+ 903 042b 04       		.byte	0x4
+ 904 042c BC01     		.2byte	0x1bc
+ 905 042e 83000000 		.4byte	0x83
+ 906 0432 10       		.byte	0x10
+ 907 0433 0D       		.uleb128 0xd
+ 908 0434 39010000 		.4byte	.LASF63
+ 909 0438 04       		.byte	0x4
+ 910 0439 C101     		.2byte	0x1c1
+ 911 043b 83000000 		.4byte	0x83
+ 912 043f 14       		.byte	0x14
+ 913 0440 0D       		.uleb128 0xd
+ 914 0441 29040000 		.4byte	.LASF64
+ 915 0445 04       		.byte	0x4
+ 916 0446 C601     		.2byte	0x1c6
+ 917 0448 6B000000 		.4byte	0x6b
+ 918 044c 18       		.byte	0x18
+ 919 044d 0D       		.uleb128 0xd
+ 920 044e 17010000 		.4byte	.LASF65
+ 921 0452 04       		.byte	0x4
+ 922 0453 CB01     		.2byte	0x1cb
+ 923 0455 6B000000 		.4byte	0x6b
+ 924 0459 19       		.byte	0x19
+ 925 045a 0D       		.uleb128 0xd
+ 926 045b 11010000 		.4byte	.LASF66
+ 927 045f 04       		.byte	0x4
+ 928 0460 D001     		.2byte	0x1d0
+ 929 0462 6B000000 		.4byte	0x6b
+ 930 0466 1A       		.byte	0x1a
+ 931 0467 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 33
+
+
+ 932 0468 0F       		.uleb128 0xf
+ 933 0469 04       		.byte	0x4
+ 934 046a A9000000 		.4byte	0xa9
+ 935 046e 04       		.uleb128 0x4
+ 936 046f 8C030000 		.4byte	.LASF67
+ 937 0473 04       		.byte	0x4
+ 938 0474 D101     		.2byte	0x1d1
+ 939 0476 E9030000 		.4byte	0x3e9
+ 940 047a 0C       		.uleb128 0xc
+ 941 047b 1C       		.byte	0x1c
+ 942 047c 04       		.byte	0x4
+ 943 047d FC01     		.2byte	0x1fc
+ 944 047f F9040000 		.4byte	0x4f9
+ 945 0483 0D       		.uleb128 0xd
+ 946 0484 51000000 		.4byte	.LASF68
+ 947 0488 04       		.byte	0x4
+ 948 0489 0502     		.2byte	0x205
+ 949 048b F9040000 		.4byte	0x4f9
+ 950 048f 00       		.byte	0
+ 951 0490 0D       		.uleb128 0xd
+ 952 0491 D7020000 		.4byte	.LASF69
+ 953 0495 04       		.byte	0x4
+ 954 0496 0B02     		.2byte	0x20b
+ 955 0498 C1000000 		.4byte	0xc1
+ 956 049c 04       		.byte	0x4
+ 957 049d 0D       		.uleb128 0xd
+ 958 049e D0000000 		.4byte	.LASF70
+ 959 04a2 04       		.byte	0x4
+ 960 04a3 1102     		.2byte	0x211
+ 961 04a5 00050000 		.4byte	0x500
+ 962 04a9 08       		.byte	0x8
+ 963 04aa 0D       		.uleb128 0xd
+ 964 04ab 19040000 		.4byte	.LASF71
+ 965 04af 04       		.byte	0x4
+ 966 04b0 1602     		.2byte	0x216
+ 967 04b2 C1000000 		.4byte	0xc1
+ 968 04b6 0C       		.byte	0xc
+ 969 04b7 0D       		.uleb128 0xd
+ 970 04b8 F1040000 		.4byte	.LASF72
+ 971 04bc 04       		.byte	0x4
+ 972 04bd 1D02     		.2byte	0x21d
+ 973 04bf 06050000 		.4byte	0x506
+ 974 04c3 10       		.byte	0x10
+ 975 04c4 0D       		.uleb128 0xd
+ 976 04c5 33030000 		.4byte	.LASF73
+ 977 04c9 04       		.byte	0x4
+ 978 04ca 2202     		.2byte	0x222
+ 979 04cc 77000000 		.4byte	0x77
+ 980 04d0 14       		.byte	0x14
+ 981 04d1 0D       		.uleb128 0xd
+ 982 04d2 E5040000 		.4byte	.LASF74
+ 983 04d6 04       		.byte	0x4
+ 984 04d7 2902     		.2byte	0x229
+ 985 04d9 77000000 		.4byte	0x77
+ 986 04dd 16       		.byte	0x16
+ 987 04de 0D       		.uleb128 0xd
+ 988 04df 49030000 		.4byte	.LASF75
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 34
+
+
+ 989 04e3 04       		.byte	0x4
+ 990 04e4 3402     		.2byte	0x234
+ 991 04e6 6B000000 		.4byte	0x6b
+ 992 04ea 18       		.byte	0x18
+ 993 04eb 0D       		.uleb128 0xd
+ 994 04ec 22030000 		.4byte	.LASF76
+ 995 04f0 04       		.byte	0x4
+ 996 04f1 3C02     		.2byte	0x23c
+ 997 04f3 6B000000 		.4byte	0x6b
+ 998 04f7 19       		.byte	0x19
+ 999 04f8 00       		.byte	0
+ 1000 04f9 0F       		.uleb128 0xf
+ 1001 04fa 04       		.byte	0x4
+ 1002 04fb FF040000 		.4byte	0x4ff
+ 1003 04ff 10       		.uleb128 0x10
+ 1004 0500 0F       		.uleb128 0xf
+ 1005 0501 04       		.byte	0x4
+ 1006 0502 B4020000 		.4byte	0x2b4
+ 1007 0506 0F       		.uleb128 0xf
+ 1008 0507 04       		.byte	0x4
+ 1009 0508 6B000000 		.4byte	0x6b
+ 1010 050c 04       		.uleb128 0x4
+ 1011 050d 34040000 		.4byte	.LASF77
+ 1012 0511 04       		.byte	0x4
+ 1013 0512 3D02     		.2byte	0x23d
+ 1014 0514 7A040000 		.4byte	0x47a
+ 1015 0518 0C       		.uleb128 0xc
+ 1016 0519 1C       		.byte	0x1c
+ 1017 051a 04       		.byte	0x4
+ 1018 051b 4302     		.2byte	0x243
+ 1019 051d 2F050000 		.4byte	0x52f
+ 1020 0521 0D       		.uleb128 0xd
+ 1021 0522 51010000 		.4byte	.LASF78
+ 1022 0526 04       		.byte	0x4
+ 1023 0527 4802     		.2byte	0x248
+ 1024 0529 2F050000 		.4byte	0x52f
+ 1025 052d 00       		.byte	0
+ 1026 052e 00       		.byte	0
+ 1027 052f 0A       		.uleb128 0xa
+ 1028 0530 0C050000 		.4byte	0x50c
+ 1029 0534 3F050000 		.4byte	0x53f
+ 1030 0538 0B       		.uleb128 0xb
+ 1031 0539 BA000000 		.4byte	0xba
+ 1032 053d 00       		.byte	0
+ 1033 053e 00       		.byte	0
+ 1034 053f 04       		.uleb128 0x4
+ 1035 0540 08050000 		.4byte	.LASF79
+ 1036 0544 04       		.byte	0x4
+ 1037 0545 4902     		.2byte	0x249
+ 1038 0547 18050000 		.4byte	0x518
+ 1039 054b 11       		.uleb128 0x11
+ 1040 054c 24000000 		.4byte	.LASF96
+ 1041 0550 01       		.byte	0x1
+ 1042 0551 77       		.byte	0x77
+ 1043 0552 00000000 		.4byte	.LFB1
+ 1044 0556 38000000 		.4byte	.LFE1-.LFB1
+ 1045 055a 01       		.uleb128 0x1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 35
+
+
+ 1046 055b 9C       		.byte	0x9c
+ 1047 055c 12       		.uleb128 0x12
+ 1048 055d 7C000000 		.4byte	.LASF97
+ 1049 0561 01       		.byte	0x1
+ 1050 0562 E6       		.byte	0xe6
+ 1051 0563 00000000 		.4byte	.LFB2
+ 1052 0567 5C000000 		.4byte	.LFE2-.LFB2
+ 1053 056b 01       		.uleb128 0x1
+ 1054 056c 9C       		.byte	0x9c
+ 1055 056d 80050000 		.4byte	0x580
+ 1056 0571 13       		.uleb128 0x13
+ 1057 0572 24050000 		.4byte	.LASF80
+ 1058 0576 01       		.byte	0x1
+ 1059 0577 E9       		.byte	0xe9
+ 1060 0578 80050000 		.4byte	0x580
+ 1061 057c 02       		.uleb128 0x2
+ 1062 057d 91       		.byte	0x91
+ 1063 057e 74       		.sleb128 -12
+ 1064 057f 00       		.byte	0
+ 1065 0580 0F       		.uleb128 0xf
+ 1066 0581 04       		.byte	0x4
+ 1067 0582 86050000 		.4byte	0x586
+ 1068 0586 14       		.uleb128 0x14
+ 1069 0587 6E040000 		.4byte	0x46e
+ 1070 058b 15       		.uleb128 0x15
+ 1071 058c 8B040000 		.4byte	.LASF84
+ 1072 0590 01       		.byte	0x1
+ 1073 0591 D902     		.2byte	0x2d9
+ 1074 0593 00000000 		.4byte	.LFB3
+ 1075 0597 7C000000 		.4byte	.LFE3-.LFB3
+ 1076 059b 01       		.uleb128 0x1
+ 1077 059c 9C       		.byte	0x9c
+ 1078 059d CF050000 		.4byte	0x5cf
+ 1079 05a1 16       		.uleb128 0x16
+ 1080 05a2 8A020000 		.4byte	.LASF81
+ 1081 05a6 01       		.byte	0x1
+ 1082 05a7 DD02     		.2byte	0x2dd
+ 1083 05a9 83000000 		.4byte	0x83
+ 1084 05ad 02       		.uleb128 0x2
+ 1085 05ae 91       		.byte	0x91
+ 1086 05af 70       		.sleb128 -16
+ 1087 05b0 16       		.uleb128 0x16
+ 1088 05b1 9C050000 		.4byte	.LASF82
+ 1089 05b5 01       		.byte	0x1
+ 1090 05b6 DE02     		.2byte	0x2de
+ 1091 05b8 83000000 		.4byte	0x83
+ 1092 05bc 02       		.uleb128 0x2
+ 1093 05bd 91       		.byte	0x91
+ 1094 05be 6C       		.sleb128 -20
+ 1095 05bf 16       		.uleb128 0x16
+ 1096 05c0 A0020000 		.4byte	.LASF83
+ 1097 05c4 01       		.byte	0x1
+ 1098 05c5 DF02     		.2byte	0x2df
+ 1099 05c7 CF050000 		.4byte	0x5cf
+ 1100 05cb 02       		.uleb128 0x2
+ 1101 05cc 91       		.byte	0x91
+ 1102 05cd 74       		.sleb128 -12
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 36
+
+
+ 1103 05ce 00       		.byte	0
+ 1104 05cf 0F       		.uleb128 0xf
+ 1105 05d0 04       		.byte	0x4
+ 1106 05d1 D5050000 		.4byte	0x5d5
+ 1107 05d5 14       		.uleb128 0x14
+ 1108 05d6 76010000 		.4byte	0x176
+ 1109 05da 17       		.uleb128 0x17
+ 1110 05db 11000000 		.4byte	.LASF85
+ 1111 05df 01       		.byte	0x1
+ 1112 05e0 1903     		.2byte	0x319
+ 1113 05e2 00000000 		.4byte	.LFB4
+ 1114 05e6 00010000 		.4byte	.LFE4-.LFB4
+ 1115 05ea 01       		.uleb128 0x1
+ 1116 05eb 9C       		.byte	0x9c
+ 1117 05ec 00060000 		.4byte	0x600
+ 1118 05f0 16       		.uleb128 0x16
+ 1119 05f1 A0020000 		.4byte	.LASF83
+ 1120 05f5 01       		.byte	0x1
+ 1121 05f6 2103     		.2byte	0x321
+ 1122 05f8 00060000 		.4byte	0x600
+ 1123 05fc 02       		.uleb128 0x2
+ 1124 05fd 91       		.byte	0x91
+ 1125 05fe 74       		.sleb128 -12
+ 1126 05ff 00       		.byte	0
+ 1127 0600 0F       		.uleb128 0xf
+ 1128 0601 04       		.byte	0x4
+ 1129 0602 76010000 		.4byte	0x176
+ 1130 0606 18       		.uleb128 0x18
+ 1131 0607 07000000 		.4byte	.LASF86
+ 1132 060b 04       		.byte	0x4
+ 1133 060c 8103     		.2byte	0x381
+ 1134 060e DD030000 		.4byte	0x3dd
+ 1135 0612 18       		.uleb128 0x18
+ 1136 0613 0D040000 		.4byte	.LASF87
+ 1137 0617 04       		.byte	0x4
+ 1138 0618 8203     		.2byte	0x382
+ 1139 061a 1E060000 		.4byte	0x61e
+ 1140 061e 14       		.uleb128 0x14
+ 1141 061f 3F050000 		.4byte	0x53f
+ 1142 0623 18       		.uleb128 0x18
+ 1143 0624 3D050000 		.4byte	.LASF88
+ 1144 0628 05       		.byte	0x5
+ 1145 0629 1A05     		.2byte	0x51a
+ 1146 062b 2F060000 		.4byte	0x62f
+ 1147 062f 14       		.uleb128 0x14
+ 1148 0630 6B000000 		.4byte	0x6b
+ 1149 0634 18       		.uleb128 0x18
+ 1150 0635 5E030000 		.4byte	.LASF89
+ 1151 0639 05       		.byte	0x5
+ 1152 063a 1C05     		.2byte	0x51c
+ 1153 063c A4000000 		.4byte	0xa4
+ 1154 0640 18       		.uleb128 0x18
+ 1155 0641 A0030000 		.4byte	.LASF90
+ 1156 0645 05       		.byte	0x5
+ 1157 0646 1D05     		.2byte	0x51d
+ 1158 0648 A4000000 		.4byte	0xa4
+ 1159 064c 18       		.uleb128 0x18
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 37
+
+
+ 1160 064d BA030000 		.4byte	.LASF91
+ 1161 0651 05       		.byte	0x5
+ 1162 0652 1E05     		.2byte	0x51e
+ 1163 0654 6B000000 		.4byte	0x6b
+ 1164 0658 18       		.uleb128 0x18
+ 1165 0659 09030000 		.4byte	.LASF92
+ 1166 065d 05       		.byte	0x5
+ 1167 065e 1F05     		.2byte	0x51f
+ 1168 0660 00050000 		.4byte	0x500
+ 1169 0664 00       		.byte	0
+ 1170              		.section	.debug_abbrev,"",%progbits
+ 1171              	.Ldebug_abbrev0:
+ 1172 0000 01       		.uleb128 0x1
+ 1173 0001 11       		.uleb128 0x11
+ 1174 0002 01       		.byte	0x1
+ 1175 0003 25       		.uleb128 0x25
+ 1176 0004 0E       		.uleb128 0xe
+ 1177 0005 13       		.uleb128 0x13
+ 1178 0006 0B       		.uleb128 0xb
+ 1179 0007 03       		.uleb128 0x3
+ 1180 0008 0E       		.uleb128 0xe
+ 1181 0009 1B       		.uleb128 0x1b
+ 1182 000a 0E       		.uleb128 0xe
+ 1183 000b 55       		.uleb128 0x55
+ 1184 000c 17       		.uleb128 0x17
+ 1185 000d 11       		.uleb128 0x11
+ 1186 000e 01       		.uleb128 0x1
+ 1187 000f 10       		.uleb128 0x10
+ 1188 0010 17       		.uleb128 0x17
+ 1189 0011 00       		.byte	0
+ 1190 0012 00       		.byte	0
+ 1191 0013 02       		.uleb128 0x2
+ 1192 0014 24       		.uleb128 0x24
+ 1193 0015 00       		.byte	0
+ 1194 0016 0B       		.uleb128 0xb
+ 1195 0017 0B       		.uleb128 0xb
+ 1196 0018 3E       		.uleb128 0x3e
+ 1197 0019 0B       		.uleb128 0xb
+ 1198 001a 03       		.uleb128 0x3
+ 1199 001b 0E       		.uleb128 0xe
+ 1200 001c 00       		.byte	0
+ 1201 001d 00       		.byte	0
+ 1202 001e 03       		.uleb128 0x3
+ 1203 001f 24       		.uleb128 0x24
+ 1204 0020 00       		.byte	0
+ 1205 0021 0B       		.uleb128 0xb
+ 1206 0022 0B       		.uleb128 0xb
+ 1207 0023 3E       		.uleb128 0x3e
+ 1208 0024 0B       		.uleb128 0xb
+ 1209 0025 03       		.uleb128 0x3
+ 1210 0026 08       		.uleb128 0x8
+ 1211 0027 00       		.byte	0
+ 1212 0028 00       		.byte	0
+ 1213 0029 04       		.uleb128 0x4
+ 1214 002a 16       		.uleb128 0x16
+ 1215 002b 00       		.byte	0
+ 1216 002c 03       		.uleb128 0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 38
+
+
+ 1217 002d 0E       		.uleb128 0xe
+ 1218 002e 3A       		.uleb128 0x3a
+ 1219 002f 0B       		.uleb128 0xb
+ 1220 0030 3B       		.uleb128 0x3b
+ 1221 0031 05       		.uleb128 0x5
+ 1222 0032 49       		.uleb128 0x49
+ 1223 0033 13       		.uleb128 0x13
+ 1224 0034 00       		.byte	0
+ 1225 0035 00       		.byte	0
+ 1226 0036 05       		.uleb128 0x5
+ 1227 0037 35       		.uleb128 0x35
+ 1228 0038 00       		.byte	0
+ 1229 0039 49       		.uleb128 0x49
+ 1230 003a 13       		.uleb128 0x13
+ 1231 003b 00       		.byte	0
+ 1232 003c 00       		.byte	0
+ 1233 003d 06       		.uleb128 0x6
+ 1234 003e 0F       		.uleb128 0xf
+ 1235 003f 00       		.byte	0
+ 1236 0040 0B       		.uleb128 0xb
+ 1237 0041 0B       		.uleb128 0xb
+ 1238 0042 00       		.byte	0
+ 1239 0043 00       		.byte	0
+ 1240 0044 07       		.uleb128 0x7
+ 1241 0045 16       		.uleb128 0x16
+ 1242 0046 00       		.byte	0
+ 1243 0047 03       		.uleb128 0x3
+ 1244 0048 0E       		.uleb128 0xe
+ 1245 0049 3A       		.uleb128 0x3a
+ 1246 004a 0B       		.uleb128 0xb
+ 1247 004b 3B       		.uleb128 0x3b
+ 1248 004c 0B       		.uleb128 0xb
+ 1249 004d 49       		.uleb128 0x49
+ 1250 004e 13       		.uleb128 0x13
+ 1251 004f 00       		.byte	0
+ 1252 0050 00       		.byte	0
+ 1253 0051 08       		.uleb128 0x8
+ 1254 0052 13       		.uleb128 0x13
+ 1255 0053 01       		.byte	0x1
+ 1256 0054 0B       		.uleb128 0xb
+ 1257 0055 0B       		.uleb128 0xb
+ 1258 0056 3A       		.uleb128 0x3a
+ 1259 0057 0B       		.uleb128 0xb
+ 1260 0058 3B       		.uleb128 0x3b
+ 1261 0059 0B       		.uleb128 0xb
+ 1262 005a 01       		.uleb128 0x1
+ 1263 005b 13       		.uleb128 0x13
+ 1264 005c 00       		.byte	0
+ 1265 005d 00       		.byte	0
+ 1266 005e 09       		.uleb128 0x9
+ 1267 005f 0D       		.uleb128 0xd
+ 1268 0060 00       		.byte	0
+ 1269 0061 03       		.uleb128 0x3
+ 1270 0062 0E       		.uleb128 0xe
+ 1271 0063 3A       		.uleb128 0x3a
+ 1272 0064 0B       		.uleb128 0xb
+ 1273 0065 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 39
+
+
+ 1274 0066 0B       		.uleb128 0xb
+ 1275 0067 49       		.uleb128 0x49
+ 1276 0068 13       		.uleb128 0x13
+ 1277 0069 38       		.uleb128 0x38
+ 1278 006a 0B       		.uleb128 0xb
+ 1279 006b 00       		.byte	0
+ 1280 006c 00       		.byte	0
+ 1281 006d 0A       		.uleb128 0xa
+ 1282 006e 01       		.uleb128 0x1
+ 1283 006f 01       		.byte	0x1
+ 1284 0070 49       		.uleb128 0x49
+ 1285 0071 13       		.uleb128 0x13
+ 1286 0072 01       		.uleb128 0x1
+ 1287 0073 13       		.uleb128 0x13
+ 1288 0074 00       		.byte	0
+ 1289 0075 00       		.byte	0
+ 1290 0076 0B       		.uleb128 0xb
+ 1291 0077 21       		.uleb128 0x21
+ 1292 0078 00       		.byte	0
+ 1293 0079 49       		.uleb128 0x49
+ 1294 007a 13       		.uleb128 0x13
+ 1295 007b 2F       		.uleb128 0x2f
+ 1296 007c 0B       		.uleb128 0xb
+ 1297 007d 00       		.byte	0
+ 1298 007e 00       		.byte	0
+ 1299 007f 0C       		.uleb128 0xc
+ 1300 0080 13       		.uleb128 0x13
+ 1301 0081 01       		.byte	0x1
+ 1302 0082 0B       		.uleb128 0xb
+ 1303 0083 0B       		.uleb128 0xb
+ 1304 0084 3A       		.uleb128 0x3a
+ 1305 0085 0B       		.uleb128 0xb
+ 1306 0086 3B       		.uleb128 0x3b
+ 1307 0087 05       		.uleb128 0x5
+ 1308 0088 01       		.uleb128 0x1
+ 1309 0089 13       		.uleb128 0x13
+ 1310 008a 00       		.byte	0
+ 1311 008b 00       		.byte	0
+ 1312 008c 0D       		.uleb128 0xd
+ 1313 008d 0D       		.uleb128 0xd
+ 1314 008e 00       		.byte	0
+ 1315 008f 03       		.uleb128 0x3
+ 1316 0090 0E       		.uleb128 0xe
+ 1317 0091 3A       		.uleb128 0x3a
+ 1318 0092 0B       		.uleb128 0xb
+ 1319 0093 3B       		.uleb128 0x3b
+ 1320 0094 05       		.uleb128 0x5
+ 1321 0095 49       		.uleb128 0x49
+ 1322 0096 13       		.uleb128 0x13
+ 1323 0097 38       		.uleb128 0x38
+ 1324 0098 0B       		.uleb128 0xb
+ 1325 0099 00       		.byte	0
+ 1326 009a 00       		.byte	0
+ 1327 009b 0E       		.uleb128 0xe
+ 1328 009c 0D       		.uleb128 0xd
+ 1329 009d 00       		.byte	0
+ 1330 009e 03       		.uleb128 0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 40
+
+
+ 1331 009f 08       		.uleb128 0x8
+ 1332 00a0 3A       		.uleb128 0x3a
+ 1333 00a1 0B       		.uleb128 0xb
+ 1334 00a2 3B       		.uleb128 0x3b
+ 1335 00a3 05       		.uleb128 0x5
+ 1336 00a4 49       		.uleb128 0x49
+ 1337 00a5 13       		.uleb128 0x13
+ 1338 00a6 38       		.uleb128 0x38
+ 1339 00a7 0B       		.uleb128 0xb
+ 1340 00a8 00       		.byte	0
+ 1341 00a9 00       		.byte	0
+ 1342 00aa 0F       		.uleb128 0xf
+ 1343 00ab 0F       		.uleb128 0xf
+ 1344 00ac 00       		.byte	0
+ 1345 00ad 0B       		.uleb128 0xb
+ 1346 00ae 0B       		.uleb128 0xb
+ 1347 00af 49       		.uleb128 0x49
+ 1348 00b0 13       		.uleb128 0x13
+ 1349 00b1 00       		.byte	0
+ 1350 00b2 00       		.byte	0
+ 1351 00b3 10       		.uleb128 0x10
+ 1352 00b4 26       		.uleb128 0x26
+ 1353 00b5 00       		.byte	0
+ 1354 00b6 00       		.byte	0
+ 1355 00b7 00       		.byte	0
+ 1356 00b8 11       		.uleb128 0x11
+ 1357 00b9 2E       		.uleb128 0x2e
+ 1358 00ba 00       		.byte	0
+ 1359 00bb 3F       		.uleb128 0x3f
+ 1360 00bc 19       		.uleb128 0x19
+ 1361 00bd 03       		.uleb128 0x3
+ 1362 00be 0E       		.uleb128 0xe
+ 1363 00bf 3A       		.uleb128 0x3a
+ 1364 00c0 0B       		.uleb128 0xb
+ 1365 00c1 3B       		.uleb128 0x3b
+ 1366 00c2 0B       		.uleb128 0xb
+ 1367 00c3 27       		.uleb128 0x27
+ 1368 00c4 19       		.uleb128 0x19
+ 1369 00c5 11       		.uleb128 0x11
+ 1370 00c6 01       		.uleb128 0x1
+ 1371 00c7 12       		.uleb128 0x12
+ 1372 00c8 06       		.uleb128 0x6
+ 1373 00c9 40       		.uleb128 0x40
+ 1374 00ca 18       		.uleb128 0x18
+ 1375 00cb 9642     		.uleb128 0x2116
+ 1376 00cd 19       		.uleb128 0x19
+ 1377 00ce 00       		.byte	0
+ 1378 00cf 00       		.byte	0
+ 1379 00d0 12       		.uleb128 0x12
+ 1380 00d1 2E       		.uleb128 0x2e
+ 1381 00d2 01       		.byte	0x1
+ 1382 00d3 3F       		.uleb128 0x3f
+ 1383 00d4 19       		.uleb128 0x19
+ 1384 00d5 03       		.uleb128 0x3
+ 1385 00d6 0E       		.uleb128 0xe
+ 1386 00d7 3A       		.uleb128 0x3a
+ 1387 00d8 0B       		.uleb128 0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 41
+
+
+ 1388 00d9 3B       		.uleb128 0x3b
+ 1389 00da 0B       		.uleb128 0xb
+ 1390 00db 27       		.uleb128 0x27
+ 1391 00dc 19       		.uleb128 0x19
+ 1392 00dd 11       		.uleb128 0x11
+ 1393 00de 01       		.uleb128 0x1
+ 1394 00df 12       		.uleb128 0x12
+ 1395 00e0 06       		.uleb128 0x6
+ 1396 00e1 40       		.uleb128 0x40
+ 1397 00e2 18       		.uleb128 0x18
+ 1398 00e3 9642     		.uleb128 0x2116
+ 1399 00e5 19       		.uleb128 0x19
+ 1400 00e6 01       		.uleb128 0x1
+ 1401 00e7 13       		.uleb128 0x13
+ 1402 00e8 00       		.byte	0
+ 1403 00e9 00       		.byte	0
+ 1404 00ea 13       		.uleb128 0x13
+ 1405 00eb 34       		.uleb128 0x34
+ 1406 00ec 00       		.byte	0
+ 1407 00ed 03       		.uleb128 0x3
+ 1408 00ee 0E       		.uleb128 0xe
+ 1409 00ef 3A       		.uleb128 0x3a
+ 1410 00f0 0B       		.uleb128 0xb
+ 1411 00f1 3B       		.uleb128 0x3b
+ 1412 00f2 0B       		.uleb128 0xb
+ 1413 00f3 49       		.uleb128 0x49
+ 1414 00f4 13       		.uleb128 0x13
+ 1415 00f5 02       		.uleb128 0x2
+ 1416 00f6 18       		.uleb128 0x18
+ 1417 00f7 00       		.byte	0
+ 1418 00f8 00       		.byte	0
+ 1419 00f9 14       		.uleb128 0x14
+ 1420 00fa 26       		.uleb128 0x26
+ 1421 00fb 00       		.byte	0
+ 1422 00fc 49       		.uleb128 0x49
+ 1423 00fd 13       		.uleb128 0x13
+ 1424 00fe 00       		.byte	0
+ 1425 00ff 00       		.byte	0
+ 1426 0100 15       		.uleb128 0x15
+ 1427 0101 2E       		.uleb128 0x2e
+ 1428 0102 01       		.byte	0x1
+ 1429 0103 03       		.uleb128 0x3
+ 1430 0104 0E       		.uleb128 0xe
+ 1431 0105 3A       		.uleb128 0x3a
+ 1432 0106 0B       		.uleb128 0xb
+ 1433 0107 3B       		.uleb128 0x3b
+ 1434 0108 05       		.uleb128 0x5
+ 1435 0109 27       		.uleb128 0x27
+ 1436 010a 19       		.uleb128 0x19
+ 1437 010b 11       		.uleb128 0x11
+ 1438 010c 01       		.uleb128 0x1
+ 1439 010d 12       		.uleb128 0x12
+ 1440 010e 06       		.uleb128 0x6
+ 1441 010f 40       		.uleb128 0x40
+ 1442 0110 18       		.uleb128 0x18
+ 1443 0111 9742     		.uleb128 0x2117
+ 1444 0113 19       		.uleb128 0x19
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 42
+
+
+ 1445 0114 01       		.uleb128 0x1
+ 1446 0115 13       		.uleb128 0x13
+ 1447 0116 00       		.byte	0
+ 1448 0117 00       		.byte	0
+ 1449 0118 16       		.uleb128 0x16
+ 1450 0119 34       		.uleb128 0x34
+ 1451 011a 00       		.byte	0
+ 1452 011b 03       		.uleb128 0x3
+ 1453 011c 0E       		.uleb128 0xe
+ 1454 011d 3A       		.uleb128 0x3a
+ 1455 011e 0B       		.uleb128 0xb
+ 1456 011f 3B       		.uleb128 0x3b
+ 1457 0120 05       		.uleb128 0x5
+ 1458 0121 49       		.uleb128 0x49
+ 1459 0122 13       		.uleb128 0x13
+ 1460 0123 02       		.uleb128 0x2
+ 1461 0124 18       		.uleb128 0x18
+ 1462 0125 00       		.byte	0
+ 1463 0126 00       		.byte	0
+ 1464 0127 17       		.uleb128 0x17
+ 1465 0128 2E       		.uleb128 0x2e
+ 1466 0129 01       		.byte	0x1
+ 1467 012a 03       		.uleb128 0x3
+ 1468 012b 0E       		.uleb128 0xe
+ 1469 012c 3A       		.uleb128 0x3a
+ 1470 012d 0B       		.uleb128 0xb
+ 1471 012e 3B       		.uleb128 0x3b
+ 1472 012f 05       		.uleb128 0x5
+ 1473 0130 27       		.uleb128 0x27
+ 1474 0131 19       		.uleb128 0x19
+ 1475 0132 11       		.uleb128 0x11
+ 1476 0133 01       		.uleb128 0x1
+ 1477 0134 12       		.uleb128 0x12
+ 1478 0135 06       		.uleb128 0x6
+ 1479 0136 40       		.uleb128 0x40
+ 1480 0137 18       		.uleb128 0x18
+ 1481 0138 9642     		.uleb128 0x2116
+ 1482 013a 19       		.uleb128 0x19
+ 1483 013b 01       		.uleb128 0x1
+ 1484 013c 13       		.uleb128 0x13
+ 1485 013d 00       		.byte	0
+ 1486 013e 00       		.byte	0
+ 1487 013f 18       		.uleb128 0x18
+ 1488 0140 34       		.uleb128 0x34
+ 1489 0141 00       		.byte	0
+ 1490 0142 03       		.uleb128 0x3
+ 1491 0143 0E       		.uleb128 0xe
+ 1492 0144 3A       		.uleb128 0x3a
+ 1493 0145 0B       		.uleb128 0xb
+ 1494 0146 3B       		.uleb128 0x3b
+ 1495 0147 05       		.uleb128 0x5
+ 1496 0148 49       		.uleb128 0x49
+ 1497 0149 13       		.uleb128 0x13
+ 1498 014a 3F       		.uleb128 0x3f
+ 1499 014b 19       		.uleb128 0x19
+ 1500 014c 3C       		.uleb128 0x3c
+ 1501 014d 19       		.uleb128 0x19
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 43
+
+
+ 1502 014e 00       		.byte	0
+ 1503 014f 00       		.byte	0
+ 1504 0150 00       		.byte	0
+ 1505              		.section	.debug_aranges,"",%progbits
+ 1506 0000 34000000 		.4byte	0x34
+ 1507 0004 0200     		.2byte	0x2
+ 1508 0006 00000000 		.4byte	.Ldebug_info0
+ 1509 000a 04       		.byte	0x4
+ 1510 000b 00       		.byte	0
+ 1511 000c 0000     		.2byte	0
+ 1512 000e 0000     		.2byte	0
+ 1513 0010 00000000 		.4byte	.LFB1
+ 1514 0014 38000000 		.4byte	.LFE1-.LFB1
+ 1515 0018 00000000 		.4byte	.LFB2
+ 1516 001c 5C000000 		.4byte	.LFE2-.LFB2
+ 1517 0020 00000000 		.4byte	.LFB3
+ 1518 0024 7C000000 		.4byte	.LFE3-.LFB3
+ 1519 0028 00000000 		.4byte	.LFB4
+ 1520 002c 00010000 		.4byte	.LFE4-.LFB4
+ 1521 0030 00000000 		.4byte	0
+ 1522 0034 00000000 		.4byte	0
+ 1523              		.section	.debug_ranges,"",%progbits
+ 1524              	.Ldebug_ranges0:
+ 1525 0000 00000000 		.4byte	.LFB1
+ 1526 0004 38000000 		.4byte	.LFE1
+ 1527 0008 00000000 		.4byte	.LFB2
+ 1528 000c 5C000000 		.4byte	.LFE2
+ 1529 0010 00000000 		.4byte	.LFB3
+ 1530 0014 7C000000 		.4byte	.LFE3
+ 1531 0018 00000000 		.4byte	.LFB4
+ 1532 001c 00010000 		.4byte	.LFE4
+ 1533 0020 00000000 		.4byte	0
+ 1534 0024 00000000 		.4byte	0
+ 1535              		.section	.debug_line,"",%progbits
+ 1536              	.Ldebug_line0:
+ 1537 0000 04010000 		.section	.debug_str,"MS",%progbits,1
+ 1537      02007F00 
+ 1537      00000201 
+ 1537      FB0E0D00 
+ 1537      01010101 
+ 1538              	.LASF10:
+ 1539 0000 75696E74 		.ascii	"uint16\000"
+ 1539      313600
+ 1540              	.LASF86:
+ 1541 0007 4353445F 		.ascii	"CSD_dsRam\000"
+ 1541      64735261 
+ 1541      6D00
+ 1542              	.LASF85:
+ 1543 0011 4353445F 		.ascii	"CSD_SsInitNextScan\000"
+ 1543      5373496E 
+ 1543      69744E65 
+ 1543      78745363 
+ 1543      616E00
+ 1544              	.LASF96:
+ 1545 0024 4353445F 		.ascii	"CSD_CSDPostSingleScan\000"
+ 1545      43534450 
+ 1545      6F737453 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 44
+
+
+ 1545      696E676C 
+ 1545      65536361 
+ 1546              	.LASF7:
+ 1547 003a 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1547      206C6F6E 
+ 1547      6720756E 
+ 1547      7369676E 
+ 1547      65642069 
+ 1548              	.LASF68:
+ 1549 0051 70747232 		.ascii	"ptr2SnsFlash\000"
+ 1549      536E7346 
+ 1549      6C617368 
+ 1549      00
+ 1550              	.LASF37:
+ 1551 005e 64696666 		.ascii	"diff\000"
+ 1551      00
+ 1552              	.LASF58:
+ 1553 0063 6873696F 		.ascii	"hsiomPtr\000"
+ 1553      6D507472 
+ 1553      00
+ 1554              	.LASF54:
+ 1555 006c 736E7254 		.ascii	"snrTestSensorId\000"
+ 1555      65737453 
+ 1555      656E736F 
+ 1555      72496400 
+ 1556              	.LASF97:
+ 1557 007c 4353445F 		.ascii	"CSD_CSDPostMultiScan\000"
+ 1557      43534450 
+ 1557      6F73744D 
+ 1557      756C7469 
+ 1557      5363616E 
+ 1558              	.LASF6:
+ 1559 0091 6C6F6E67 		.ascii	"long long int\000"
+ 1559      206C6F6E 
+ 1559      6720696E 
+ 1559      7400
+ 1560              	.LASF0:
+ 1561 009f 7369676E 		.ascii	"signed char\000"
+ 1561      65642063 
+ 1561      68617200 
+ 1562              	.LASF32:
+ 1563 00ab 62757474 		.ascii	"button0\000"
+ 1563      6F6E3000 
+ 1564              	.LASF48:
+ 1565 00b3 736E7353 		.ascii	"snsStatus\000"
+ 1565      74617475 
+ 1565      7300
+ 1566              	.LASF4:
+ 1567 00bd 6C6F6E67 		.ascii	"long int\000"
+ 1567      20696E74 
+ 1567      00
+ 1568              	.LASF50:
+ 1569 00c6 6D6F6443 		.ascii	"modCsdClk\000"
+ 1569      7364436C 
+ 1569      6B00
+ 1570              	.LASF70:
+ 1571 00d0 70747232 		.ascii	"ptr2SnsRam\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 45
+
+
+ 1571      536E7352 
+ 1571      616D00
+ 1572              	.LASF61:
+ 1573 00db 70735074 		.ascii	"psPtr\000"
+ 1573      7200
+ 1574              	.LASF9:
+ 1575 00e1 75696E74 		.ascii	"uint8\000"
+ 1575      3800
+ 1576              	.LASF39:
+ 1577 00e7 4353445F 		.ascii	"CSD_RAM_SNS_STRUCT\000"
+ 1577      52414D5F 
+ 1577      534E535F 
+ 1577      53545255 
+ 1577      435400
+ 1578              	.LASF13:
+ 1579 00fa 646F7562 		.ascii	"double\000"
+ 1579      6C6500
+ 1580              	.LASF56:
+ 1581 0101 736E7254 		.ascii	"snrTestRawCount\000"
+ 1581      65737452 
+ 1581      6177436F 
+ 1581      756E7400 
+ 1582              	.LASF66:
+ 1583 0111 73686966 		.ascii	"shift\000"
+ 1583      7400
+ 1584              	.LASF65:
+ 1585 0117 64725368 		.ascii	"drShift\000"
+ 1585      69667400 
+ 1586              	.LASF11:
+ 1587 011f 75696E74 		.ascii	"uint32\000"
+ 1587      333200
+ 1588              	.LASF17:
+ 1589 0126 4353445F 		.ascii	"CSD_THRESHOLD_TYPE\000"
+ 1589      54485245 
+ 1589      53484F4C 
+ 1589      445F5459 
+ 1589      504500
+ 1590              	.LASF63:
+ 1591 0139 6D61736B 		.ascii	"mask\000"
+ 1591      00
+ 1592              	.LASF35:
+ 1593 013e 62736C6E 		.ascii	"bslnExt\000"
+ 1593      45787400 
+ 1594              	.LASF47:
+ 1595 0146 77646774 		.ascii	"wdgtStatus\000"
+ 1595      53746174 
+ 1595      757300
+ 1596              	.LASF78:
+ 1597 0151 77646774 		.ascii	"wdgtArray\000"
+ 1597      41727261 
+ 1597      7900
+ 1598              	.LASF34:
+ 1599 015b 62736C6E 		.ascii	"bsln\000"
+ 1599      00
+ 1600              	.LASF8:
+ 1601 0160 756E7369 		.ascii	"unsigned int\000"
+ 1601      676E6564 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 46
+
+
+ 1601      20696E74 
+ 1601      00
+ 1602              	.LASF53:
+ 1603 016d 736E7254 		.ascii	"snrTestWidgetId\000"
+ 1603      65737457 
+ 1603      69646765 
+ 1603      74496400 
+ 1604              	.LASF95:
+ 1605 017d 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 1605      73657273 
+ 1605      5C436872 
+ 1605      6973746F 
+ 1605      70686572 
+ 1606 01ac 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 1606      456E7669 
+ 1606      726F6E6D 
+ 1606      656E7453 
+ 1606      656E7369 
+ 1607 01dd 7964736E 		.ascii	"ydsn\000"
+ 1607      00
+ 1608              	.LASF18:
+ 1609 01e2 4353445F 		.ascii	"CSD_LOW_BSLN_RST_TYPE\000"
+ 1609      4C4F575F 
+ 1609      42534C4E 
+ 1609      5F525354 
+ 1609      5F545950 
+ 1610              	.LASF93:
+ 1611 01f8 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1611      4320342E 
+ 1611      392E3320 
+ 1611      32303135 
+ 1611      30333033 
+ 1612 022b 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 1612      20726576 
+ 1612      6973696F 
+ 1612      6E203232 
+ 1612      31323230 
+ 1613 025e 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 1613      30202D66 
+ 1613      66756E63 
+ 1613      74696F6E 
+ 1613      2D736563 
+ 1614              	.LASF81:
+ 1615 028a 746D7052 		.ascii	"tmpRawData\000"
+ 1615      61774461 
+ 1615      746100
+ 1616              	.LASF25:
+ 1617 0295 6C6F7742 		.ascii	"lowBslnRst\000"
+ 1617      736C6E52 
+ 1617      737400
+ 1618              	.LASF83:
+ 1619 02a0 70747257 		.ascii	"ptrWdgt\000"
+ 1619      64677400 
+ 1620              	.LASF3:
+ 1621 02a8 73686F72 		.ascii	"short unsigned int\000"
+ 1621      7420756E 
+ 1621      7369676E 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 47
+
+
+ 1621      65642069 
+ 1621      6E7400
+ 1622              	.LASF52:
+ 1623 02bb 736E734C 		.ascii	"snsList\000"
+ 1623      69737400 
+ 1624              	.LASF41:
+ 1625 02c3 636F6E66 		.ascii	"configId\000"
+ 1625      69674964 
+ 1625      00
+ 1626              	.LASF49:
+ 1627 02cc 63736430 		.ascii	"csd0Config\000"
+ 1627      436F6E66 
+ 1627      696700
+ 1628              	.LASF69:
+ 1629 02d7 70747232 		.ascii	"ptr2WdgtRam\000"
+ 1629      57646774 
+ 1629      52616D00 
+ 1630              	.LASF42:
+ 1631 02e3 64657669 		.ascii	"deviceId\000"
+ 1631      63654964 
+ 1631      00
+ 1632              	.LASF30:
+ 1633 02ec 4353445F 		.ascii	"CSD_RAM_WD_BASE_STRUCT\000"
+ 1633      52414D5F 
+ 1633      57445F42 
+ 1633      4153455F 
+ 1633      53545255 
+ 1634              	.LASF15:
+ 1635 0303 72656733 		.ascii	"reg32\000"
+ 1635      3200
+ 1636              	.LASF92:
+ 1637 0309 4353445F 		.ascii	"CSD_curRamSnsPtr\000"
+ 1637      63757252 
+ 1637      616D536E 
+ 1637      73507472 
+ 1637      00
+ 1638              	.LASF27:
+ 1639 031a 69646163 		.ascii	"idacMod\000"
+ 1639      4D6F6400 
+ 1640              	.LASF76:
+ 1641 0322 6E756D43 		.ascii	"numCols\000"
+ 1641      6F6C7300 
+ 1642              	.LASF16:
+ 1643 032a 73697A65 		.ascii	"sizetype\000"
+ 1643      74797065 
+ 1643      00
+ 1644              	.LASF73:
+ 1645 0333 73746174 		.ascii	"staticConfig\000"
+ 1645      6963436F 
+ 1645      6E666967 
+ 1645      00
+ 1646              	.LASF22:
+ 1647 0340 6E4E6F69 		.ascii	"nNoiseTh\000"
+ 1647      73655468 
+ 1647      00
+ 1648              	.LASF75:
+ 1649 0349 77646774 		.ascii	"wdgtType\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 48
+
+
+ 1649      54797065 
+ 1649      00
+ 1650              	.LASF44:
+ 1651 0352 7363616E 		.ascii	"scanCounter\000"
+ 1651      436F756E 
+ 1651      74657200 
+ 1652              	.LASF89:
+ 1653 035e 4353445F 		.ascii	"CSD_widgetIndex\000"
+ 1653      77696467 
+ 1653      6574496E 
+ 1653      64657800 
+ 1654              	.LASF43:
+ 1655 036e 74756E65 		.ascii	"tunerCmd\000"
+ 1655      72436D64 
+ 1655      00
+ 1656              	.LASF12:
+ 1657 0377 666C6F61 		.ascii	"float\000"
+ 1657      7400
+ 1658              	.LASF57:
+ 1659 037d 4353445F 		.ascii	"CSD_RAM_STRUCT\000"
+ 1659      52414D5F 
+ 1659      53545255 
+ 1659      435400
+ 1660              	.LASF67:
+ 1661 038c 4353445F 		.ascii	"CSD_FLASH_IO_STRUCT\000"
+ 1661      464C4153 
+ 1661      485F494F 
+ 1661      5F535452 
+ 1661      55435400 
+ 1662              	.LASF90:
+ 1663 03a0 4353445F 		.ascii	"CSD_sensorIndex\000"
+ 1663      73656E73 
+ 1663      6F72496E 
+ 1663      64657800 
+ 1664              	.LASF26:
+ 1665 03b0 62736C6E 		.ascii	"bslnCoeff\000"
+ 1665      436F6566 
+ 1665      6600
+ 1666              	.LASF91:
+ 1667 03ba 4353445F 		.ascii	"CSD_requestScanAllWidget\000"
+ 1667      72657175 
+ 1667      65737453 
+ 1667      63616E41 
+ 1667      6C6C5769 
+ 1668              	.LASF23:
+ 1669 03d3 68797374 		.ascii	"hysteresis\000"
+ 1669      65726573 
+ 1669      697300
+ 1670              	.LASF1:
+ 1671 03de 756E7369 		.ascii	"unsigned char\000"
+ 1671      676E6564 
+ 1671      20636861 
+ 1671      7200
+ 1672              	.LASF33:
+ 1673 03ec 4353445F 		.ascii	"CSD_RAM_WD_LIST_STRUCT\000"
+ 1673      52414D5F 
+ 1673      57445F4C 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 49
+
+
+ 1673      4953545F 
+ 1673      53545255 
+ 1674              	.LASF2:
+ 1675 0403 73686F72 		.ascii	"short int\000"
+ 1675      7420696E 
+ 1675      7400
+ 1676              	.LASF87:
+ 1677 040d 4353445F 		.ascii	"CSD_dsFlash\000"
+ 1677      6473466C 
+ 1677      61736800 
+ 1678              	.LASF71:
+ 1679 0419 70747232 		.ascii	"ptr2FltrHistory\000"
+ 1679      466C7472 
+ 1679      48697374 
+ 1679      6F727900 
+ 1680              	.LASF64:
+ 1681 0429 6873696F 		.ascii	"hsiomShift\000"
+ 1681      6D536869 
+ 1681      667400
+ 1682              	.LASF77:
+ 1683 0434 4353445F 		.ascii	"CSD_FLASH_WD_STRUCT\000"
+ 1683      464C4153 
+ 1683      485F5744 
+ 1683      5F535452 
+ 1683      55435400 
+ 1684              	.LASF19:
+ 1685 0448 7265736F 		.ascii	"resolution\000"
+ 1685      6C757469 
+ 1685      6F6E00
+ 1686              	.LASF51:
+ 1687 0453 77646774 		.ascii	"wdgtList\000"
+ 1687      4C697374 
+ 1687      00
+ 1688              	.LASF40:
+ 1689 045c 4353445F 		.ascii	"CSD_RAM_SNS_LIST_STRUCT\000"
+ 1689      52414D5F 
+ 1689      534E535F 
+ 1689      4C495354 
+ 1689      5F535452 
+ 1690              	.LASF5:
+ 1691 0474 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1691      20756E73 
+ 1691      69676E65 
+ 1691      6420696E 
+ 1691      7400
+ 1692              	.LASF14:
+ 1693 0486 63686172 		.ascii	"char\000"
+ 1693      00
+ 1694              	.LASF84:
+ 1695 048b 4353445F 		.ascii	"CSD_SsCSDPostScan\000"
+ 1695      53734353 
+ 1695      44506F73 
+ 1695      74536361 
+ 1695      6E00
+ 1696              	.LASF60:
+ 1697 049d 64725074 		.ascii	"drPtr\000"
+ 1697      7200
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 50
+
+
+ 1698              	.LASF28:
+ 1699 04a3 736E7343 		.ascii	"snsClk\000"
+ 1699      6C6B00
+ 1700              	.LASF24:
+ 1701 04aa 6F6E4465 		.ascii	"onDebounce\000"
+ 1701      626F756E 
+ 1701      636500
+ 1702              	.LASF31:
+ 1703 04b5 4353445F 		.ascii	"CSD_RAM_WD_BUTTON_STRUCT\000"
+ 1703      52414D5F 
+ 1703      57445F42 
+ 1703      5554544F 
+ 1703      4E5F5354 
+ 1704              	.LASF36:
+ 1705 04ce 69646163 		.ascii	"idacComp\000"
+ 1705      436F6D70 
+ 1705      00
+ 1706              	.LASF38:
+ 1707 04d7 6E656742 		.ascii	"negBslnRstCnt\000"
+ 1707      736C6E52 
+ 1707      7374436E 
+ 1707      7400
+ 1708              	.LASF74:
+ 1709 04e5 746F7461 		.ascii	"totalNumSns\000"
+ 1709      6C4E756D 
+ 1709      536E7300 
+ 1710              	.LASF72:
+ 1711 04f1 70747232 		.ascii	"ptr2DebounceArr\000"
+ 1711      4465626F 
+ 1711      756E6365 
+ 1711      41727200 
+ 1712              	.LASF45:
+ 1713 0501 73746174 		.ascii	"status\000"
+ 1713      757300
+ 1714              	.LASF79:
+ 1715 0508 4353445F 		.ascii	"CSD_FLASH_STRUCT\000"
+ 1715      464C4153 
+ 1715      485F5354 
+ 1715      52554354 
+ 1715      00
+ 1716              	.LASF46:
+ 1717 0519 77646774 		.ascii	"wdgtEnable\000"
+ 1717      456E6162 
+ 1717      6C6500
+ 1718              	.LASF80:
+ 1719 0524 63757253 		.ascii	"curSnsIOPtr\000"
+ 1719      6E73494F 
+ 1719      50747200 
+ 1720              	.LASF29:
+ 1721 0530 736E7343 		.ascii	"snsClkSource\000"
+ 1721      6C6B536F 
+ 1721      75726365 
+ 1721      00
+ 1722              	.LASF88:
+ 1723 053d 4353445F 		.ascii	"CSD_scanFreqIndex\000"
+ 1723      7363616E 
+ 1723      46726571 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccADi2zK.s 			page 51
+
+
+ 1723      496E6465 
+ 1723      7800
+ 1724              	.LASF20:
+ 1725 054f 66696E67 		.ascii	"fingerTh\000"
+ 1725      65725468 
+ 1725      00
+ 1726              	.LASF94:
+ 1727 0558 47656E65 		.ascii	"Generated_Source\\PSoC4\\CSD_INT.c\000"
+ 1727      72617465 
+ 1727      645F536F 
+ 1727      75726365 
+ 1727      5C50536F 
+ 1728              	.LASF59:
+ 1729 0579 70635074 		.ascii	"pcPtr\000"
+ 1729      7200
+ 1730              	.LASF55:
+ 1731 057f 736E7254 		.ascii	"snrTestScanCounter\000"
+ 1731      65737453 
+ 1731      63616E43 
+ 1731      6F756E74 
+ 1731      657200
+ 1732              	.LASF62:
+ 1733 0592 6873696F 		.ascii	"hsiomMask\000"
+ 1733      6D4D6173 
+ 1733      6B00
+ 1734              	.LASF82:
+ 1735 059c 746D704D 		.ascii	"tmpMaxCount\000"
+ 1735      6178436F 
+ 1735      756E7400 
+ 1736              	.LASF21:
+ 1737 05a8 6E6F6973 		.ascii	"noiseTh\000"
+ 1737      65546800 
+ 1738              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

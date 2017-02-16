@@ -1,0 +1,1369 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Filters.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	Lpf
+  18              		.bss
+  19              		.align	2
+  20              		.type	Lpf, %object
+  21              		.size	Lpf, 16
+  22              	Lpf:
+  23 0000 00000000 		.space	16
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  24              		.global	IIRFilterCoefficient
+  25              		.align	2
+  26              		.type	IIRFilterCoefficient, %object
+  27              		.size	IIRFilterCoefficient, 8
+  28              	IIRFilterCoefficient:
+  29 0010 00000000 		.space	8
+  29      00000000 
+  30              		.global	vlp
+  31              		.align	2
+  32              		.type	vlp, %object
+  33              		.size	vlp, 4
+  34              	vlp:
+  35 0018 00000000 		.space	4
+  36              		.section	.text.InitFilters,"ax",%progbits
+  37              		.align	2
+  38              		.global	InitFilters
+  39              		.code	16
+  40              		.thumb_func
+  41              		.type	InitFilters, %function
+  42              	InitFilters:
+  43              	.LFB35:
+  44              		.file 1 "Filters.c"
+   1:Filters.c     **** /*******************************************************************************
+   2:Filters.c     **** * File Name: Filters.c
+   3:Filters.c     **** *
+   4:Filters.c     **** * Version: 1.0
+   5:Filters.c     **** *
+   6:Filters.c     **** * Description:
+   7:Filters.c     **** * This is source code for IIR low pass and high pass filters.
+   8:Filters.c     **** *
+   9:Filters.c     **** * Code Tested With:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 2
+
+
+  10:Filters.c     **** * PSoC Creator 3.3 SP2 build 9598
+  11:Filters.c     **** *
+  12:Filters.c     **** ********************************************************************************
+  13:Filters.c     **** * Copyright (2015) , Cypress Semiconductor Corporation.
+  14:Filters.c     **** ********************************************************************************
+  15:Filters.c     **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  16:Filters.c     **** * protected by and subject to worldwide patent protection (United States and
+  17:Filters.c     **** * foreign), United States copyright laws and international treaty provisions.
+  18:Filters.c     **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  19:Filters.c     **** * license to copy, use, modify, create derivative works of, and compile the
+  20:Filters.c     **** * Cypress Source Code and derivative works for the sole purpose of creating
+  21:Filters.c     **** * custom software in support of licensee product to be used only in conjunction
+  22:Filters.c     **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  23:Filters.c     **** * Any reproduction, modification, translation, compilation, or representation of
+  24:Filters.c     **** * this software except as specified above is prohibited without the express
+  25:Filters.c     **** * written permission of Cypress.
+  26:Filters.c     **** *
+  27:Filters.c     **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  28:Filters.c     **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  29:Filters.c     **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  30:Filters.c     **** * Cypress reserves the right to make changes without further notice to the
+  31:Filters.c     **** * materials described herein. Cypress does not assume any liability arising out
+  32:Filters.c     **** * of the application or use of any product or circuit described herein. Cypress
+  33:Filters.c     **** * does not authorize its products for use as critical components in life-support
+  34:Filters.c     **** * systems where a malfunction or failure may reasonably be expected to result in
+  35:Filters.c     **** * significant injury to the user. The inclusion of Cypress' product in a life
+  36:Filters.c     **** * support systems application implies that the manufacturer assumes all risk of
+  37:Filters.c     **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  38:Filters.c     **** * limited by and subject to the applicable Cypress software license agreement.
+  39:Filters.c     **** *******************************************************************************/
+  40:Filters.c     **** 
+  41:Filters.c     **** #include <project.h>
+  42:Filters.c     **** #include <filters.h>
+  43:Filters.c     **** 
+  44:Filters.c     **** int32 Lpf[FILTER_CHANNELS] = {0};
+  45:Filters.c     **** int16 IIRFilterCoefficient[FILTER_CHANNELS] = {0};
+  46:Filters.c     **** 
+  47:Filters.c     **** int32 vlp = 0;
+  48:Filters.c     **** 
+  49:Filters.c     **** /****************************************************************************** 
+  50:Filters.c     **** * Function Name: InitFilters
+  51:Filters.c     **** *******************************************************************************
+  52:Filters.c     **** *
+  53:Filters.c     **** * Summary:
+  54:Filters.c     **** *  This function initializes the filters
+  55:Filters.c     **** *  
+  56:Filters.c     **** *
+  57:Filters.c     **** * Parameters:  
+  58:Filters.c     **** *  None
+  59:Filters.c     **** *
+  60:Filters.c     **** * Return: 
+  61:Filters.c     **** *  None
+  62:Filters.c     **** *
+  63:Filters.c     **** *******************************************************************************/
+  64:Filters.c     **** void InitFilters(void)
+  65:Filters.c     **** {
+  45              		.loc 1 65 0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 3
+
+
+  46              		.cfi_startproc
+  47 0000 80B5     		push	{r7, lr}
+  48              		.cfi_def_cfa_offset 8
+  49              		.cfi_offset 7, -8
+  50              		.cfi_offset 14, -4
+  51 0002 82B0     		sub	sp, sp, #8
+  52              		.cfi_def_cfa_offset 16
+  53 0004 00AF     		add	r7, sp, #0
+  54              		.cfi_def_cfa_register 7
+  66:Filters.c     **** 	uint8 Channel;
+  67:Filters.c     **** 	for (Channel=0; Channel<FILTER_CHANNELS; Channel++)
+  55              		.loc 1 67 0
+  56 0006 FB1D     		add	r3, r7, #7
+  57 0008 0022     		mov	r2, #0
+  58 000a 1A70     		strb	r2, [r3]
+  59 000c 0BE0     		b	.L2
+  60              	.L3:
+  68:Filters.c     **** 	{
+  69:Filters.c     **** 		Lpf[Channel]=(1 << (ADC_SAR_MAX_RESOLUTION - 1) << 8);
+  61              		.loc 1 69 0 discriminator 3
+  62 000e FB1D     		add	r3, r7, #7
+  63 0010 1A78     		ldrb	r2, [r3]
+  64 0012 084B     		ldr	r3, .L4
+  65 0014 9200     		lsl	r2, r2, #2
+  66 0016 8021     		mov	r1, #128
+  67 0018 0903     		lsl	r1, r1, #12
+  68 001a D150     		str	r1, [r2, r3]
+  67:Filters.c     **** 	{
+  69              		.loc 1 67 0 discriminator 3
+  70 001c FB1D     		add	r3, r7, #7
+  71 001e 1A78     		ldrb	r2, [r3]
+  72 0020 FB1D     		add	r3, r7, #7
+  73 0022 0132     		add	r2, r2, #1
+  74 0024 1A70     		strb	r2, [r3]
+  75              	.L2:
+  67:Filters.c     **** 	{
+  76              		.loc 1 67 0 is_stmt 0 discriminator 1
+  77 0026 FB1D     		add	r3, r7, #7
+  78 0028 1B78     		ldrb	r3, [r3]
+  79 002a 032B     		cmp	r3, #3
+  80 002c EFD9     		bls	.L3
+  70:Filters.c     **** 	}
+  71:Filters.c     **** }
+  81              		.loc 1 71 0 is_stmt 1
+  82 002e BD46     		mov	sp, r7
+  83 0030 02B0     		add	sp, sp, #8
+  84              		@ sp needed
+  85 0032 80BD     		pop	{r7, pc}
+  86              	.L5:
+  87              		.align	2
+  88              	.L4:
+  89 0034 00000000 		.word	Lpf
+  90              		.cfi_endproc
+  91              	.LFE35:
+  92              		.size	InitFilters, .-InitFilters
+  93              		.global	__aeabi_idiv
+  94              		.section	.text.LowPassFilter,"ax",%progbits
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 4
+
+
+  95              		.align	2
+  96              		.global	LowPassFilter
+  97              		.code	16
+  98              		.thumb_func
+  99              		.type	LowPassFilter, %function
+ 100              	LowPassFilter:
+ 101              	.LFB36:
+  72:Filters.c     **** 
+  73:Filters.c     **** /*******************************************************************************
+  74:Filters.c     **** * Function Name: int32 LowPassFilter(int32 input, uint8 Channel)
+  75:Filters.c     **** ********************************************************************************
+  76:Filters.c     **** *
+  77:Filters.c     **** * Summary:
+  78:Filters.c     **** *  This function implements an IIR low pass filter
+  79:Filters.c     **** *
+  80:Filters.c     **** * Parameters:
+  81:Filters.c     **** *  int32 input - Input value to be filtered
+  82:Filters.c     **** *  uint8 Channel - IIR filter channel number
+  83:Filters.c     **** *
+  84:Filters.c     **** * Return:
+  85:Filters.c     **** *  int32 - Filtered output
+  86:Filters.c     **** *
+  87:Filters.c     **** * Side Effects:
+  88:Filters.c     **** *   None
+  89:Filters.c     **** *******************************************************************************/
+  90:Filters.c     **** int32 LowPassFilter(int32 input, uint8 Channel)
+  91:Filters.c     **** {
+ 102              		.loc 1 91 0
+ 103              		.cfi_startproc
+ 104 0000 90B5     		push	{r4, r7, lr}
+ 105              		.cfi_def_cfa_offset 12
+ 106              		.cfi_offset 4, -12
+ 107              		.cfi_offset 7, -8
+ 108              		.cfi_offset 14, -4
+ 109 0002 83B0     		sub	sp, sp, #12
+ 110              		.cfi_def_cfa_offset 24
+ 111 0004 00AF     		add	r7, sp, #0
+ 112              		.cfi_def_cfa_register 7
+ 113 0006 7860     		str	r0, [r7, #4]
+ 114 0008 0A1C     		mov	r2, r1
+ 115 000a FB1C     		add	r3, r7, #3
+ 116 000c 1A70     		strb	r2, [r3]
+  92:Filters.c     ****     input <<= 8;
+ 117              		.loc 1 92 0
+ 118 000e 7B68     		ldr	r3, [r7, #4]
+ 119 0010 1B02     		lsl	r3, r3, #8
+ 120 0012 7B60     		str	r3, [r7, #4]
+  93:Filters.c     ****     Lpf[Channel] = (input + (IIRFilterCoefficient[Channel] - 1)*Lpf[Channel])/IIRFilterCoefficient[
+ 121              		.loc 1 93 0
+ 122 0014 FB1C     		add	r3, r7, #3
+ 123 0016 1C78     		ldrb	r4, [r3]
+ 124 0018 FB1C     		add	r3, r7, #3
+ 125 001a 1A78     		ldrb	r2, [r3]
+ 126 001c 124B     		ldr	r3, .L8
+ 127 001e 5200     		lsl	r2, r2, #1
+ 128 0020 D35A     		ldrh	r3, [r2, r3]
+ 129 0022 1BB2     		sxth	r3, r3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 5
+
+
+ 130 0024 013B     		sub	r3, r3, #1
+ 131 0026 FA1C     		add	r2, r7, #3
+ 132 0028 1178     		ldrb	r1, [r2]
+ 133 002a 104A     		ldr	r2, .L8+4
+ 134 002c 8900     		lsl	r1, r1, #2
+ 135 002e 8A58     		ldr	r2, [r1, r2]
+ 136 0030 5A43     		mul	r2, r3
+ 137 0032 7B68     		ldr	r3, [r7, #4]
+ 138 0034 D118     		add	r1, r2, r3
+ 139 0036 FB1C     		add	r3, r7, #3
+ 140 0038 1A78     		ldrb	r2, [r3]
+ 141 003a 0B4B     		ldr	r3, .L8
+ 142 003c 5200     		lsl	r2, r2, #1
+ 143 003e D35A     		ldrh	r3, [r2, r3]
+ 144 0040 1BB2     		sxth	r3, r3
+ 145 0042 081C     		mov	r0, r1
+ 146 0044 191C     		mov	r1, r3
+ 147 0046 FFF7FEFF 		bl	__aeabi_idiv
+ 148 004a 031C     		mov	r3, r0
+ 149 004c 191C     		mov	r1, r3
+ 150 004e 074B     		ldr	r3, .L8+4
+ 151 0050 A200     		lsl	r2, r4, #2
+ 152 0052 D150     		str	r1, [r2, r3]
+  94:Filters.c     ****     return(Lpf[Channel] >> 8);
+ 153              		.loc 1 94 0
+ 154 0054 FB1C     		add	r3, r7, #3
+ 155 0056 1A78     		ldrb	r2, [r3]
+ 156 0058 044B     		ldr	r3, .L8+4
+ 157 005a 9200     		lsl	r2, r2, #2
+ 158 005c D358     		ldr	r3, [r2, r3]
+ 159 005e 1B12     		asr	r3, r3, #8
+  95:Filters.c     **** }
+ 160              		.loc 1 95 0
+ 161 0060 181C     		mov	r0, r3
+ 162 0062 BD46     		mov	sp, r7
+ 163 0064 03B0     		add	sp, sp, #12
+ 164              		@ sp needed
+ 165 0066 90BD     		pop	{r4, r7, pc}
+ 166              	.L9:
+ 167              		.align	2
+ 168              	.L8:
+ 169 0068 00000000 		.word	IIRFilterCoefficient
+ 170 006c 00000000 		.word	Lpf
+ 171              		.cfi_endproc
+ 172              	.LFE36:
+ 173              		.size	LowPassFilter, .-LowPassFilter
+ 174              		.section	.text.SetFilterCoefficient,"ax",%progbits
+ 175              		.align	2
+ 176              		.global	SetFilterCoefficient
+ 177              		.code	16
+ 178              		.thumb_func
+ 179              		.type	SetFilterCoefficient, %function
+ 180              	SetFilterCoefficient:
+ 181              	.LFB37:
+  96:Filters.c     **** 
+  97:Filters.c     **** /*******************************************************************************
+  98:Filters.c     **** * Function Name: void SetFilterCoefficient(uint16 FilterCoefficient, uint8 Channel)
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 6
+
+
+  99:Filters.c     **** ********************************************************************************
+ 100:Filters.c     **** *
+ 101:Filters.c     **** * Summary:
+ 102:Filters.c     **** *  This function sets the filter coefficient for a filter channel
+ 103:Filters.c     **** *
+ 104:Filters.c     **** * Parameters:
+ 105:Filters.c     **** *  uint16 FilterCoefficient - Filter coefficient for the particular channel
+ 106:Filters.c     **** *  uint8 Channel - IIR filter channel number
+ 107:Filters.c     **** *
+ 108:Filters.c     **** * Return:
+ 109:Filters.c     **** *  None
+ 110:Filters.c     **** *
+ 111:Filters.c     **** * Side Effects:
+ 112:Filters.c     **** *   None
+ 113:Filters.c     **** *******************************************************************************/
+ 114:Filters.c     **** void SetFilterCoefficient(uint16 FilterCoefficient, uint8 Channel)
+ 115:Filters.c     **** {
+ 182              		.loc 1 115 0
+ 183              		.cfi_startproc
+ 184 0000 80B5     		push	{r7, lr}
+ 185              		.cfi_def_cfa_offset 8
+ 186              		.cfi_offset 7, -8
+ 187              		.cfi_offset 14, -4
+ 188 0002 82B0     		sub	sp, sp, #8
+ 189              		.cfi_def_cfa_offset 16
+ 190 0004 00AF     		add	r7, sp, #0
+ 191              		.cfi_def_cfa_register 7
+ 192 0006 021C     		mov	r2, r0
+ 193 0008 BB1D     		add	r3, r7, #6
+ 194 000a 1A80     		strh	r2, [r3]
+ 195 000c 7B1D     		add	r3, r7, #5
+ 196 000e 0A1C     		add	r2, r1, #0
+ 197 0010 1A70     		strb	r2, [r3]
+ 116:Filters.c     **** 	IIRFilterCoefficient[Channel] = FilterCoefficient;
+ 198              		.loc 1 116 0
+ 199 0012 7B1D     		add	r3, r7, #5
+ 200 0014 1A78     		ldrb	r2, [r3]
+ 201 0016 BB1D     		add	r3, r7, #6
+ 202 0018 1988     		ldrh	r1, [r3]
+ 203 001a 034B     		ldr	r3, .L11
+ 204 001c 5200     		lsl	r2, r2, #1
+ 205 001e D152     		strh	r1, [r2, r3]
+ 117:Filters.c     **** }
+ 206              		.loc 1 117 0
+ 207 0020 BD46     		mov	sp, r7
+ 208 0022 02B0     		add	sp, sp, #8
+ 209              		@ sp needed
+ 210 0024 80BD     		pop	{r7, pc}
+ 211              	.L12:
+ 212 0026 C046     		.align	2
+ 213              	.L11:
+ 214 0028 00000000 		.word	IIRFilterCoefficient
+ 215              		.cfi_endproc
+ 216              	.LFE37:
+ 217              		.size	SetFilterCoefficient, .-SetFilterCoefficient
+ 218              		.section	.text.InitLowPassFilter,"ax",%progbits
+ 219              		.align	2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 7
+
+
+ 220              		.global	InitLowPassFilter
+ 221              		.code	16
+ 222              		.thumb_func
+ 223              		.type	InitLowPassFilter, %function
+ 224              	InitLowPassFilter:
+ 225              	.LFB38:
+ 118:Filters.c     **** 
+ 119:Filters.c     **** /*******************************************************************************
+ 120:Filters.c     **** * Function Name: void InitLowPassFilter(int32 InitValue, uint8 Channel)
+ 121:Filters.c     **** ********************************************************************************
+ 122:Filters.c     **** *
+ 123:Filters.c     **** * Summary:
+ 124:Filters.c     **** *  This function initializes a particular low pass filter channel
+ 125:Filters.c     **** *
+ 126:Filters.c     **** * Parameters:
+ 127:Filters.c     **** *  int32 InitValue - Value to be initialized
+ 128:Filters.c     **** *  uint8 Channel - IIR filter channel number
+ 129:Filters.c     **** *
+ 130:Filters.c     **** * Return:
+ 131:Filters.c     **** *  None
+ 132:Filters.c     **** *
+ 133:Filters.c     **** * Side Effects:
+ 134:Filters.c     **** *   None
+ 135:Filters.c     **** *******************************************************************************/
+ 136:Filters.c     **** void InitLowPassFilter(int32 InitValue, uint8 Channel)
+ 137:Filters.c     **** {
+ 226              		.loc 1 137 0
+ 227              		.cfi_startproc
+ 228 0000 80B5     		push	{r7, lr}
+ 229              		.cfi_def_cfa_offset 8
+ 230              		.cfi_offset 7, -8
+ 231              		.cfi_offset 14, -4
+ 232 0002 82B0     		sub	sp, sp, #8
+ 233              		.cfi_def_cfa_offset 16
+ 234 0004 00AF     		add	r7, sp, #0
+ 235              		.cfi_def_cfa_register 7
+ 236 0006 7860     		str	r0, [r7, #4]
+ 237 0008 0A1C     		mov	r2, r1
+ 238 000a FB1C     		add	r3, r7, #3
+ 239 000c 1A70     		strb	r2, [r3]
+ 138:Filters.c     **** 	Lpf[Channel] = InitValue << 8;
+ 240              		.loc 1 138 0
+ 241 000e FB1C     		add	r3, r7, #3
+ 242 0010 1A78     		ldrb	r2, [r3]
+ 243 0012 7B68     		ldr	r3, [r7, #4]
+ 244 0014 1902     		lsl	r1, r3, #8
+ 245 0016 034B     		ldr	r3, .L14
+ 246 0018 9200     		lsl	r2, r2, #2
+ 247 001a D150     		str	r1, [r2, r3]
+ 139:Filters.c     **** }
+ 248              		.loc 1 139 0
+ 249 001c BD46     		mov	sp, r7
+ 250 001e 02B0     		add	sp, sp, #8
+ 251              		@ sp needed
+ 252 0020 80BD     		pop	{r7, pc}
+ 253              	.L15:
+ 254 0022 C046     		.align	2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 8
+
+
+ 255              	.L14:
+ 256 0024 00000000 		.word	Lpf
+ 257              		.cfi_endproc
+ 258              	.LFE38:
+ 259              		.size	InitLowPassFilter, .-InitLowPassFilter
+ 260              		.section	.text.InitHighPassFilter,"ax",%progbits
+ 261              		.align	2
+ 262              		.global	InitHighPassFilter
+ 263              		.code	16
+ 264              		.thumb_func
+ 265              		.type	InitHighPassFilter, %function
+ 266              	InitHighPassFilter:
+ 267              	.LFB39:
+ 140:Filters.c     **** 
+ 141:Filters.c     **** /*******************************************************************************
+ 142:Filters.c     **** * Function Name: void InitHighPassFilter(int16 input)
+ 143:Filters.c     **** ********************************************************************************
+ 144:Filters.c     **** *
+ 145:Filters.c     **** * Summary:
+ 146:Filters.c     **** *  This function initializes the high pass filter with a particular value
+ 147:Filters.c     **** *
+ 148:Filters.c     **** * Parameters:
+ 149:Filters.c     **** *  int16 input - initialization value
+ 150:Filters.c     **** *
+ 151:Filters.c     **** * Return:
+ 152:Filters.c     **** *  None
+ 153:Filters.c     **** *
+ 154:Filters.c     **** * Side Effects:
+ 155:Filters.c     **** *   None
+ 156:Filters.c     **** *******************************************************************************/
+ 157:Filters.c     **** void InitHighPassFilter(int16 input)
+ 158:Filters.c     **** {
+ 268              		.loc 1 158 0
+ 269              		.cfi_startproc
+ 270 0000 80B5     		push	{r7, lr}
+ 271              		.cfi_def_cfa_offset 8
+ 272              		.cfi_offset 7, -8
+ 273              		.cfi_offset 14, -4
+ 274 0002 82B0     		sub	sp, sp, #8
+ 275              		.cfi_def_cfa_offset 16
+ 276 0004 00AF     		add	r7, sp, #0
+ 277              		.cfi_def_cfa_register 7
+ 278 0006 021C     		mov	r2, r0
+ 279 0008 BB1D     		add	r3, r7, #6
+ 280 000a 1A80     		strh	r2, [r3]
+ 159:Filters.c     **** 	vlp = (int32)input;	
+ 281              		.loc 1 159 0
+ 282 000c BB1D     		add	r3, r7, #6
+ 283 000e 0022     		mov	r2, #0
+ 284 0010 9A5E     		ldrsh	r2, [r3, r2]
+ 285 0012 024B     		ldr	r3, .L17
+ 286 0014 1A60     		str	r2, [r3]
+ 160:Filters.c     **** }
+ 287              		.loc 1 160 0
+ 288 0016 BD46     		mov	sp, r7
+ 289 0018 02B0     		add	sp, sp, #8
+ 290              		@ sp needed
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 9
+
+
+ 291 001a 80BD     		pop	{r7, pc}
+ 292              	.L18:
+ 293              		.align	2
+ 294              	.L17:
+ 295 001c 00000000 		.word	vlp
+ 296              		.cfi_endproc
+ 297              	.LFE39:
+ 298              		.size	InitHighPassFilter, .-InitHighPassFilter
+ 299              		.section	.text.HighPassFilter,"ax",%progbits
+ 300              		.align	2
+ 301              		.global	HighPassFilter
+ 302              		.code	16
+ 303              		.thumb_func
+ 304              		.type	HighPassFilter, %function
+ 305              	HighPassFilter:
+ 306              	.LFB40:
+ 161:Filters.c     **** 
+ 162:Filters.c     **** 
+ 163:Filters.c     **** /*******************************************************************************
+ 164:Filters.c     **** * Function Name: int16 HighPassFilter(int16 input)
+ 165:Filters.c     **** ********************************************************************************
+ 166:Filters.c     **** *
+ 167:Filters.c     **** * Summary:
+ 168:Filters.c     **** *  This function implements a high pass filter
+ 169:Filters.c     **** *
+ 170:Filters.c     **** * Parameters:
+ 171:Filters.c     **** *  int16 input - 16 bit signed input
+ 172:Filters.c     **** *
+ 173:Filters.c     **** * Return:
+ 174:Filters.c     **** *  int16 - High pass filtered output
+ 175:Filters.c     **** *
+ 176:Filters.c     **** * Side Effects:
+ 177:Filters.c     **** *   None
+ 178:Filters.c     **** *******************************************************************************/
+ 179:Filters.c     **** int16 HighPassFilter(int16 input)
+ 180:Filters.c     **** {
+ 307              		.loc 1 180 0
+ 308              		.cfi_startproc
+ 309 0000 80B5     		push	{r7, lr}
+ 310              		.cfi_def_cfa_offset 8
+ 311              		.cfi_offset 7, -8
+ 312              		.cfi_offset 14, -4
+ 313 0002 84B0     		sub	sp, sp, #16
+ 314              		.cfi_def_cfa_offset 24
+ 315 0004 00AF     		add	r7, sp, #0
+ 316              		.cfi_def_cfa_register 7
+ 317 0006 021C     		mov	r2, r0
+ 318 0008 BB1D     		add	r3, r7, #6
+ 319 000a 1A80     		strh	r2, [r3]
+ 181:Filters.c     **** 	int16 vhp;
+ 182:Filters.c     ****     uint8 scale = 6;
+ 320              		.loc 1 182 0
+ 321 000c 0F23     		mov	r3, #15
+ 322 000e FB18     		add	r3, r7, r3
+ 323 0010 0622     		mov	r2, #6
+ 324 0012 1A70     		strb	r2, [r3]
+ 183:Filters.c     **** 	
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 10
+
+
+ 184:Filters.c     **** 	vhp = input-vlp;
+ 325              		.loc 1 184 0
+ 326 0014 BB1D     		add	r3, r7, #6
+ 327 0016 1A88     		ldrh	r2, [r3]
+ 328 0018 134B     		ldr	r3, .L21
+ 329 001a 1B68     		ldr	r3, [r3]
+ 330 001c 9BB2     		uxth	r3, r3
+ 331 001e D31A     		sub	r3, r2, r3
+ 332 0020 9AB2     		uxth	r2, r3
+ 333 0022 0C23     		mov	r3, #12
+ 334 0024 FB18     		add	r3, r7, r3
+ 335 0026 1A80     		strh	r2, [r3]
+ 185:Filters.c     **** 	vlp += vhp >> scale;
+ 336              		.loc 1 185 0
+ 337 0028 0C23     		mov	r3, #12
+ 338 002a FB18     		add	r3, r7, r3
+ 339 002c 0022     		mov	r2, #0
+ 340 002e 9A5E     		ldrsh	r2, [r3, r2]
+ 341 0030 0F23     		mov	r3, #15
+ 342 0032 FB18     		add	r3, r7, r3
+ 343 0034 1B78     		ldrb	r3, [r3]
+ 344 0036 1A41     		asr	r2, r2, r3
+ 345 0038 0B4B     		ldr	r3, .L21
+ 346 003a 1B68     		ldr	r3, [r3]
+ 347 003c D218     		add	r2, r2, r3
+ 348 003e 0A4B     		ldr	r3, .L21
+ 349 0040 1A60     		str	r2, [r3]
+ 186:Filters.c     **** 	return vhp - (1 << (scale - 1));
+ 350              		.loc 1 186 0
+ 351 0042 0C23     		mov	r3, #12
+ 352 0044 FB18     		add	r3, r7, r3
+ 353 0046 1A88     		ldrh	r2, [r3]
+ 354 0048 0F23     		mov	r3, #15
+ 355 004a FB18     		add	r3, r7, r3
+ 356 004c 1B78     		ldrb	r3, [r3]
+ 357 004e 013B     		sub	r3, r3, #1
+ 358 0050 0121     		mov	r1, #1
+ 359 0052 9940     		lsl	r1, r1, r3
+ 360 0054 0B1C     		mov	r3, r1
+ 361 0056 9BB2     		uxth	r3, r3
+ 362 0058 D31A     		sub	r3, r2, r3
+ 363 005a 9BB2     		uxth	r3, r3
+ 364 005c 9BB2     		uxth	r3, r3
+ 365 005e 1BB2     		sxth	r3, r3
+ 187:Filters.c     **** }
+ 366              		.loc 1 187 0
+ 367 0060 181C     		mov	r0, r3
+ 368 0062 BD46     		mov	sp, r7
+ 369 0064 04B0     		add	sp, sp, #16
+ 370              		@ sp needed
+ 371 0066 80BD     		pop	{r7, pc}
+ 372              	.L22:
+ 373              		.align	2
+ 374              	.L21:
+ 375 0068 00000000 		.word	vlp
+ 376              		.cfi_endproc
+ 377              	.LFE40:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 11
+
+
+ 378              		.size	HighPassFilter, .-HighPassFilter
+ 379              		.text
+ 380              	.Letext0:
+ 381              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 382              		.section	.debug_info,"",%progbits
+ 383              	.Ldebug_info0:
+ 384 0000 39020000 		.4byte	0x239
+ 385 0004 0400     		.2byte	0x4
+ 386 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 387 000a 04       		.byte	0x4
+ 388 000b 01       		.uleb128 0x1
+ 389 000c 5A010000 		.4byte	.LASF30
+ 390 0010 01       		.byte	0x1
+ 391 0011 06000000 		.4byte	.LASF31
+ 392 0015 87000000 		.4byte	.LASF32
+ 393 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 394 001d 00000000 		.4byte	0
+ 395 0021 00000000 		.4byte	.Ldebug_line0
+ 396 0025 02       		.uleb128 0x2
+ 397 0026 01       		.byte	0x1
+ 398 0027 06       		.byte	0x6
+ 399 0028 20020000 		.4byte	.LASF0
+ 400 002c 02       		.uleb128 0x2
+ 401 002d 01       		.byte	0x1
+ 402 002e 08       		.byte	0x8
+ 403 002f 10010000 		.4byte	.LASF1
+ 404 0033 02       		.uleb128 0x2
+ 405 0034 02       		.byte	0x2
+ 406 0035 05       		.byte	0x5
+ 407 0036 0D020000 		.4byte	.LASF2
+ 408 003a 02       		.uleb128 0x2
+ 409 003b 02       		.byte	0x2
+ 410 003c 07       		.byte	0x7
+ 411 003d 2C020000 		.4byte	.LASF3
+ 412 0041 02       		.uleb128 0x2
+ 413 0042 04       		.byte	0x4
+ 414 0043 05       		.byte	0x5
+ 415 0044 17020000 		.4byte	.LASF4
+ 416 0048 02       		.uleb128 0x2
+ 417 0049 04       		.byte	0x4
+ 418 004a 07       		.byte	0x7
+ 419 004b F8000000 		.4byte	.LASF5
+ 420 004f 02       		.uleb128 0x2
+ 421 0050 08       		.byte	0x8
+ 422 0051 05       		.byte	0x5
+ 423 0052 FF010000 		.4byte	.LASF6
+ 424 0056 02       		.uleb128 0x2
+ 425 0057 08       		.byte	0x8
+ 426 0058 07       		.byte	0x7
+ 427 0059 3F020000 		.4byte	.LASF7
+ 428 005d 03       		.uleb128 0x3
+ 429 005e 04       		.byte	0x4
+ 430 005f 05       		.byte	0x5
+ 431 0060 696E7400 		.ascii	"int\000"
+ 432 0064 02       		.uleb128 0x2
+ 433 0065 04       		.byte	0x4
+ 434 0066 07       		.byte	0x7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 12
+
+
+ 435 0067 48010000 		.4byte	.LASF8
+ 436 006b 04       		.uleb128 0x4
+ 437 006c 0A010000 		.4byte	.LASF9
+ 438 0070 02       		.byte	0x2
+ 439 0071 9801     		.2byte	0x198
+ 440 0073 2C000000 		.4byte	0x2c
+ 441 0077 04       		.uleb128 0x4
+ 442 0078 25010000 		.4byte	.LASF10
+ 443 007c 02       		.byte	0x2
+ 444 007d 9901     		.2byte	0x199
+ 445 007f 3A000000 		.4byte	0x3a
+ 446 0083 04       		.uleb128 0x4
+ 447 0084 41010000 		.4byte	.LASF11
+ 448 0088 02       		.byte	0x2
+ 449 0089 9A01     		.2byte	0x19a
+ 450 008b 48000000 		.4byte	0x48
+ 451 008f 04       		.uleb128 0x4
+ 452 0090 F2000000 		.4byte	.LASF12
+ 453 0094 02       		.byte	0x2
+ 454 0095 9C01     		.2byte	0x19c
+ 455 0097 33000000 		.4byte	0x33
+ 456 009b 04       		.uleb128 0x4
+ 457 009c 00000000 		.4byte	.LASF13
+ 458 00a0 02       		.byte	0x2
+ 459 00a1 9D01     		.2byte	0x19d
+ 460 00a3 41000000 		.4byte	0x41
+ 461 00a7 02       		.uleb128 0x2
+ 462 00a8 04       		.byte	0x4
+ 463 00a9 04       		.byte	0x4
+ 464 00aa 23000000 		.4byte	.LASF14
+ 465 00ae 02       		.uleb128 0x2
+ 466 00af 08       		.byte	0x8
+ 467 00b0 04       		.byte	0x4
+ 468 00b1 1E010000 		.4byte	.LASF15
+ 469 00b5 02       		.uleb128 0x2
+ 470 00b6 01       		.byte	0x1
+ 471 00b7 08       		.byte	0x8
+ 472 00b8 55010000 		.4byte	.LASF16
+ 473 00bc 02       		.uleb128 0x2
+ 474 00bd 04       		.byte	0x4
+ 475 00be 07       		.byte	0x7
+ 476 00bf F6010000 		.4byte	.LASF17
+ 477 00c3 05       		.uleb128 0x5
+ 478 00c4 3E000000 		.4byte	.LASF20
+ 479 00c8 01       		.byte	0x1
+ 480 00c9 40       		.byte	0x40
+ 481 00ca 00000000 		.4byte	.LFB35
+ 482 00ce 38000000 		.4byte	.LFE35-.LFB35
+ 483 00d2 01       		.uleb128 0x1
+ 484 00d3 9C       		.byte	0x9c
+ 485 00d4 E7000000 		.4byte	0xe7
+ 486 00d8 06       		.uleb128 0x6
+ 487 00d9 62000000 		.4byte	.LASF19
+ 488 00dd 01       		.byte	0x1
+ 489 00de 42       		.byte	0x42
+ 490 00df 6B000000 		.4byte	0x6b
+ 491 00e3 02       		.uleb128 0x2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 13
+
+
+ 492 00e4 91       		.byte	0x91
+ 493 00e5 77       		.sleb128 -9
+ 494 00e6 00       		.byte	0
+ 495 00e7 07       		.uleb128 0x7
+ 496 00e8 79000000 		.4byte	.LASF26
+ 497 00ec 01       		.byte	0x1
+ 498 00ed 5A       		.byte	0x5a
+ 499 00ee 9B000000 		.4byte	0x9b
+ 500 00f2 00000000 		.4byte	.LFB36
+ 501 00f6 70000000 		.4byte	.LFE36-.LFB36
+ 502 00fa 01       		.uleb128 0x1
+ 503 00fb 9C       		.byte	0x9c
+ 504 00fc 1D010000 		.4byte	0x11d
+ 505 0100 08       		.uleb128 0x8
+ 506 0101 EC000000 		.4byte	.LASF18
+ 507 0105 01       		.byte	0x1
+ 508 0106 5A       		.byte	0x5a
+ 509 0107 9B000000 		.4byte	0x9b
+ 510 010b 02       		.uleb128 0x2
+ 511 010c 91       		.byte	0x91
+ 512 010d 6C       		.sleb128 -20
+ 513 010e 08       		.uleb128 0x8
+ 514 010f 62000000 		.4byte	.LASF19
+ 515 0113 01       		.byte	0x1
+ 516 0114 5A       		.byte	0x5a
+ 517 0115 6B000000 		.4byte	0x6b
+ 518 0119 02       		.uleb128 0x2
+ 519 011a 91       		.byte	0x91
+ 520 011b 6B       		.sleb128 -21
+ 521 011c 00       		.byte	0
+ 522 011d 05       		.uleb128 0x5
+ 523 011e 29000000 		.4byte	.LASF21
+ 524 0122 01       		.byte	0x1
+ 525 0123 72       		.byte	0x72
+ 526 0124 00000000 		.4byte	.LFB37
+ 527 0128 2C000000 		.4byte	.LFE37-.LFB37
+ 528 012c 01       		.uleb128 0x1
+ 529 012d 9C       		.byte	0x9c
+ 530 012e 4F010000 		.4byte	0x14f
+ 531 0132 08       		.uleb128 0x8
+ 532 0133 4A000000 		.4byte	.LASF22
+ 533 0137 01       		.byte	0x1
+ 534 0138 72       		.byte	0x72
+ 535 0139 77000000 		.4byte	0x77
+ 536 013d 02       		.uleb128 0x2
+ 537 013e 91       		.byte	0x91
+ 538 013f 76       		.sleb128 -10
+ 539 0140 08       		.uleb128 0x8
+ 540 0141 62000000 		.4byte	.LASF19
+ 541 0145 01       		.byte	0x1
+ 542 0146 72       		.byte	0x72
+ 543 0147 6B000000 		.4byte	0x6b
+ 544 014b 02       		.uleb128 0x2
+ 545 014c 91       		.byte	0x91
+ 546 014d 75       		.sleb128 -11
+ 547 014e 00       		.byte	0
+ 548 014f 05       		.uleb128 0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 14
+
+
+ 549 0150 56020000 		.4byte	.LASF23
+ 550 0154 01       		.byte	0x1
+ 551 0155 88       		.byte	0x88
+ 552 0156 00000000 		.4byte	.LFB38
+ 553 015a 28000000 		.4byte	.LFE38-.LFB38
+ 554 015e 01       		.uleb128 0x1
+ 555 015f 9C       		.byte	0x9c
+ 556 0160 81010000 		.4byte	0x181
+ 557 0164 08       		.uleb128 0x8
+ 558 0165 EC010000 		.4byte	.LASF24
+ 559 0169 01       		.byte	0x1
+ 560 016a 88       		.byte	0x88
+ 561 016b 9B000000 		.4byte	0x9b
+ 562 016f 02       		.uleb128 0x2
+ 563 0170 91       		.byte	0x91
+ 564 0171 74       		.sleb128 -12
+ 565 0172 08       		.uleb128 0x8
+ 566 0173 62000000 		.4byte	.LASF19
+ 567 0177 01       		.byte	0x1
+ 568 0178 88       		.byte	0x88
+ 569 0179 6B000000 		.4byte	0x6b
+ 570 017d 02       		.uleb128 0x2
+ 571 017e 91       		.byte	0x91
+ 572 017f 73       		.sleb128 -13
+ 573 0180 00       		.byte	0
+ 574 0181 05       		.uleb128 0x5
+ 575 0182 10000000 		.4byte	.LASF25
+ 576 0186 01       		.byte	0x1
+ 577 0187 9D       		.byte	0x9d
+ 578 0188 00000000 		.4byte	.LFB39
+ 579 018c 20000000 		.4byte	.LFE39-.LFB39
+ 580 0190 01       		.uleb128 0x1
+ 581 0191 9C       		.byte	0x9c
+ 582 0192 A5010000 		.4byte	0x1a5
+ 583 0196 08       		.uleb128 0x8
+ 584 0197 EC000000 		.4byte	.LASF18
+ 585 019b 01       		.byte	0x1
+ 586 019c 9D       		.byte	0x9d
+ 587 019d 8F000000 		.4byte	0x8f
+ 588 01a1 02       		.uleb128 0x2
+ 589 01a2 91       		.byte	0x91
+ 590 01a3 76       		.sleb128 -10
+ 591 01a4 00       		.byte	0
+ 592 01a5 09       		.uleb128 0x9
+ 593 01a6 6A000000 		.4byte	.LASF27
+ 594 01aa 01       		.byte	0x1
+ 595 01ab B3       		.byte	0xb3
+ 596 01ac 8F000000 		.4byte	0x8f
+ 597 01b0 00000000 		.4byte	.LFB40
+ 598 01b4 6C000000 		.4byte	.LFE40-.LFB40
+ 599 01b8 01       		.uleb128 0x1
+ 600 01b9 9C       		.byte	0x9c
+ 601 01ba E9010000 		.4byte	0x1e9
+ 602 01be 08       		.uleb128 0x8
+ 603 01bf EC000000 		.4byte	.LASF18
+ 604 01c3 01       		.byte	0x1
+ 605 01c4 B3       		.byte	0xb3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 15
+
+
+ 606 01c5 8F000000 		.4byte	0x8f
+ 607 01c9 02       		.uleb128 0x2
+ 608 01ca 91       		.byte	0x91
+ 609 01cb 6E       		.sleb128 -18
+ 610 01cc 0A       		.uleb128 0xa
+ 611 01cd 76687000 		.ascii	"vhp\000"
+ 612 01d1 01       		.byte	0x1
+ 613 01d2 B5       		.byte	0xb5
+ 614 01d3 8F000000 		.4byte	0x8f
+ 615 01d7 02       		.uleb128 0x2
+ 616 01d8 91       		.byte	0x91
+ 617 01d9 74       		.sleb128 -12
+ 618 01da 06       		.uleb128 0x6
+ 619 01db 5C000000 		.4byte	.LASF28
+ 620 01df 01       		.byte	0x1
+ 621 01e0 B6       		.byte	0xb6
+ 622 01e1 6B000000 		.4byte	0x6b
+ 623 01e5 02       		.uleb128 0x2
+ 624 01e6 91       		.byte	0x91
+ 625 01e7 77       		.sleb128 -9
+ 626 01e8 00       		.byte	0
+ 627 01e9 0B       		.uleb128 0xb
+ 628 01ea 9B000000 		.4byte	0x9b
+ 629 01ee F9010000 		.4byte	0x1f9
+ 630 01f2 0C       		.uleb128 0xc
+ 631 01f3 BC000000 		.4byte	0xbc
+ 632 01f7 03       		.byte	0x3
+ 633 01f8 00       		.byte	0
+ 634 01f9 0D       		.uleb128 0xd
+ 635 01fa 4C706600 		.ascii	"Lpf\000"
+ 636 01fe 01       		.byte	0x1
+ 637 01ff 2C       		.byte	0x2c
+ 638 0200 E9010000 		.4byte	0x1e9
+ 639 0204 05       		.uleb128 0x5
+ 640 0205 03       		.byte	0x3
+ 641 0206 00000000 		.4byte	Lpf
+ 642 020a 0B       		.uleb128 0xb
+ 643 020b 8F000000 		.4byte	0x8f
+ 644 020f 1A020000 		.4byte	0x21a
+ 645 0213 0C       		.uleb128 0xc
+ 646 0214 BC000000 		.4byte	0xbc
+ 647 0218 03       		.byte	0x3
+ 648 0219 00       		.byte	0
+ 649 021a 0E       		.uleb128 0xe
+ 650 021b 2C010000 		.4byte	.LASF29
+ 651 021f 01       		.byte	0x1
+ 652 0220 2D       		.byte	0x2d
+ 653 0221 0A020000 		.4byte	0x20a
+ 654 0225 05       		.uleb128 0x5
+ 655 0226 03       		.byte	0x3
+ 656 0227 00000000 		.4byte	IIRFilterCoefficient
+ 657 022b 0D       		.uleb128 0xd
+ 658 022c 766C7000 		.ascii	"vlp\000"
+ 659 0230 01       		.byte	0x1
+ 660 0231 2F       		.byte	0x2f
+ 661 0232 9B000000 		.4byte	0x9b
+ 662 0236 05       		.uleb128 0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 16
+
+
+ 663 0237 03       		.byte	0x3
+ 664 0238 00000000 		.4byte	vlp
+ 665 023c 00       		.byte	0
+ 666              		.section	.debug_abbrev,"",%progbits
+ 667              	.Ldebug_abbrev0:
+ 668 0000 01       		.uleb128 0x1
+ 669 0001 11       		.uleb128 0x11
+ 670 0002 01       		.byte	0x1
+ 671 0003 25       		.uleb128 0x25
+ 672 0004 0E       		.uleb128 0xe
+ 673 0005 13       		.uleb128 0x13
+ 674 0006 0B       		.uleb128 0xb
+ 675 0007 03       		.uleb128 0x3
+ 676 0008 0E       		.uleb128 0xe
+ 677 0009 1B       		.uleb128 0x1b
+ 678 000a 0E       		.uleb128 0xe
+ 679 000b 55       		.uleb128 0x55
+ 680 000c 17       		.uleb128 0x17
+ 681 000d 11       		.uleb128 0x11
+ 682 000e 01       		.uleb128 0x1
+ 683 000f 10       		.uleb128 0x10
+ 684 0010 17       		.uleb128 0x17
+ 685 0011 00       		.byte	0
+ 686 0012 00       		.byte	0
+ 687 0013 02       		.uleb128 0x2
+ 688 0014 24       		.uleb128 0x24
+ 689 0015 00       		.byte	0
+ 690 0016 0B       		.uleb128 0xb
+ 691 0017 0B       		.uleb128 0xb
+ 692 0018 3E       		.uleb128 0x3e
+ 693 0019 0B       		.uleb128 0xb
+ 694 001a 03       		.uleb128 0x3
+ 695 001b 0E       		.uleb128 0xe
+ 696 001c 00       		.byte	0
+ 697 001d 00       		.byte	0
+ 698 001e 03       		.uleb128 0x3
+ 699 001f 24       		.uleb128 0x24
+ 700 0020 00       		.byte	0
+ 701 0021 0B       		.uleb128 0xb
+ 702 0022 0B       		.uleb128 0xb
+ 703 0023 3E       		.uleb128 0x3e
+ 704 0024 0B       		.uleb128 0xb
+ 705 0025 03       		.uleb128 0x3
+ 706 0026 08       		.uleb128 0x8
+ 707 0027 00       		.byte	0
+ 708 0028 00       		.byte	0
+ 709 0029 04       		.uleb128 0x4
+ 710 002a 16       		.uleb128 0x16
+ 711 002b 00       		.byte	0
+ 712 002c 03       		.uleb128 0x3
+ 713 002d 0E       		.uleb128 0xe
+ 714 002e 3A       		.uleb128 0x3a
+ 715 002f 0B       		.uleb128 0xb
+ 716 0030 3B       		.uleb128 0x3b
+ 717 0031 05       		.uleb128 0x5
+ 718 0032 49       		.uleb128 0x49
+ 719 0033 13       		.uleb128 0x13
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 17
+
+
+ 720 0034 00       		.byte	0
+ 721 0035 00       		.byte	0
+ 722 0036 05       		.uleb128 0x5
+ 723 0037 2E       		.uleb128 0x2e
+ 724 0038 01       		.byte	0x1
+ 725 0039 3F       		.uleb128 0x3f
+ 726 003a 19       		.uleb128 0x19
+ 727 003b 03       		.uleb128 0x3
+ 728 003c 0E       		.uleb128 0xe
+ 729 003d 3A       		.uleb128 0x3a
+ 730 003e 0B       		.uleb128 0xb
+ 731 003f 3B       		.uleb128 0x3b
+ 732 0040 0B       		.uleb128 0xb
+ 733 0041 27       		.uleb128 0x27
+ 734 0042 19       		.uleb128 0x19
+ 735 0043 11       		.uleb128 0x11
+ 736 0044 01       		.uleb128 0x1
+ 737 0045 12       		.uleb128 0x12
+ 738 0046 06       		.uleb128 0x6
+ 739 0047 40       		.uleb128 0x40
+ 740 0048 18       		.uleb128 0x18
+ 741 0049 9742     		.uleb128 0x2117
+ 742 004b 19       		.uleb128 0x19
+ 743 004c 01       		.uleb128 0x1
+ 744 004d 13       		.uleb128 0x13
+ 745 004e 00       		.byte	0
+ 746 004f 00       		.byte	0
+ 747 0050 06       		.uleb128 0x6
+ 748 0051 34       		.uleb128 0x34
+ 749 0052 00       		.byte	0
+ 750 0053 03       		.uleb128 0x3
+ 751 0054 0E       		.uleb128 0xe
+ 752 0055 3A       		.uleb128 0x3a
+ 753 0056 0B       		.uleb128 0xb
+ 754 0057 3B       		.uleb128 0x3b
+ 755 0058 0B       		.uleb128 0xb
+ 756 0059 49       		.uleb128 0x49
+ 757 005a 13       		.uleb128 0x13
+ 758 005b 02       		.uleb128 0x2
+ 759 005c 18       		.uleb128 0x18
+ 760 005d 00       		.byte	0
+ 761 005e 00       		.byte	0
+ 762 005f 07       		.uleb128 0x7
+ 763 0060 2E       		.uleb128 0x2e
+ 764 0061 01       		.byte	0x1
+ 765 0062 3F       		.uleb128 0x3f
+ 766 0063 19       		.uleb128 0x19
+ 767 0064 03       		.uleb128 0x3
+ 768 0065 0E       		.uleb128 0xe
+ 769 0066 3A       		.uleb128 0x3a
+ 770 0067 0B       		.uleb128 0xb
+ 771 0068 3B       		.uleb128 0x3b
+ 772 0069 0B       		.uleb128 0xb
+ 773 006a 27       		.uleb128 0x27
+ 774 006b 19       		.uleb128 0x19
+ 775 006c 49       		.uleb128 0x49
+ 776 006d 13       		.uleb128 0x13
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 18
+
+
+ 777 006e 11       		.uleb128 0x11
+ 778 006f 01       		.uleb128 0x1
+ 779 0070 12       		.uleb128 0x12
+ 780 0071 06       		.uleb128 0x6
+ 781 0072 40       		.uleb128 0x40
+ 782 0073 18       		.uleb128 0x18
+ 783 0074 9642     		.uleb128 0x2116
+ 784 0076 19       		.uleb128 0x19
+ 785 0077 01       		.uleb128 0x1
+ 786 0078 13       		.uleb128 0x13
+ 787 0079 00       		.byte	0
+ 788 007a 00       		.byte	0
+ 789 007b 08       		.uleb128 0x8
+ 790 007c 05       		.uleb128 0x5
+ 791 007d 00       		.byte	0
+ 792 007e 03       		.uleb128 0x3
+ 793 007f 0E       		.uleb128 0xe
+ 794 0080 3A       		.uleb128 0x3a
+ 795 0081 0B       		.uleb128 0xb
+ 796 0082 3B       		.uleb128 0x3b
+ 797 0083 0B       		.uleb128 0xb
+ 798 0084 49       		.uleb128 0x49
+ 799 0085 13       		.uleb128 0x13
+ 800 0086 02       		.uleb128 0x2
+ 801 0087 18       		.uleb128 0x18
+ 802 0088 00       		.byte	0
+ 803 0089 00       		.byte	0
+ 804 008a 09       		.uleb128 0x9
+ 805 008b 2E       		.uleb128 0x2e
+ 806 008c 01       		.byte	0x1
+ 807 008d 3F       		.uleb128 0x3f
+ 808 008e 19       		.uleb128 0x19
+ 809 008f 03       		.uleb128 0x3
+ 810 0090 0E       		.uleb128 0xe
+ 811 0091 3A       		.uleb128 0x3a
+ 812 0092 0B       		.uleb128 0xb
+ 813 0093 3B       		.uleb128 0x3b
+ 814 0094 0B       		.uleb128 0xb
+ 815 0095 27       		.uleb128 0x27
+ 816 0096 19       		.uleb128 0x19
+ 817 0097 49       		.uleb128 0x49
+ 818 0098 13       		.uleb128 0x13
+ 819 0099 11       		.uleb128 0x11
+ 820 009a 01       		.uleb128 0x1
+ 821 009b 12       		.uleb128 0x12
+ 822 009c 06       		.uleb128 0x6
+ 823 009d 40       		.uleb128 0x40
+ 824 009e 18       		.uleb128 0x18
+ 825 009f 9742     		.uleb128 0x2117
+ 826 00a1 19       		.uleb128 0x19
+ 827 00a2 01       		.uleb128 0x1
+ 828 00a3 13       		.uleb128 0x13
+ 829 00a4 00       		.byte	0
+ 830 00a5 00       		.byte	0
+ 831 00a6 0A       		.uleb128 0xa
+ 832 00a7 34       		.uleb128 0x34
+ 833 00a8 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 19
+
+
+ 834 00a9 03       		.uleb128 0x3
+ 835 00aa 08       		.uleb128 0x8
+ 836 00ab 3A       		.uleb128 0x3a
+ 837 00ac 0B       		.uleb128 0xb
+ 838 00ad 3B       		.uleb128 0x3b
+ 839 00ae 0B       		.uleb128 0xb
+ 840 00af 49       		.uleb128 0x49
+ 841 00b0 13       		.uleb128 0x13
+ 842 00b1 02       		.uleb128 0x2
+ 843 00b2 18       		.uleb128 0x18
+ 844 00b3 00       		.byte	0
+ 845 00b4 00       		.byte	0
+ 846 00b5 0B       		.uleb128 0xb
+ 847 00b6 01       		.uleb128 0x1
+ 848 00b7 01       		.byte	0x1
+ 849 00b8 49       		.uleb128 0x49
+ 850 00b9 13       		.uleb128 0x13
+ 851 00ba 01       		.uleb128 0x1
+ 852 00bb 13       		.uleb128 0x13
+ 853 00bc 00       		.byte	0
+ 854 00bd 00       		.byte	0
+ 855 00be 0C       		.uleb128 0xc
+ 856 00bf 21       		.uleb128 0x21
+ 857 00c0 00       		.byte	0
+ 858 00c1 49       		.uleb128 0x49
+ 859 00c2 13       		.uleb128 0x13
+ 860 00c3 2F       		.uleb128 0x2f
+ 861 00c4 0B       		.uleb128 0xb
+ 862 00c5 00       		.byte	0
+ 863 00c6 00       		.byte	0
+ 864 00c7 0D       		.uleb128 0xd
+ 865 00c8 34       		.uleb128 0x34
+ 866 00c9 00       		.byte	0
+ 867 00ca 03       		.uleb128 0x3
+ 868 00cb 08       		.uleb128 0x8
+ 869 00cc 3A       		.uleb128 0x3a
+ 870 00cd 0B       		.uleb128 0xb
+ 871 00ce 3B       		.uleb128 0x3b
+ 872 00cf 0B       		.uleb128 0xb
+ 873 00d0 49       		.uleb128 0x49
+ 874 00d1 13       		.uleb128 0x13
+ 875 00d2 3F       		.uleb128 0x3f
+ 876 00d3 19       		.uleb128 0x19
+ 877 00d4 02       		.uleb128 0x2
+ 878 00d5 18       		.uleb128 0x18
+ 879 00d6 00       		.byte	0
+ 880 00d7 00       		.byte	0
+ 881 00d8 0E       		.uleb128 0xe
+ 882 00d9 34       		.uleb128 0x34
+ 883 00da 00       		.byte	0
+ 884 00db 03       		.uleb128 0x3
+ 885 00dc 0E       		.uleb128 0xe
+ 886 00dd 3A       		.uleb128 0x3a
+ 887 00de 0B       		.uleb128 0xb
+ 888 00df 3B       		.uleb128 0x3b
+ 889 00e0 0B       		.uleb128 0xb
+ 890 00e1 49       		.uleb128 0x49
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 20
+
+
+ 891 00e2 13       		.uleb128 0x13
+ 892 00e3 3F       		.uleb128 0x3f
+ 893 00e4 19       		.uleb128 0x19
+ 894 00e5 02       		.uleb128 0x2
+ 895 00e6 18       		.uleb128 0x18
+ 896 00e7 00       		.byte	0
+ 897 00e8 00       		.byte	0
+ 898 00e9 00       		.byte	0
+ 899              		.section	.debug_aranges,"",%progbits
+ 900 0000 44000000 		.4byte	0x44
+ 901 0004 0200     		.2byte	0x2
+ 902 0006 00000000 		.4byte	.Ldebug_info0
+ 903 000a 04       		.byte	0x4
+ 904 000b 00       		.byte	0
+ 905 000c 0000     		.2byte	0
+ 906 000e 0000     		.2byte	0
+ 907 0010 00000000 		.4byte	.LFB35
+ 908 0014 38000000 		.4byte	.LFE35-.LFB35
+ 909 0018 00000000 		.4byte	.LFB36
+ 910 001c 70000000 		.4byte	.LFE36-.LFB36
+ 911 0020 00000000 		.4byte	.LFB37
+ 912 0024 2C000000 		.4byte	.LFE37-.LFB37
+ 913 0028 00000000 		.4byte	.LFB38
+ 914 002c 28000000 		.4byte	.LFE38-.LFB38
+ 915 0030 00000000 		.4byte	.LFB39
+ 916 0034 20000000 		.4byte	.LFE39-.LFB39
+ 917 0038 00000000 		.4byte	.LFB40
+ 918 003c 6C000000 		.4byte	.LFE40-.LFB40
+ 919 0040 00000000 		.4byte	0
+ 920 0044 00000000 		.4byte	0
+ 921              		.section	.debug_ranges,"",%progbits
+ 922              	.Ldebug_ranges0:
+ 923 0000 00000000 		.4byte	.LFB35
+ 924 0004 38000000 		.4byte	.LFE35
+ 925 0008 00000000 		.4byte	.LFB36
+ 926 000c 70000000 		.4byte	.LFE36
+ 927 0010 00000000 		.4byte	.LFB37
+ 928 0014 2C000000 		.4byte	.LFE37
+ 929 0018 00000000 		.4byte	.LFB38
+ 930 001c 28000000 		.4byte	.LFE38
+ 931 0020 00000000 		.4byte	.LFB39
+ 932 0024 20000000 		.4byte	.LFE39
+ 933 0028 00000000 		.4byte	.LFB40
+ 934 002c 6C000000 		.4byte	.LFE40
+ 935 0030 00000000 		.4byte	0
+ 936 0034 00000000 		.4byte	0
+ 937              		.section	.debug_line,"",%progbits
+ 938              	.Ldebug_line0:
+ 939 0000 CD000000 		.section	.debug_str,"MS",%progbits,1
+ 939      02004400 
+ 939      00000201 
+ 939      FB0E0D00 
+ 939      01010101 
+ 940              	.LASF13:
+ 941 0000 696E7433 		.ascii	"int32\000"
+ 941      3200
+ 942              	.LASF31:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 21
+
+
+ 943 0006 46696C74 		.ascii	"Filters.c\000"
+ 943      6572732E 
+ 943      6300
+ 944              	.LASF25:
+ 945 0010 496E6974 		.ascii	"InitHighPassFilter\000"
+ 945      48696768 
+ 945      50617373 
+ 945      46696C74 
+ 945      657200
+ 946              	.LASF14:
+ 947 0023 666C6F61 		.ascii	"float\000"
+ 947      7400
+ 948              	.LASF21:
+ 949 0029 53657446 		.ascii	"SetFilterCoefficient\000"
+ 949      696C7465 
+ 949      72436F65 
+ 949      66666963 
+ 949      69656E74 
+ 950              	.LASF20:
+ 951 003e 496E6974 		.ascii	"InitFilters\000"
+ 951      46696C74 
+ 951      65727300 
+ 952              	.LASF22:
+ 953 004a 46696C74 		.ascii	"FilterCoefficient\000"
+ 953      6572436F 
+ 953      65666669 
+ 953      6369656E 
+ 953      7400
+ 954              	.LASF28:
+ 955 005c 7363616C 		.ascii	"scale\000"
+ 955      6500
+ 956              	.LASF19:
+ 957 0062 4368616E 		.ascii	"Channel\000"
+ 957      6E656C00 
+ 958              	.LASF27:
+ 959 006a 48696768 		.ascii	"HighPassFilter\000"
+ 959      50617373 
+ 959      46696C74 
+ 959      657200
+ 960              	.LASF26:
+ 961 0079 4C6F7750 		.ascii	"LowPassFilter\000"
+ 961      61737346 
+ 961      696C7465 
+ 961      7200
+ 962              	.LASF32:
+ 963 0087 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 963      73657273 
+ 963      5C436872 
+ 963      6973746F 
+ 963      70686572 
+ 964 00b6 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 964      456E7669 
+ 964      726F6E6D 
+ 964      656E7453 
+ 964      656E7369 
+ 965 00e7 7964736E 		.ascii	"ydsn\000"
+ 965      00
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 22
+
+
+ 966              	.LASF18:
+ 967 00ec 696E7075 		.ascii	"input\000"
+ 967      7400
+ 968              	.LASF12:
+ 969 00f2 696E7431 		.ascii	"int16\000"
+ 969      3600
+ 970              	.LASF5:
+ 971 00f8 6C6F6E67 		.ascii	"long unsigned int\000"
+ 971      20756E73 
+ 971      69676E65 
+ 971      6420696E 
+ 971      7400
+ 972              	.LASF9:
+ 973 010a 75696E74 		.ascii	"uint8\000"
+ 973      3800
+ 974              	.LASF1:
+ 975 0110 756E7369 		.ascii	"unsigned char\000"
+ 975      676E6564 
+ 975      20636861 
+ 975      7200
+ 976              	.LASF15:
+ 977 011e 646F7562 		.ascii	"double\000"
+ 977      6C6500
+ 978              	.LASF10:
+ 979 0125 75696E74 		.ascii	"uint16\000"
+ 979      313600
+ 980              	.LASF29:
+ 981 012c 49495246 		.ascii	"IIRFilterCoefficient\000"
+ 981      696C7465 
+ 981      72436F65 
+ 981      66666963 
+ 981      69656E74 
+ 982              	.LASF11:
+ 983 0141 75696E74 		.ascii	"uint32\000"
+ 983      333200
+ 984              	.LASF8:
+ 985 0148 756E7369 		.ascii	"unsigned int\000"
+ 985      676E6564 
+ 985      20696E74 
+ 985      00
+ 986              	.LASF16:
+ 987 0155 63686172 		.ascii	"char\000"
+ 987      00
+ 988              	.LASF30:
+ 989 015a 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 989      4320342E 
+ 989      392E3320 
+ 989      32303135 
+ 989      30333033 
+ 990 018d 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 990      20726576 
+ 990      6973696F 
+ 990      6E203232 
+ 990      31323230 
+ 991 01c0 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 991      30202D66 
+ 991      66756E63 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccTEtyyK.s 			page 23
+
+
+ 991      74696F6E 
+ 991      2D736563 
+ 992              	.LASF24:
+ 993 01ec 496E6974 		.ascii	"InitValue\000"
+ 993      56616C75 
+ 993      6500
+ 994              	.LASF17:
+ 995 01f6 73697A65 		.ascii	"sizetype\000"
+ 995      74797065 
+ 995      00
+ 996              	.LASF6:
+ 997 01ff 6C6F6E67 		.ascii	"long long int\000"
+ 997      206C6F6E 
+ 997      6720696E 
+ 997      7400
+ 998              	.LASF2:
+ 999 020d 73686F72 		.ascii	"short int\000"
+ 999      7420696E 
+ 999      7400
+ 1000              	.LASF4:
+ 1001 0217 6C6F6E67 		.ascii	"long int\000"
+ 1001      20696E74 
+ 1001      00
+ 1002              	.LASF0:
+ 1003 0220 7369676E 		.ascii	"signed char\000"
+ 1003      65642063 
+ 1003      68617200 
+ 1004              	.LASF3:
+ 1005 022c 73686F72 		.ascii	"short unsigned int\000"
+ 1005      7420756E 
+ 1005      7369676E 
+ 1005      65642069 
+ 1005      6E7400
+ 1006              	.LASF7:
+ 1007 023f 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1007      206C6F6E 
+ 1007      6720756E 
+ 1007      7369676E 
+ 1007      65642069 
+ 1008              	.LASF23:
+ 1009 0256 496E6974 		.ascii	"InitLowPassFilter\000"
+ 1009      4C6F7750 
+ 1009      61737346 
+ 1009      696C7465 
+ 1009      7200
+ 1010              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

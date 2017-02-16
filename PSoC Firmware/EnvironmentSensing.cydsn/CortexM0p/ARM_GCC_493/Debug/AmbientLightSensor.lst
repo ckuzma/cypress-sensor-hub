@@ -1,0 +1,1624 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"AmbientLightSensor.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.comm	ALSOffsetCount,2,2
+  18              		.global	__aeabi_idiv
+  19              		.section	.text.CalculateAmbientLight,"ax",%progbits
+  20              		.align	2
+  21              		.global	CalculateAmbientLight
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	CalculateAmbientLight, %function
+  25              	CalculateAmbientLight:
+  26              	.LFB35:
+  27              		.file 1 "AmbientLightSensor.c"
+   1:AmbientLightSensor.c **** /*******************************************************************************
+   2:AmbientLightSensor.c **** * File Name: AmbientLightSensor.c
+   3:AmbientLightSensor.c **** *
+   4:AmbientLightSensor.c **** * Version: 1.0
+   5:AmbientLightSensor.c **** *
+   6:AmbientLightSensor.c **** * Description:
+   7:AmbientLightSensor.c **** * This source file has functions related to Ambient Light Sensor measurement.
+   8:AmbientLightSensor.c **** *
+   9:AmbientLightSensor.c **** * Owner:
+  10:AmbientLightSensor.c **** * GRAA
+  11:AmbientLightSensor.c **** *
+  12:AmbientLightSensor.c **** * Code Tested With:
+  13:AmbientLightSensor.c **** * 1. PSoC Creator 3.3 SP2 build 9598
+  14:AmbientLightSensor.c **** *
+  15:AmbientLightSensor.c **** ********************************************************************************
+  16:AmbientLightSensor.c **** * Copyright (2016) , Cypress Semiconductor Corporation.
+  17:AmbientLightSensor.c **** ********************************************************************************
+  18:AmbientLightSensor.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  19:AmbientLightSensor.c **** * protected by and subject to worldwide patent protection (United States and
+  20:AmbientLightSensor.c **** * foreign), United States copyright laws and international treaty provisions.
+  21:AmbientLightSensor.c **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  22:AmbientLightSensor.c **** * license to copy, use, modify, create derivative works of, and compile the
+  23:AmbientLightSensor.c **** * Cypress Source Code and derivative works for the sole purpose of creating
+  24:AmbientLightSensor.c **** * custom software in support of licensee product to be used only in conjunction
+  25:AmbientLightSensor.c **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  26:AmbientLightSensor.c **** * Any reproduction, modification, translation, compilation, or representation of
+  27:AmbientLightSensor.c **** * this software except as specified above is prohibited without the express
+  28:AmbientLightSensor.c **** * written permission of Cypress.
+  29:AmbientLightSensor.c **** *
+  30:AmbientLightSensor.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 2
+
+
+  31:AmbientLightSensor.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  32:AmbientLightSensor.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  33:AmbientLightSensor.c **** * Cypress reserves the right to make changes without further notice to the
+  34:AmbientLightSensor.c **** * materials described herein. Cypress does not assume any liability arising out
+  35:AmbientLightSensor.c **** * of the application or use of any product or circuit described herein. Cypress
+  36:AmbientLightSensor.c **** * does not authorize its products for use as critical components in life-support
+  37:AmbientLightSensor.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  38:AmbientLightSensor.c **** * significant injury to the user. The inclusion of Cypress' product in a life
+  39:AmbientLightSensor.c **** * support systems application implies that the manufacturer assumes all risk of
+  40:AmbientLightSensor.c **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  41:AmbientLightSensor.c **** * limited by and subject to the applicable Cypress software license agreement.
+  42:AmbientLightSensor.c **** *******************************************************************************/
+  43:AmbientLightSensor.c **** 
+  44:AmbientLightSensor.c **** #include <project.h>
+  45:AmbientLightSensor.c **** #include <AmbientLightSensor.h>
+  46:AmbientLightSensor.c **** #include <main.h>
+  47:AmbientLightSensor.c **** #include <filters.h>
+  48:AmbientLightSensor.c **** 
+  49:AmbientLightSensor.c **** int16 CalculateAlsCurrent(int16 ADCResult);
+  50:AmbientLightSensor.c **** uint16 CalculateAmbientLight(uint16 ALSCurrent);
+  51:AmbientLightSensor.c **** uint16 ALSOffsetCount;
+  52:AmbientLightSensor.c **** 
+  53:AmbientLightSensor.c **** /*******************************************************************************
+  54:AmbientLightSensor.c **** * Function Name: uint16 CalculateAmbientLight(uint16 ALSCurrent)
+  55:AmbientLightSensor.c **** ********************************************************************************
+  56:AmbientLightSensor.c **** *
+  57:AmbientLightSensor.c **** * Summary:
+  58:AmbientLightSensor.c **** *  This function takes photo diode current as parameter, calculates and returns
+  59:AmbientLightSensor.c **** *  ambient light in lumens
+  60:AmbientLightSensor.c **** *
+  61:AmbientLightSensor.c **** * Parameters:
+  62:AmbientLightSensor.c **** *  uint16 ALSCurrent 	- 	Current in nA.  This is an unsigned integer
+  63:AmbientLightSensor.c **** *
+  64:AmbientLightSensor.c **** * Return:
+  65:AmbientLightSensor.c **** *  uint16 LightIntensity - Returns light intensity in Lumens
+  66:AmbientLightSensor.c **** *
+  67:AmbientLightSensor.c **** * Side Effects:
+  68:AmbientLightSensor.c **** *   None
+  69:AmbientLightSensor.c **** *******************************************************************************/
+  70:AmbientLightSensor.c **** uint16 CalculateAmbientLight(uint16 ALSCurrent)
+  71:AmbientLightSensor.c **** {
+  28              		.loc 1 71 0
+  29              		.cfi_startproc
+  30 0000 80B5     		push	{r7, lr}
+  31              		.cfi_def_cfa_offset 8
+  32              		.cfi_offset 7, -8
+  33              		.cfi_offset 14, -4
+  34 0002 84B0     		sub	sp, sp, #16
+  35              		.cfi_def_cfa_offset 24
+  36 0004 00AF     		add	r7, sp, #0
+  37              		.cfi_def_cfa_register 7
+  38 0006 021C     		mov	r2, r0
+  39 0008 BB1D     		add	r3, r7, #6
+  40 000a 1A80     		strh	r2, [r3]
+  72:AmbientLightSensor.c **** 	uint32 LightIntensity;
+  73:AmbientLightSensor.c ****     
+  74:AmbientLightSensor.c **** 	/* Calculate light intensity */
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 3
+
+
+  75:AmbientLightSensor.c **** 	LightIntensity = (ALSCurrent * ALS_LIGHT_SCALE_FACTOR_NUMERATOR)/ALS_LIGHT_SCALE_FACTOR_DENOMINATO
+  41              		.loc 1 75 0
+  42 000c BB1D     		add	r3, r7, #6
+  43 000e 1B88     		ldrh	r3, [r3]
+  44 0010 074A     		ldr	r2, .L3
+  45 0012 5343     		mul	r3, r2
+  46 0014 181C     		mov	r0, r3
+  47 0016 FA23     		mov	r3, #250
+  48 0018 9900     		lsl	r1, r3, #2
+  49 001a FFF7FEFF 		bl	__aeabi_idiv
+  50 001e 031C     		mov	r3, r0
+  51 0020 FB60     		str	r3, [r7, #12]
+  76:AmbientLightSensor.c **** 	
+  77:AmbientLightSensor.c **** 	return (int16)LightIntensity;
+  52              		.loc 1 77 0
+  53 0022 FB68     		ldr	r3, [r7, #12]
+  54 0024 9BB2     		uxth	r3, r3
+  78:AmbientLightSensor.c **** }
+  55              		.loc 1 78 0
+  56 0026 181C     		mov	r0, r3
+  57 0028 BD46     		mov	sp, r7
+  58 002a 04B0     		add	sp, sp, #16
+  59              		@ sp needed
+  60 002c 80BD     		pop	{r7, pc}
+  61              	.L4:
+  62 002e C046     		.align	2
+  63              	.L3:
+  64 0030 050D0000 		.word	3333
+  65              		.cfi_endproc
+  66              	.LFE35:
+  67              		.size	CalculateAmbientLight, .-CalculateAmbientLight
+  68              		.section	.text.AmbientLightSensorTask,"ax",%progbits
+  69              		.align	2
+  70              		.global	AmbientLightSensorTask
+  71              		.code	16
+  72              		.thumb_func
+  73              		.type	AmbientLightSensorTask, %function
+  74              	AmbientLightSensorTask:
+  75              	.LFB36:
+  79:AmbientLightSensor.c **** 
+  80:AmbientLightSensor.c **** /*******************************************************************************
+  81:AmbientLightSensor.c **** * Function Name: void AmbientLightSensorTask(void)
+  82:AmbientLightSensor.c **** ********************************************************************************
+  83:AmbientLightSensor.c **** *
+  84:AmbientLightSensor.c **** * Summary:
+  85:AmbientLightSensor.c **** *  This function performs the ambient light measurement task
+  86:AmbientLightSensor.c **** *  The function reads ADC counts from ALS channel, passes the result through
+  87:AmbientLightSensor.c **** *  a low pass filter, calls respective functions to calculate photo diode
+  88:AmbientLightSensor.c **** *  current and ambient light and updates the respective variables in the
+  89:AmbientLightSensor.c **** *  ProcessValues structure
+  90:AmbientLightSensor.c **** *
+  91:AmbientLightSensor.c **** * Parameters:
+  92:AmbientLightSensor.c **** *  None
+  93:AmbientLightSensor.c **** *
+  94:AmbientLightSensor.c **** * Return:
+  95:AmbientLightSensor.c **** *  None
+  96:AmbientLightSensor.c **** *
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 4
+
+
+  97:AmbientLightSensor.c **** * Side Effects:
+  98:AmbientLightSensor.c **** *   None
+  99:AmbientLightSensor.c **** *******************************************************************************/
+ 100:AmbientLightSensor.c **** void AmbientLightSensorTask(void)
+ 101:AmbientLightSensor.c **** {
+  76              		.loc 1 101 0
+  77              		.cfi_startproc
+  78 0000 80B5     		push	{r7, lr}
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 82B0     		sub	sp, sp, #8
+  83              		.cfi_def_cfa_offset 16
+  84 0004 00AF     		add	r7, sp, #0
+  85              		.cfi_def_cfa_register 7
+ 102:AmbientLightSensor.c **** 	uint16 ADCResult_ALS_Direct, ADCResult_ALS_Reverse, ADCResult;
+ 103:AmbientLightSensor.c ****     
+ 104:AmbientLightSensor.c ****     ADCResult_ALS_Direct = ADC_GetResult16(ADC_CHANNEL_ALS_DIRECT);
+  86              		.loc 1 104 0
+  87 0006 0320     		mov	r0, #3
+  88 0008 FFF7FEFF 		bl	ADC_GetResult16
+  89 000c 031C     		mov	r3, r0
+  90 000e 1A1C     		mov	r2, r3
+  91 0010 BB1D     		add	r3, r7, #6
+  92 0012 1A80     		strh	r2, [r3]
+ 105:AmbientLightSensor.c **** 	ADCResult_ALS_Reverse = ADC_GetResult16(ADC_CHANNEL_ALS_REVERSE);
+  93              		.loc 1 105 0
+  94 0014 0420     		mov	r0, #4
+  95 0016 FFF7FEFF 		bl	ADC_GetResult16
+  96 001a 031C     		mov	r3, r0
+  97 001c 1A1C     		mov	r2, r3
+  98 001e 3B1D     		add	r3, r7, #4
+  99 0020 1A80     		strh	r2, [r3]
+ 106:AmbientLightSensor.c ****     
+ 107:AmbientLightSensor.c **** 	ADCResult = LowPassFilter((int16)(ADCResult_ALS_Direct - ADCResult_ALS_Reverse)/2, LPF_CHANNEL_ALS
+ 100              		.loc 1 107 0
+ 101 0022 BA1D     		add	r2, r7, #6
+ 102 0024 3B1D     		add	r3, r7, #4
+ 103 0026 1288     		ldrh	r2, [r2]
+ 104 0028 1B88     		ldrh	r3, [r3]
+ 105 002a D31A     		sub	r3, r2, r3
+ 106 002c 9BB2     		uxth	r3, r3
+ 107 002e 9BB2     		uxth	r3, r3
+ 108 0030 1BB2     		sxth	r3, r3
+ 109 0032 002B     		cmp	r3, #0
+ 110 0034 00DA     		bge	.L6
+ 111 0036 0133     		add	r3, r3, #1
+ 112              	.L6:
+ 113 0038 5B10     		asr	r3, r3, #1
+ 114 003a 9BB2     		uxth	r3, r3
+ 115 003c 1BB2     		sxth	r3, r3
+ 116 003e 181C     		mov	r0, r3
+ 117 0040 0221     		mov	r1, #2
+ 118 0042 FFF7FEFF 		bl	LowPassFilter
+ 119 0046 021C     		mov	r2, r0
+ 120 0048 BB1C     		add	r3, r7, #2
+ 121 004a 1A80     		strh	r2, [r3]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 5
+
+
+ 108:AmbientLightSensor.c **** 	
+ 109:AmbientLightSensor.c **** 	if(I2CRegsCommand)
+ 122              		.loc 1 109 0
+ 123 004c 134B     		ldr	r3, .L8
+ 124 004e 1B88     		ldrh	r3, [r3]
+ 125 0050 002B     		cmp	r3, #0
+ 126 0052 08D0     		beq	.L7
+ 110:AmbientLightSensor.c **** 	{
+ 111:AmbientLightSensor.c **** 		/* Read the offset count */		
+ 112:AmbientLightSensor.c **** 		ALSOffsetCount = ADCResult;
+ 127              		.loc 1 112 0
+ 128 0054 124B     		ldr	r3, .L8+4
+ 129 0056 BA1C     		add	r2, r7, #2
+ 130 0058 1288     		ldrh	r2, [r2]
+ 131 005a 1A80     		strh	r2, [r3]
+ 113:AmbientLightSensor.c **** 		
+ 114:AmbientLightSensor.c **** 		/* Clear the calibration command register */
+ 115:AmbientLightSensor.c **** 		I2CRegsCommand = 0;
+ 132              		.loc 1 115 0
+ 133 005c 0F4B     		ldr	r3, .L8
+ 134 005e 0022     		mov	r2, #0
+ 135 0060 1A80     		strh	r2, [r3]
+ 116:AmbientLightSensor.c **** 		
+ 117:AmbientLightSensor.c **** 		/* Write to flash */
+ 118:AmbientLightSensor.c **** 		WriteALSOffset();
+ 136              		.loc 1 118 0
+ 137 0062 FFF7FEFF 		bl	WriteALSOffset
+ 138              	.L7:
+ 119:AmbientLightSensor.c **** 	}
+ 120:AmbientLightSensor.c **** 	
+ 121:AmbientLightSensor.c ****   	ProcessValues.ALSCurrent = CalculateAlsCurrent(ADCResult - ALSOffsetCount);
+ 139              		.loc 1 121 0
+ 140 0066 0E4B     		ldr	r3, .L8+4
+ 141 0068 1B88     		ldrh	r3, [r3]
+ 142 006a BA1C     		add	r2, r7, #2
+ 143 006c 1288     		ldrh	r2, [r2]
+ 144 006e D31A     		sub	r3, r2, r3
+ 145 0070 9BB2     		uxth	r3, r3
+ 146 0072 9BB2     		uxth	r3, r3
+ 147 0074 1BB2     		sxth	r3, r3
+ 148 0076 181C     		mov	r0, r3
+ 149 0078 FFF7FEFF 		bl	CalculateAlsCurrent
+ 150 007c 031C     		mov	r3, r0
+ 151 007e 9AB2     		uxth	r2, r3
+ 152 0080 084B     		ldr	r3, .L8+8
+ 153 0082 1A81     		strh	r2, [r3, #8]
+ 122:AmbientLightSensor.c **** 	
+ 123:AmbientLightSensor.c **** 	ProcessValues.LightIntensity = CalculateAmbientLight(ProcessValues.ALSCurrent);
+ 154              		.loc 1 123 0
+ 155 0084 074B     		ldr	r3, .L8+8
+ 156 0086 1B89     		ldrh	r3, [r3, #8]
+ 157 0088 181C     		mov	r0, r3
+ 158 008a FFF7FEFF 		bl	CalculateAmbientLight
+ 159 008e 031C     		mov	r3, r0
+ 160 0090 1A1C     		mov	r2, r3
+ 161 0092 044B     		ldr	r3, .L8+8
+ 162 0094 5A81     		strh	r2, [r3, #10]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 6
+
+
+ 124:AmbientLightSensor.c **** }	
+ 163              		.loc 1 124 0
+ 164 0096 BD46     		mov	sp, r7
+ 165 0098 02B0     		add	sp, sp, #8
+ 166              		@ sp needed
+ 167 009a 80BD     		pop	{r7, pc}
+ 168              	.L9:
+ 169              		.align	2
+ 170              	.L8:
+ 171 009c 00000000 		.word	I2CRegsCommand
+ 172 00a0 00000000 		.word	ALSOffsetCount
+ 173 00a4 00000000 		.word	ProcessValues
+ 174              		.cfi_endproc
+ 175              	.LFE36:
+ 176              		.size	AmbientLightSensorTask, .-AmbientLightSensorTask
+ 177              		.section	.text.CalculateAlsCurrent,"ax",%progbits
+ 178              		.align	2
+ 179              		.global	CalculateAlsCurrent
+ 180              		.code	16
+ 181              		.thumb_func
+ 182              		.type	CalculateAlsCurrent, %function
+ 183              	CalculateAlsCurrent:
+ 184              	.LFB37:
+ 125:AmbientLightSensor.c **** 
+ 126:AmbientLightSensor.c **** /*******************************************************************************
+ 127:AmbientLightSensor.c **** * Function Name: int16 CalculateAlsCurrent(int16 ADCResult)
+ 128:AmbientLightSensor.c **** ********************************************************************************
+ 129:AmbientLightSensor.c **** *
+ 130:AmbientLightSensor.c **** * Summary:
+ 131:AmbientLightSensor.c **** *  This function takes ADC Counts as input and calculates and returns photo
+ 132:AmbientLightSensor.c **** *  diode current.  The function limits the current to a +ve value
+ 133:AmbientLightSensor.c **** *
+ 134:AmbientLightSensor.c **** * Parameters:
+ 135:AmbientLightSensor.c **** *  int16 ADCResult 	- 	16 bit ADC result
+ 136:AmbientLightSensor.c **** *
+ 137:AmbientLightSensor.c **** * Return:
+ 138:AmbientLightSensor.c **** *  int16 DiodeCurrent - Returns diode current in nA
+ 139:AmbientLightSensor.c **** *
+ 140:AmbientLightSensor.c **** * Side Effects:
+ 141:AmbientLightSensor.c **** *   None
+ 142:AmbientLightSensor.c **** *******************************************************************************/
+ 143:AmbientLightSensor.c **** int16 CalculateAlsCurrent(int16 ADCResult)
+ 144:AmbientLightSensor.c **** {
+ 185              		.loc 1 144 0
+ 186              		.cfi_startproc
+ 187 0000 80B5     		push	{r7, lr}
+ 188              		.cfi_def_cfa_offset 8
+ 189              		.cfi_offset 7, -8
+ 190              		.cfi_offset 14, -4
+ 191 0002 84B0     		sub	sp, sp, #16
+ 192              		.cfi_def_cfa_offset 24
+ 193 0004 00AF     		add	r7, sp, #0
+ 194              		.cfi_def_cfa_register 7
+ 195 0006 021C     		mov	r2, r0
+ 196 0008 BB1D     		add	r3, r7, #6
+ 197 000a 1A80     		strh	r2, [r3]
+ 145:AmbientLightSensor.c **** 	int32 DiodeCurrent;
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 7
+
+
+ 146:AmbientLightSensor.c **** 	
+ 147:AmbientLightSensor.c **** 	/* Calculate photo diode current */
+ 148:AmbientLightSensor.c **** 	DiodeCurrent = (ADCResult * ALS_CURRENT_SCALE_FACTOR_NUMERATOR)/ALS_CURRENT_SCALE_FACTOR_DENOMINAT
+ 198              		.loc 1 148 0
+ 199 000c BB1D     		add	r3, r7, #6
+ 200 000e 0022     		mov	r2, #0
+ 201 0010 9B5E     		ldrsh	r3, [r3, r2]
+ 202 0012 0A4A     		ldr	r2, .L13
+ 203 0014 5343     		mul	r3, r2
+ 204 0016 181C     		mov	r0, r3
+ 205 0018 0949     		ldr	r1, .L13+4
+ 206 001a FFF7FEFF 		bl	__aeabi_idiv
+ 207 001e 031C     		mov	r3, r0
+ 208 0020 FB60     		str	r3, [r7, #12]
+ 149:AmbientLightSensor.c **** 	
+ 150:AmbientLightSensor.c **** 	/* If the calculated current is -ve, limit this to zero */
+ 151:AmbientLightSensor.c **** 	if(DiodeCurrent < 0)
+ 209              		.loc 1 151 0
+ 210 0022 FB68     		ldr	r3, [r7, #12]
+ 211 0024 002B     		cmp	r3, #0
+ 212 0026 01DA     		bge	.L11
+ 152:AmbientLightSensor.c **** 	{
+ 153:AmbientLightSensor.c **** 		DiodeCurrent = 0;
+ 213              		.loc 1 153 0
+ 214 0028 0023     		mov	r3, #0
+ 215 002a FB60     		str	r3, [r7, #12]
+ 216              	.L11:
+ 154:AmbientLightSensor.c **** 	}
+ 155:AmbientLightSensor.c ****     
+ 156:AmbientLightSensor.c **** 	return DiodeCurrent;
+ 217              		.loc 1 156 0
+ 218 002c FB68     		ldr	r3, [r7, #12]
+ 219 002e 9BB2     		uxth	r3, r3
+ 220 0030 1BB2     		sxth	r3, r3
+ 157:AmbientLightSensor.c **** }
+ 221              		.loc 1 157 0
+ 222 0032 181C     		mov	r0, r3
+ 223 0034 BD46     		mov	sp, r7
+ 224 0036 04B0     		add	sp, sp, #16
+ 225              		@ sp needed
+ 226 0038 80BD     		pop	{r7, pc}
+ 227              	.L14:
+ 228 003a C046     		.align	2
+ 229              	.L13:
+ 230 003c 79A7FFFF 		.word	-22663
+ 231 0040 10270000 		.word	10000
+ 232              		.cfi_endproc
+ 233              	.LFE37:
+ 234              		.size	CalculateAlsCurrent, .-CalculateAlsCurrent
+ 235              		.section	.text.AmbientLightSensor_Start,"ax",%progbits
+ 236              		.align	2
+ 237              		.global	AmbientLightSensor_Start
+ 238              		.code	16
+ 239              		.thumb_func
+ 240              		.type	AmbientLightSensor_Start, %function
+ 241              	AmbientLightSensor_Start:
+ 242              	.LFB38:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 8
+
+
+ 158:AmbientLightSensor.c **** 
+ 159:AmbientLightSensor.c **** void AmbientLightSensor_Start(void)
+ 160:AmbientLightSensor.c **** {
+ 243              		.loc 1 160 0
+ 244              		.cfi_startproc
+ 245 0000 80B5     		push	{r7, lr}
+ 246              		.cfi_def_cfa_offset 8
+ 247              		.cfi_offset 7, -8
+ 248              		.cfi_offset 14, -4
+ 249 0002 00AF     		add	r7, sp, #0
+ 250              		.cfi_def_cfa_register 7
+ 161:AmbientLightSensor.c **** 	/* Start the TIA */
+ 162:AmbientLightSensor.c **** 	Opamp_TIA_Start();
+ 251              		.loc 1 162 0
+ 252 0004 FFF7FEFF 		bl	Opamp_TIA_Start
+ 163:AmbientLightSensor.c **** 
+ 164:AmbientLightSensor.c ****     /* Initialize the ALS current and light intensity values to zero */
+ 165:AmbientLightSensor.c ****     ProcessValues.ALSCurrent = 0;
+ 253              		.loc 1 165 0
+ 254 0008 064B     		ldr	r3, .L16
+ 255 000a 0022     		mov	r2, #0
+ 256 000c 1A81     		strh	r2, [r3, #8]
+ 166:AmbientLightSensor.c ****     ProcessValues.LightIntensity = 0;
+ 257              		.loc 1 166 0
+ 258 000e 054B     		ldr	r3, .L16
+ 259 0010 0022     		mov	r2, #0
+ 260 0012 5A81     		strh	r2, [r3, #10]
+ 167:AmbientLightSensor.c **** 	
+ 168:AmbientLightSensor.c **** 	/* Read ALS offset from flash */
+ 169:AmbientLightSensor.c **** 	ALSOffsetCount = (*((uint16 *) CY_TEST_FLASH_ADDR));
+ 261              		.loc 1 169 0
+ 262 0014 FE23     		mov	r3, #254
+ 263 0016 DB01     		lsl	r3, r3, #7
+ 264 0018 1A88     		ldrh	r2, [r3]
+ 265 001a 034B     		ldr	r3, .L16+4
+ 266 001c 1A80     		strh	r2, [r3]
+ 170:AmbientLightSensor.c **** }
+ 267              		.loc 1 170 0
+ 268 001e BD46     		mov	sp, r7
+ 269              		@ sp needed
+ 270 0020 80BD     		pop	{r7, pc}
+ 271              	.L17:
+ 272 0022 C046     		.align	2
+ 273              	.L16:
+ 274 0024 00000000 		.word	ProcessValues
+ 275 0028 00000000 		.word	ALSOffsetCount
+ 276              		.cfi_endproc
+ 277              	.LFE38:
+ 278              		.size	AmbientLightSensor_Start, .-AmbientLightSensor_Start
+ 279              		.section	.text.AmbientLightSensor_Stop,"ax",%progbits
+ 280              		.align	2
+ 281              		.global	AmbientLightSensor_Stop
+ 282              		.code	16
+ 283              		.thumb_func
+ 284              		.type	AmbientLightSensor_Stop, %function
+ 285              	AmbientLightSensor_Stop:
+ 286              	.LFB39:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 9
+
+
+ 171:AmbientLightSensor.c **** 
+ 172:AmbientLightSensor.c **** void AmbientLightSensor_Stop(void)
+ 173:AmbientLightSensor.c **** {
+ 287              		.loc 1 173 0
+ 288              		.cfi_startproc
+ 289 0000 80B5     		push	{r7, lr}
+ 290              		.cfi_def_cfa_offset 8
+ 291              		.cfi_offset 7, -8
+ 292              		.cfi_offset 14, -4
+ 293 0002 00AF     		add	r7, sp, #0
+ 294              		.cfi_def_cfa_register 7
+ 174:AmbientLightSensor.c **** 	/* Stop the TIA */
+ 175:AmbientLightSensor.c **** 	Opamp_TIA_Stop();
+ 295              		.loc 1 175 0
+ 296 0004 FFF7FEFF 		bl	Opamp_TIA_Stop
+ 176:AmbientLightSensor.c ****     
+ 177:AmbientLightSensor.c ****     /* Initialize the ALS current and light intensity values to zero */
+ 178:AmbientLightSensor.c ****     ProcessValues.ALSCurrent = 0;
+ 297              		.loc 1 178 0
+ 298 0008 034B     		ldr	r3, .L19
+ 299 000a 0022     		mov	r2, #0
+ 300 000c 1A81     		strh	r2, [r3, #8]
+ 179:AmbientLightSensor.c ****     ProcessValues.LightIntensity = 0;
+ 301              		.loc 1 179 0
+ 302 000e 024B     		ldr	r3, .L19
+ 303 0010 0022     		mov	r2, #0
+ 304 0012 5A81     		strh	r2, [r3, #10]
+ 180:AmbientLightSensor.c **** }
+ 305              		.loc 1 180 0
+ 306 0014 BD46     		mov	sp, r7
+ 307              		@ sp needed
+ 308 0016 80BD     		pop	{r7, pc}
+ 309              	.L20:
+ 310              		.align	2
+ 311              	.L19:
+ 312 0018 00000000 		.word	ProcessValues
+ 313              		.cfi_endproc
+ 314              	.LFE39:
+ 315              		.size	AmbientLightSensor_Stop, .-AmbientLightSensor_Stop
+ 316              		.section	.text.WriteALSOffset,"ax",%progbits
+ 317              		.align	2
+ 318              		.global	WriteALSOffset
+ 319              		.code	16
+ 320              		.thumb_func
+ 321              		.type	WriteALSOffset, %function
+ 322              	WriteALSOffset:
+ 323              	.LFB40:
+ 181:AmbientLightSensor.c **** 
+ 182:AmbientLightSensor.c **** void WriteALSOffset(void)
+ 183:AmbientLightSensor.c **** {
+ 324              		.loc 1 183 0
+ 325              		.cfi_startproc
+ 326 0000 80B5     		push	{r7, lr}
+ 327              		.cfi_def_cfa_offset 8
+ 328              		.cfi_offset 7, -8
+ 329              		.cfi_offset 14, -4
+ 330 0002 A2B0     		sub	sp, sp, #136
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 10
+
+
+ 331              		.cfi_def_cfa_offset 144
+ 332 0004 00AF     		add	r7, sp, #0
+ 333              		.cfi_def_cfa_register 7
+ 184:AmbientLightSensor.c **** 	uint16 rowPattern[CY_FLASH_SIZEOF_ROW/2];
+ 185:AmbientLightSensor.c **** 	
+ 186:AmbientLightSensor.c **** 	cystatus returnValue = CYRET_SUCCESS;
+ 334              		.loc 1 186 0
+ 335 0006 0023     		mov	r3, #0
+ 336 0008 8422     		mov	r2, #132
+ 337 000a BA18     		add	r2, r7, r2
+ 338 000c 1360     		str	r3, [r2]
+ 187:AmbientLightSensor.c **** 	
+ 188:AmbientLightSensor.c **** 	rowPattern[0] = ALSOffsetCount;
+ 339              		.loc 1 188 0
+ 340 000e 084B     		ldr	r3, .L22
+ 341 0010 1A88     		ldrh	r2, [r3]
+ 342 0012 3B1D     		add	r3, r7, #4
+ 343 0014 1A80     		strh	r2, [r3]
+ 189:AmbientLightSensor.c **** 	
+ 190:AmbientLightSensor.c **** 	/* Erases a row of Flash and programs it with the rowPattern */
+ 191:AmbientLightSensor.c ****     returnValue = CySysFlashWriteRow(CY_TEST_FLASH_ROW, (uint8 *)rowPattern);
+ 344              		.loc 1 191 0
+ 345 0016 3B1D     		add	r3, r7, #4
+ 346 0018 FE20     		mov	r0, #254
+ 347 001a 191C     		mov	r1, r3
+ 348 001c FFF7FEFF 		bl	CySysFlashWriteRow
+ 349 0020 031C     		mov	r3, r0
+ 350 0022 8422     		mov	r2, #132
+ 351 0024 BA18     		add	r2, r7, r2
+ 352 0026 1360     		str	r3, [r2]
+ 192:AmbientLightSensor.c **** 
+ 193:AmbientLightSensor.c ****     /* Check if operration is successful */
+ 194:AmbientLightSensor.c ****     if (returnValue != CY_SYS_FLASH_SUCCESS)
+ 195:AmbientLightSensor.c ****     {
+ 196:AmbientLightSensor.c **** 		
+ 197:AmbientLightSensor.c ****     }
+ 198:AmbientLightSensor.c **** }
+ 353              		.loc 1 198 0
+ 354 0028 BD46     		mov	sp, r7
+ 355 002a 22B0     		add	sp, sp, #136
+ 356              		@ sp needed
+ 357 002c 80BD     		pop	{r7, pc}
+ 358              	.L23:
+ 359 002e C046     		.align	2
+ 360              	.L22:
+ 361 0030 00000000 		.word	ALSOffsetCount
+ 362              		.cfi_endproc
+ 363              	.LFE40:
+ 364              		.size	WriteALSOffset, .-WriteALSOffset
+ 365              		.text
+ 366              	.Letext0:
+ 367              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 368              		.file 3 "./main.h"
+ 369              		.section	.debug_info,"",%progbits
+ 370              	.Ldebug_info0:
+ 371 0000 00030000 		.4byte	0x300
+ 372 0004 0400     		.2byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 11
+
+
+ 373 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 374 000a 04       		.byte	0x4
+ 375 000b 01       		.uleb128 0x1
+ 376 000c F1010000 		.4byte	.LASF52
+ 377 0010 01       		.byte	0x1
+ 378 0011 91030000 		.4byte	.LASF53
+ 379 0015 7B000000 		.4byte	.LASF54
+ 380 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 381 001d 00000000 		.4byte	0
+ 382 0021 00000000 		.4byte	.Ldebug_line0
+ 383 0025 02       		.uleb128 0x2
+ 384 0026 01       		.byte	0x1
+ 385 0027 06       		.byte	0x6
+ 386 0028 76030000 		.4byte	.LASF0
+ 387 002c 02       		.uleb128 0x2
+ 388 002d 01       		.byte	0x1
+ 389 002e 08       		.byte	0x8
+ 390 002f 18010000 		.4byte	.LASF1
+ 391 0033 02       		.uleb128 0x2
+ 392 0034 02       		.byte	0x2
+ 393 0035 05       		.byte	0x5
+ 394 0036 18030000 		.4byte	.LASF2
+ 395 003a 02       		.uleb128 0x2
+ 396 003b 02       		.byte	0x2
+ 397 003c 07       		.byte	0x7
+ 398 003d 24000000 		.4byte	.LASF3
+ 399 0041 02       		.uleb128 0x2
+ 400 0042 04       		.byte	0x4
+ 401 0043 05       		.byte	0x5
+ 402 0044 6D030000 		.4byte	.LASF4
+ 403 0048 02       		.uleb128 0x2
+ 404 0049 04       		.byte	0x4
+ 405 004a 07       		.byte	0x7
+ 406 004b F2000000 		.4byte	.LASF5
+ 407 004f 02       		.uleb128 0x2
+ 408 0050 08       		.byte	0x8
+ 409 0051 05       		.byte	0x5
+ 410 0052 AB020000 		.4byte	.LASF6
+ 411 0056 02       		.uleb128 0x2
+ 412 0057 08       		.byte	0x8
+ 413 0058 07       		.byte	0x7
+ 414 0059 A6030000 		.4byte	.LASF7
+ 415 005d 03       		.uleb128 0x3
+ 416 005e 04       		.byte	0x4
+ 417 005f 05       		.byte	0x5
+ 418 0060 696E7400 		.ascii	"int\000"
+ 419 0064 02       		.uleb128 0x2
+ 420 0065 04       		.byte	0x4
+ 421 0066 07       		.byte	0x7
+ 422 0067 AC010000 		.4byte	.LASF8
+ 423 006b 04       		.uleb128 0x4
+ 424 006c 04010000 		.4byte	.LASF9
+ 425 0070 02       		.byte	0x2
+ 426 0071 9801     		.2byte	0x198
+ 427 0073 2C000000 		.4byte	0x2c
+ 428 0077 04       		.uleb128 0x4
+ 429 0078 38010000 		.4byte	.LASF10
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 12
+
+
+ 430 007c 02       		.byte	0x2
+ 431 007d 9901     		.2byte	0x199
+ 432 007f 3A000000 		.4byte	0x3a
+ 433 0083 04       		.uleb128 0x4
+ 434 0084 85010000 		.4byte	.LASF11
+ 435 0088 02       		.byte	0x2
+ 436 0089 9A01     		.2byte	0x19a
+ 437 008b 48000000 		.4byte	0x48
+ 438 008f 04       		.uleb128 0x4
+ 439 0090 EC000000 		.4byte	.LASF12
+ 440 0094 02       		.byte	0x2
+ 441 0095 9C01     		.2byte	0x19c
+ 442 0097 33000000 		.4byte	0x33
+ 443 009b 04       		.uleb128 0x4
+ 444 009c 83020000 		.4byte	.LASF13
+ 445 00a0 02       		.byte	0x2
+ 446 00a1 9D01     		.2byte	0x19d
+ 447 00a3 41000000 		.4byte	0x41
+ 448 00a7 02       		.uleb128 0x2
+ 449 00a8 04       		.byte	0x4
+ 450 00a9 04       		.byte	0x4
+ 451 00aa 75000000 		.4byte	.LASF14
+ 452 00ae 02       		.uleb128 0x2
+ 453 00af 08       		.byte	0x8
+ 454 00b0 04       		.byte	0x4
+ 455 00b1 31010000 		.4byte	.LASF15
+ 456 00b5 02       		.uleb128 0x2
+ 457 00b6 01       		.byte	0x1
+ 458 00b7 08       		.byte	0x8
+ 459 00b8 B9010000 		.4byte	.LASF16
+ 460 00bc 04       		.uleb128 0x4
+ 461 00bd 75010000 		.4byte	.LASF17
+ 462 00c1 02       		.byte	0x2
+ 463 00c2 3A02     		.2byte	0x23a
+ 464 00c4 48000000 		.4byte	0x48
+ 465 00c8 02       		.uleb128 0x2
+ 466 00c9 04       		.byte	0x4
+ 467 00ca 07       		.byte	0x7
+ 468 00cb 89020000 		.4byte	.LASF18
+ 469 00cf 05       		.uleb128 0x5
+ 470 00d0 CE020000 		.4byte	.LASF36
+ 471 00d4 26       		.byte	0x26
+ 472 00d5 03       		.byte	0x3
+ 473 00d6 5C       		.byte	0x5c
+ 474 00d7 C0010000 		.4byte	0x1c0
+ 475 00db 06       		.uleb128 0x6
+ 476 00dc DC010000 		.4byte	.LASF19
+ 477 00e0 03       		.byte	0x3
+ 478 00e1 5E       		.byte	0x5e
+ 479 00e2 77000000 		.4byte	0x77
+ 480 00e6 00       		.byte	0
+ 481 00e7 07       		.uleb128 0x7
+ 482 00e8 56746800 		.ascii	"Vth\000"
+ 483 00ec 03       		.byte	0x3
+ 484 00ed 5F       		.byte	0x5f
+ 485 00ee 77000000 		.4byte	0x77
+ 486 00f2 02       		.byte	0x2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 13
+
+
+ 487 00f3 07       		.uleb128 0x7
+ 488 00f4 52746800 		.ascii	"Rth\000"
+ 489 00f8 03       		.byte	0x3
+ 490 00f9 60       		.byte	0x60
+ 491 00fa 77000000 		.4byte	0x77
+ 492 00fe 04       		.byte	0x4
+ 493 00ff 06       		.uleb128 0x6
+ 494 0100 0B000000 		.4byte	.LASF20
+ 495 0104 03       		.byte	0x3
+ 496 0105 61       		.byte	0x61
+ 497 0106 8F000000 		.4byte	0x8f
+ 498 010a 06       		.byte	0x6
+ 499 010b 06       		.uleb128 0x6
+ 500 010c 44000000 		.4byte	.LASF21
+ 501 0110 03       		.byte	0x3
+ 502 0111 62       		.byte	0x62
+ 503 0112 77000000 		.4byte	0x77
+ 504 0116 08       		.byte	0x8
+ 505 0117 06       		.uleb128 0x6
+ 506 0118 BE010000 		.4byte	.LASF22
+ 507 011c 03       		.byte	0x3
+ 508 011d 63       		.byte	0x63
+ 509 011e 77000000 		.4byte	0x77
+ 510 0122 0A       		.byte	0xa
+ 511 0123 06       		.uleb128 0x6
+ 512 0124 5F000000 		.4byte	.LASF23
+ 513 0128 03       		.byte	0x3
+ 514 0129 64       		.byte	0x64
+ 515 012a 8F000000 		.4byte	0x8f
+ 516 012e 0C       		.byte	0xc
+ 517 012f 06       		.uleb128 0x6
+ 518 0130 7E010000 		.4byte	.LASF24
+ 519 0134 03       		.byte	0x3
+ 520 0135 65       		.byte	0x65
+ 521 0136 8F000000 		.4byte	0x8f
+ 522 013a 0E       		.byte	0xe
+ 523 013b 06       		.uleb128 0x6
+ 524 013c 9E010000 		.4byte	.LASF25
+ 525 0140 03       		.byte	0x3
+ 526 0141 66       		.byte	0x66
+ 527 0142 8F000000 		.4byte	0x8f
+ 528 0146 10       		.byte	0x10
+ 529 0147 06       		.uleb128 0x6
+ 530 0148 17000000 		.4byte	.LASF26
+ 531 014c 03       		.byte	0x3
+ 532 014d 67       		.byte	0x67
+ 533 014e 8F000000 		.4byte	0x8f
+ 534 0152 12       		.byte	0x12
+ 535 0153 06       		.uleb128 0x6
+ 536 0154 00000000 		.4byte	.LASF27
+ 537 0158 03       		.byte	0x3
+ 538 0159 68       		.byte	0x68
+ 539 015a 8F000000 		.4byte	0x8f
+ 540 015e 14       		.byte	0x14
+ 541 015f 06       		.uleb128 0x6
+ 542 0160 E4010000 		.4byte	.LASF28
+ 543 0164 03       		.byte	0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 14
+
+
+ 544 0165 69       		.byte	0x69
+ 545 0166 8F000000 		.4byte	0x8f
+ 546 016a 16       		.byte	0x16
+ 547 016b 06       		.uleb128 0x6
+ 548 016c 22030000 		.4byte	.LASF29
+ 549 0170 03       		.byte	0x3
+ 550 0171 6A       		.byte	0x6a
+ 551 0172 8F000000 		.4byte	0x8f
+ 552 0176 18       		.byte	0x18
+ 553 0177 06       		.uleb128 0x6
+ 554 0178 DD020000 		.4byte	.LASF30
+ 555 017c 03       		.byte	0x3
+ 556 017d 6B       		.byte	0x6b
+ 557 017e 8F000000 		.4byte	0x8f
+ 558 0182 1A       		.byte	0x1a
+ 559 0183 06       		.uleb128 0x6
+ 560 0184 26010000 		.4byte	.LASF31
+ 561 0188 03       		.byte	0x3
+ 562 0189 6C       		.byte	0x6c
+ 563 018a 77000000 		.4byte	0x77
+ 564 018e 1C       		.byte	0x1c
+ 565 018f 06       		.uleb128 0x6
+ 566 0190 4F000000 		.4byte	.LASF32
+ 567 0194 03       		.byte	0x3
+ 568 0195 6D       		.byte	0x6d
+ 569 0196 77000000 		.4byte	0x77
+ 570 019a 1E       		.byte	0x1e
+ 571 019b 06       		.uleb128 0x6
+ 572 019c EF020000 		.4byte	.LASF33
+ 573 01a0 03       		.byte	0x3
+ 574 01a1 6E       		.byte	0x6e
+ 575 01a2 77000000 		.4byte	0x77
+ 576 01a6 20       		.byte	0x20
+ 577 01a7 06       		.uleb128 0x6
+ 578 01a8 8C010000 		.4byte	.LASF34
+ 579 01ac 03       		.byte	0x3
+ 580 01ad 6F       		.byte	0x6f
+ 581 01ae 77000000 		.4byte	0x77
+ 582 01b2 22       		.byte	0x22
+ 583 01b3 06       		.uleb128 0x6
+ 584 01b4 BD030000 		.4byte	.LASF35
+ 585 01b8 03       		.byte	0x3
+ 586 01b9 70       		.byte	0x70
+ 587 01ba 77000000 		.4byte	0x77
+ 588 01be 24       		.byte	0x24
+ 589 01bf 00       		.byte	0
+ 590 01c0 08       		.uleb128 0x8
+ 591 01c1 CE020000 		.4byte	.LASF36
+ 592 01c5 03       		.byte	0x3
+ 593 01c6 71       		.byte	0x71
+ 594 01c7 CF000000 		.4byte	0xcf
+ 595 01cb 09       		.uleb128 0x9
+ 596 01cc 3F010000 		.4byte	.LASF40
+ 597 01d0 01       		.byte	0x1
+ 598 01d1 46       		.byte	0x46
+ 599 01d2 77000000 		.4byte	0x77
+ 600 01d6 00000000 		.4byte	.LFB35
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 15
+
+
+ 601 01da 34000000 		.4byte	.LFE35-.LFB35
+ 602 01de 01       		.uleb128 0x1
+ 603 01df 9C       		.byte	0x9c
+ 604 01e0 01020000 		.4byte	0x201
+ 605 01e4 0A       		.uleb128 0xa
+ 606 01e5 44000000 		.4byte	.LASF21
+ 607 01e9 01       		.byte	0x1
+ 608 01ea 46       		.byte	0x46
+ 609 01eb 77000000 		.4byte	0x77
+ 610 01ef 02       		.uleb128 0x2
+ 611 01f0 91       		.byte	0x91
+ 612 01f1 6E       		.sleb128 -18
+ 613 01f2 0B       		.uleb128 0xb
+ 614 01f3 BE010000 		.4byte	.LASF22
+ 615 01f7 01       		.byte	0x1
+ 616 01f8 48       		.byte	0x48
+ 617 01f9 83000000 		.4byte	0x83
+ 618 01fd 02       		.uleb128 0x2
+ 619 01fe 91       		.byte	0x91
+ 620 01ff 74       		.sleb128 -12
+ 621 0200 00       		.byte	0
+ 622 0201 0C       		.uleb128 0xc
+ 623 0202 01030000 		.4byte	.LASF45
+ 624 0206 01       		.byte	0x1
+ 625 0207 64       		.byte	0x64
+ 626 0208 00000000 		.4byte	.LFB36
+ 627 020c A8000000 		.4byte	.LFE36-.LFB36
+ 628 0210 01       		.uleb128 0x1
+ 629 0211 9C       		.byte	0x9c
+ 630 0212 41020000 		.4byte	0x241
+ 631 0216 0B       		.uleb128 0xb
+ 632 0217 B9020000 		.4byte	.LASF37
+ 633 021b 01       		.byte	0x1
+ 634 021c 66       		.byte	0x66
+ 635 021d 77000000 		.4byte	0x77
+ 636 0221 02       		.uleb128 0x2
+ 637 0222 91       		.byte	0x91
+ 638 0223 76       		.sleb128 -10
+ 639 0224 0B       		.uleb128 0xb
+ 640 0225 5F010000 		.4byte	.LASF38
+ 641 0229 01       		.byte	0x1
+ 642 022a 66       		.byte	0x66
+ 643 022b 77000000 		.4byte	0x77
+ 644 022f 02       		.uleb128 0x2
+ 645 0230 91       		.byte	0x91
+ 646 0231 74       		.sleb128 -12
+ 647 0232 0B       		.uleb128 0xb
+ 648 0233 55010000 		.4byte	.LASF39
+ 649 0237 01       		.byte	0x1
+ 650 0238 66       		.byte	0x66
+ 651 0239 77000000 		.4byte	0x77
+ 652 023d 02       		.uleb128 0x2
+ 653 023e 91       		.byte	0x91
+ 654 023f 72       		.sleb128 -14
+ 655 0240 00       		.byte	0
+ 656 0241 09       		.uleb128 0x9
+ 657 0242 36030000 		.4byte	.LASF41
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 16
+
+
+ 658 0246 01       		.byte	0x1
+ 659 0247 8F       		.byte	0x8f
+ 660 0248 8F000000 		.4byte	0x8f
+ 661 024c 00000000 		.4byte	.LFB37
+ 662 0250 44000000 		.4byte	.LFE37-.LFB37
+ 663 0254 01       		.uleb128 0x1
+ 664 0255 9C       		.byte	0x9c
+ 665 0256 77020000 		.4byte	0x277
+ 666 025a 0A       		.uleb128 0xa
+ 667 025b 55010000 		.4byte	.LASF39
+ 668 025f 01       		.byte	0x1
+ 669 0260 8F       		.byte	0x8f
+ 670 0261 8F000000 		.4byte	0x8f
+ 671 0265 02       		.uleb128 0x2
+ 672 0266 91       		.byte	0x91
+ 673 0267 6E       		.sleb128 -18
+ 674 0268 0B       		.uleb128 0xb
+ 675 0269 37000000 		.4byte	.LASF42
+ 676 026d 01       		.byte	0x1
+ 677 026e 91       		.byte	0x91
+ 678 026f 9B000000 		.4byte	0x9b
+ 679 0273 02       		.uleb128 0x2
+ 680 0274 91       		.byte	0x91
+ 681 0275 74       		.sleb128 -12
+ 682 0276 00       		.byte	0
+ 683 0277 0D       		.uleb128 0xd
+ 684 0278 92020000 		.4byte	.LASF43
+ 685 027c 01       		.byte	0x1
+ 686 027d 9F       		.byte	0x9f
+ 687 027e 00000000 		.4byte	.LFB38
+ 688 0282 2C000000 		.4byte	.LFE38-.LFB38
+ 689 0286 01       		.uleb128 0x1
+ 690 0287 9C       		.byte	0x9c
+ 691 0288 0D       		.uleb128 0xd
+ 692 0289 55030000 		.4byte	.LASF44
+ 693 028d 01       		.byte	0x1
+ 694 028e AC       		.byte	0xac
+ 695 028f 00000000 		.4byte	.LFB39
+ 696 0293 1C000000 		.4byte	.LFE39-.LFB39
+ 697 0297 01       		.uleb128 0x1
+ 698 0298 9C       		.byte	0x9c
+ 699 0299 0C       		.uleb128 0xc
+ 700 029a 82030000 		.4byte	.LASF46
+ 701 029e 01       		.byte	0x1
+ 702 029f B6       		.byte	0xb6
+ 703 02a0 00000000 		.4byte	.LFB40
+ 704 02a4 34000000 		.4byte	.LFE40-.LFB40
+ 705 02a8 01       		.uleb128 0x1
+ 706 02a9 9C       		.byte	0x9c
+ 707 02aa CC020000 		.4byte	0x2cc
+ 708 02ae 0B       		.uleb128 0xb
+ 709 02af 4A030000 		.4byte	.LASF47
+ 710 02b3 01       		.byte	0x1
+ 711 02b4 B8       		.byte	0xb8
+ 712 02b5 CC020000 		.4byte	0x2cc
+ 713 02b9 03       		.uleb128 0x3
+ 714 02ba 91       		.byte	0x91
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 17
+
+
+ 715 02bb F47E     		.sleb128 -140
+ 716 02bd 0B       		.uleb128 0xb
+ 717 02be E0000000 		.4byte	.LASF48
+ 718 02c2 01       		.byte	0x1
+ 719 02c3 BA       		.byte	0xba
+ 720 02c4 BC000000 		.4byte	0xbc
+ 721 02c8 02       		.uleb128 0x2
+ 722 02c9 91       		.byte	0x91
+ 723 02ca 74       		.sleb128 -12
+ 724 02cb 00       		.byte	0
+ 725 02cc 0E       		.uleb128 0xe
+ 726 02cd 77000000 		.4byte	0x77
+ 727 02d1 DC020000 		.4byte	0x2dc
+ 728 02d5 0F       		.uleb128 0xf
+ 729 02d6 C8000000 		.4byte	0xc8
+ 730 02da 3F       		.byte	0x3f
+ 731 02db 00       		.byte	0
+ 732 02dc 10       		.uleb128 0x10
+ 733 02dd 0A010000 		.4byte	.LASF49
+ 734 02e1 03       		.byte	0x3
+ 735 02e2 78       		.byte	0x78
+ 736 02e3 C0010000 		.4byte	0x1c0
+ 737 02e7 10       		.uleb128 0x10
+ 738 02e8 CD010000 		.4byte	.LASF50
+ 739 02ec 03       		.byte	0x3
+ 740 02ed 79       		.byte	0x79
+ 741 02ee 77000000 		.4byte	0x77
+ 742 02f2 11       		.uleb128 0x11
+ 743 02f3 66000000 		.4byte	.LASF51
+ 744 02f7 01       		.byte	0x1
+ 745 02f8 33       		.byte	0x33
+ 746 02f9 77000000 		.4byte	0x77
+ 747 02fd 05       		.uleb128 0x5
+ 748 02fe 03       		.byte	0x3
+ 749 02ff 00000000 		.4byte	ALSOffsetCount
+ 750 0303 00       		.byte	0
+ 751              		.section	.debug_abbrev,"",%progbits
+ 752              	.Ldebug_abbrev0:
+ 753 0000 01       		.uleb128 0x1
+ 754 0001 11       		.uleb128 0x11
+ 755 0002 01       		.byte	0x1
+ 756 0003 25       		.uleb128 0x25
+ 757 0004 0E       		.uleb128 0xe
+ 758 0005 13       		.uleb128 0x13
+ 759 0006 0B       		.uleb128 0xb
+ 760 0007 03       		.uleb128 0x3
+ 761 0008 0E       		.uleb128 0xe
+ 762 0009 1B       		.uleb128 0x1b
+ 763 000a 0E       		.uleb128 0xe
+ 764 000b 55       		.uleb128 0x55
+ 765 000c 17       		.uleb128 0x17
+ 766 000d 11       		.uleb128 0x11
+ 767 000e 01       		.uleb128 0x1
+ 768 000f 10       		.uleb128 0x10
+ 769 0010 17       		.uleb128 0x17
+ 770 0011 00       		.byte	0
+ 771 0012 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 18
+
+
+ 772 0013 02       		.uleb128 0x2
+ 773 0014 24       		.uleb128 0x24
+ 774 0015 00       		.byte	0
+ 775 0016 0B       		.uleb128 0xb
+ 776 0017 0B       		.uleb128 0xb
+ 777 0018 3E       		.uleb128 0x3e
+ 778 0019 0B       		.uleb128 0xb
+ 779 001a 03       		.uleb128 0x3
+ 780 001b 0E       		.uleb128 0xe
+ 781 001c 00       		.byte	0
+ 782 001d 00       		.byte	0
+ 783 001e 03       		.uleb128 0x3
+ 784 001f 24       		.uleb128 0x24
+ 785 0020 00       		.byte	0
+ 786 0021 0B       		.uleb128 0xb
+ 787 0022 0B       		.uleb128 0xb
+ 788 0023 3E       		.uleb128 0x3e
+ 789 0024 0B       		.uleb128 0xb
+ 790 0025 03       		.uleb128 0x3
+ 791 0026 08       		.uleb128 0x8
+ 792 0027 00       		.byte	0
+ 793 0028 00       		.byte	0
+ 794 0029 04       		.uleb128 0x4
+ 795 002a 16       		.uleb128 0x16
+ 796 002b 00       		.byte	0
+ 797 002c 03       		.uleb128 0x3
+ 798 002d 0E       		.uleb128 0xe
+ 799 002e 3A       		.uleb128 0x3a
+ 800 002f 0B       		.uleb128 0xb
+ 801 0030 3B       		.uleb128 0x3b
+ 802 0031 05       		.uleb128 0x5
+ 803 0032 49       		.uleb128 0x49
+ 804 0033 13       		.uleb128 0x13
+ 805 0034 00       		.byte	0
+ 806 0035 00       		.byte	0
+ 807 0036 05       		.uleb128 0x5
+ 808 0037 13       		.uleb128 0x13
+ 809 0038 01       		.byte	0x1
+ 810 0039 03       		.uleb128 0x3
+ 811 003a 0E       		.uleb128 0xe
+ 812 003b 0B       		.uleb128 0xb
+ 813 003c 0B       		.uleb128 0xb
+ 814 003d 3A       		.uleb128 0x3a
+ 815 003e 0B       		.uleb128 0xb
+ 816 003f 3B       		.uleb128 0x3b
+ 817 0040 0B       		.uleb128 0xb
+ 818 0041 01       		.uleb128 0x1
+ 819 0042 13       		.uleb128 0x13
+ 820 0043 00       		.byte	0
+ 821 0044 00       		.byte	0
+ 822 0045 06       		.uleb128 0x6
+ 823 0046 0D       		.uleb128 0xd
+ 824 0047 00       		.byte	0
+ 825 0048 03       		.uleb128 0x3
+ 826 0049 0E       		.uleb128 0xe
+ 827 004a 3A       		.uleb128 0x3a
+ 828 004b 0B       		.uleb128 0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 19
+
+
+ 829 004c 3B       		.uleb128 0x3b
+ 830 004d 0B       		.uleb128 0xb
+ 831 004e 49       		.uleb128 0x49
+ 832 004f 13       		.uleb128 0x13
+ 833 0050 38       		.uleb128 0x38
+ 834 0051 0B       		.uleb128 0xb
+ 835 0052 00       		.byte	0
+ 836 0053 00       		.byte	0
+ 837 0054 07       		.uleb128 0x7
+ 838 0055 0D       		.uleb128 0xd
+ 839 0056 00       		.byte	0
+ 840 0057 03       		.uleb128 0x3
+ 841 0058 08       		.uleb128 0x8
+ 842 0059 3A       		.uleb128 0x3a
+ 843 005a 0B       		.uleb128 0xb
+ 844 005b 3B       		.uleb128 0x3b
+ 845 005c 0B       		.uleb128 0xb
+ 846 005d 49       		.uleb128 0x49
+ 847 005e 13       		.uleb128 0x13
+ 848 005f 38       		.uleb128 0x38
+ 849 0060 0B       		.uleb128 0xb
+ 850 0061 00       		.byte	0
+ 851 0062 00       		.byte	0
+ 852 0063 08       		.uleb128 0x8
+ 853 0064 16       		.uleb128 0x16
+ 854 0065 00       		.byte	0
+ 855 0066 03       		.uleb128 0x3
+ 856 0067 0E       		.uleb128 0xe
+ 857 0068 3A       		.uleb128 0x3a
+ 858 0069 0B       		.uleb128 0xb
+ 859 006a 3B       		.uleb128 0x3b
+ 860 006b 0B       		.uleb128 0xb
+ 861 006c 49       		.uleb128 0x49
+ 862 006d 13       		.uleb128 0x13
+ 863 006e 00       		.byte	0
+ 864 006f 00       		.byte	0
+ 865 0070 09       		.uleb128 0x9
+ 866 0071 2E       		.uleb128 0x2e
+ 867 0072 01       		.byte	0x1
+ 868 0073 3F       		.uleb128 0x3f
+ 869 0074 19       		.uleb128 0x19
+ 870 0075 03       		.uleb128 0x3
+ 871 0076 0E       		.uleb128 0xe
+ 872 0077 3A       		.uleb128 0x3a
+ 873 0078 0B       		.uleb128 0xb
+ 874 0079 3B       		.uleb128 0x3b
+ 875 007a 0B       		.uleb128 0xb
+ 876 007b 27       		.uleb128 0x27
+ 877 007c 19       		.uleb128 0x19
+ 878 007d 49       		.uleb128 0x49
+ 879 007e 13       		.uleb128 0x13
+ 880 007f 11       		.uleb128 0x11
+ 881 0080 01       		.uleb128 0x1
+ 882 0081 12       		.uleb128 0x12
+ 883 0082 06       		.uleb128 0x6
+ 884 0083 40       		.uleb128 0x40
+ 885 0084 18       		.uleb128 0x18
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 20
+
+
+ 886 0085 9642     		.uleb128 0x2116
+ 887 0087 19       		.uleb128 0x19
+ 888 0088 01       		.uleb128 0x1
+ 889 0089 13       		.uleb128 0x13
+ 890 008a 00       		.byte	0
+ 891 008b 00       		.byte	0
+ 892 008c 0A       		.uleb128 0xa
+ 893 008d 05       		.uleb128 0x5
+ 894 008e 00       		.byte	0
+ 895 008f 03       		.uleb128 0x3
+ 896 0090 0E       		.uleb128 0xe
+ 897 0091 3A       		.uleb128 0x3a
+ 898 0092 0B       		.uleb128 0xb
+ 899 0093 3B       		.uleb128 0x3b
+ 900 0094 0B       		.uleb128 0xb
+ 901 0095 49       		.uleb128 0x49
+ 902 0096 13       		.uleb128 0x13
+ 903 0097 02       		.uleb128 0x2
+ 904 0098 18       		.uleb128 0x18
+ 905 0099 00       		.byte	0
+ 906 009a 00       		.byte	0
+ 907 009b 0B       		.uleb128 0xb
+ 908 009c 34       		.uleb128 0x34
+ 909 009d 00       		.byte	0
+ 910 009e 03       		.uleb128 0x3
+ 911 009f 0E       		.uleb128 0xe
+ 912 00a0 3A       		.uleb128 0x3a
+ 913 00a1 0B       		.uleb128 0xb
+ 914 00a2 3B       		.uleb128 0x3b
+ 915 00a3 0B       		.uleb128 0xb
+ 916 00a4 49       		.uleb128 0x49
+ 917 00a5 13       		.uleb128 0x13
+ 918 00a6 02       		.uleb128 0x2
+ 919 00a7 18       		.uleb128 0x18
+ 920 00a8 00       		.byte	0
+ 921 00a9 00       		.byte	0
+ 922 00aa 0C       		.uleb128 0xc
+ 923 00ab 2E       		.uleb128 0x2e
+ 924 00ac 01       		.byte	0x1
+ 925 00ad 3F       		.uleb128 0x3f
+ 926 00ae 19       		.uleb128 0x19
+ 927 00af 03       		.uleb128 0x3
+ 928 00b0 0E       		.uleb128 0xe
+ 929 00b1 3A       		.uleb128 0x3a
+ 930 00b2 0B       		.uleb128 0xb
+ 931 00b3 3B       		.uleb128 0x3b
+ 932 00b4 0B       		.uleb128 0xb
+ 933 00b5 27       		.uleb128 0x27
+ 934 00b6 19       		.uleb128 0x19
+ 935 00b7 11       		.uleb128 0x11
+ 936 00b8 01       		.uleb128 0x1
+ 937 00b9 12       		.uleb128 0x12
+ 938 00ba 06       		.uleb128 0x6
+ 939 00bb 40       		.uleb128 0x40
+ 940 00bc 18       		.uleb128 0x18
+ 941 00bd 9642     		.uleb128 0x2116
+ 942 00bf 19       		.uleb128 0x19
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 21
+
+
+ 943 00c0 01       		.uleb128 0x1
+ 944 00c1 13       		.uleb128 0x13
+ 945 00c2 00       		.byte	0
+ 946 00c3 00       		.byte	0
+ 947 00c4 0D       		.uleb128 0xd
+ 948 00c5 2E       		.uleb128 0x2e
+ 949 00c6 00       		.byte	0
+ 950 00c7 3F       		.uleb128 0x3f
+ 951 00c8 19       		.uleb128 0x19
+ 952 00c9 03       		.uleb128 0x3
+ 953 00ca 0E       		.uleb128 0xe
+ 954 00cb 3A       		.uleb128 0x3a
+ 955 00cc 0B       		.uleb128 0xb
+ 956 00cd 3B       		.uleb128 0x3b
+ 957 00ce 0B       		.uleb128 0xb
+ 958 00cf 27       		.uleb128 0x27
+ 959 00d0 19       		.uleb128 0x19
+ 960 00d1 11       		.uleb128 0x11
+ 961 00d2 01       		.uleb128 0x1
+ 962 00d3 12       		.uleb128 0x12
+ 963 00d4 06       		.uleb128 0x6
+ 964 00d5 40       		.uleb128 0x40
+ 965 00d6 18       		.uleb128 0x18
+ 966 00d7 9642     		.uleb128 0x2116
+ 967 00d9 19       		.uleb128 0x19
+ 968 00da 00       		.byte	0
+ 969 00db 00       		.byte	0
+ 970 00dc 0E       		.uleb128 0xe
+ 971 00dd 01       		.uleb128 0x1
+ 972 00de 01       		.byte	0x1
+ 973 00df 49       		.uleb128 0x49
+ 974 00e0 13       		.uleb128 0x13
+ 975 00e1 01       		.uleb128 0x1
+ 976 00e2 13       		.uleb128 0x13
+ 977 00e3 00       		.byte	0
+ 978 00e4 00       		.byte	0
+ 979 00e5 0F       		.uleb128 0xf
+ 980 00e6 21       		.uleb128 0x21
+ 981 00e7 00       		.byte	0
+ 982 00e8 49       		.uleb128 0x49
+ 983 00e9 13       		.uleb128 0x13
+ 984 00ea 2F       		.uleb128 0x2f
+ 985 00eb 0B       		.uleb128 0xb
+ 986 00ec 00       		.byte	0
+ 987 00ed 00       		.byte	0
+ 988 00ee 10       		.uleb128 0x10
+ 989 00ef 34       		.uleb128 0x34
+ 990 00f0 00       		.byte	0
+ 991 00f1 03       		.uleb128 0x3
+ 992 00f2 0E       		.uleb128 0xe
+ 993 00f3 3A       		.uleb128 0x3a
+ 994 00f4 0B       		.uleb128 0xb
+ 995 00f5 3B       		.uleb128 0x3b
+ 996 00f6 0B       		.uleb128 0xb
+ 997 00f7 49       		.uleb128 0x49
+ 998 00f8 13       		.uleb128 0x13
+ 999 00f9 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 22
+
+
+ 1000 00fa 19       		.uleb128 0x19
+ 1001 00fb 3C       		.uleb128 0x3c
+ 1002 00fc 19       		.uleb128 0x19
+ 1003 00fd 00       		.byte	0
+ 1004 00fe 00       		.byte	0
+ 1005 00ff 11       		.uleb128 0x11
+ 1006 0100 34       		.uleb128 0x34
+ 1007 0101 00       		.byte	0
+ 1008 0102 03       		.uleb128 0x3
+ 1009 0103 0E       		.uleb128 0xe
+ 1010 0104 3A       		.uleb128 0x3a
+ 1011 0105 0B       		.uleb128 0xb
+ 1012 0106 3B       		.uleb128 0x3b
+ 1013 0107 0B       		.uleb128 0xb
+ 1014 0108 49       		.uleb128 0x49
+ 1015 0109 13       		.uleb128 0x13
+ 1016 010a 3F       		.uleb128 0x3f
+ 1017 010b 19       		.uleb128 0x19
+ 1018 010c 02       		.uleb128 0x2
+ 1019 010d 18       		.uleb128 0x18
+ 1020 010e 00       		.byte	0
+ 1021 010f 00       		.byte	0
+ 1022 0110 00       		.byte	0
+ 1023              		.section	.debug_aranges,"",%progbits
+ 1024 0000 44000000 		.4byte	0x44
+ 1025 0004 0200     		.2byte	0x2
+ 1026 0006 00000000 		.4byte	.Ldebug_info0
+ 1027 000a 04       		.byte	0x4
+ 1028 000b 00       		.byte	0
+ 1029 000c 0000     		.2byte	0
+ 1030 000e 0000     		.2byte	0
+ 1031 0010 00000000 		.4byte	.LFB35
+ 1032 0014 34000000 		.4byte	.LFE35-.LFB35
+ 1033 0018 00000000 		.4byte	.LFB36
+ 1034 001c A8000000 		.4byte	.LFE36-.LFB36
+ 1035 0020 00000000 		.4byte	.LFB37
+ 1036 0024 44000000 		.4byte	.LFE37-.LFB37
+ 1037 0028 00000000 		.4byte	.LFB38
+ 1038 002c 2C000000 		.4byte	.LFE38-.LFB38
+ 1039 0030 00000000 		.4byte	.LFB39
+ 1040 0034 1C000000 		.4byte	.LFE39-.LFB39
+ 1041 0038 00000000 		.4byte	.LFB40
+ 1042 003c 34000000 		.4byte	.LFE40-.LFB40
+ 1043 0040 00000000 		.4byte	0
+ 1044 0044 00000000 		.4byte	0
+ 1045              		.section	.debug_ranges,"",%progbits
+ 1046              	.Ldebug_ranges0:
+ 1047 0000 00000000 		.4byte	.LFB35
+ 1048 0004 34000000 		.4byte	.LFE35
+ 1049 0008 00000000 		.4byte	.LFB36
+ 1050 000c A8000000 		.4byte	.LFE36
+ 1051 0010 00000000 		.4byte	.LFB37
+ 1052 0014 44000000 		.4byte	.LFE37
+ 1053 0018 00000000 		.4byte	.LFB38
+ 1054 001c 2C000000 		.4byte	.LFE38
+ 1055 0020 00000000 		.4byte	.LFB39
+ 1056 0024 1C000000 		.4byte	.LFE39
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 23
+
+
+ 1057 0028 00000000 		.4byte	.LFB40
+ 1058 002c 34000000 		.4byte	.LFE40
+ 1059 0030 00000000 		.4byte	0
+ 1060 0034 00000000 		.4byte	0
+ 1061              		.section	.debug_line,"",%progbits
+ 1062              	.Ldebug_line0:
+ 1063 0000 E1000000 		.section	.debug_str,"MS",%progbits,1
+ 1063      02005B00 
+ 1063      00000201 
+ 1063      FB0E0D00 
+ 1063      01010101 
+ 1064              	.LASF27:
+ 1065 0000 50495254 		.ascii	"PIRTrigger\000"
+ 1065      72696767 
+ 1065      657200
+ 1066              	.LASF20:
+ 1067 000b 54656D70 		.ascii	"Temperature\000"
+ 1067      65726174 
+ 1067      75726500 
+ 1068              	.LASF26:
+ 1069 0017 50495257 		.ascii	"PIRWindowLow\000"
+ 1069      696E646F 
+ 1069      774C6F77 
+ 1069      00
+ 1070              	.LASF3:
+ 1071 0024 73686F72 		.ascii	"short unsigned int\000"
+ 1071      7420756E 
+ 1071      7369676E 
+ 1071      65642069 
+ 1071      6E7400
+ 1072              	.LASF42:
+ 1073 0037 44696F64 		.ascii	"DiodeCurrent\000"
+ 1073      65437572 
+ 1073      72656E74 
+ 1073      00
+ 1074              	.LASF21:
+ 1075 0044 414C5343 		.ascii	"ALSCurrent\000"
+ 1075      75727265 
+ 1075      6E7400
+ 1076              	.LASF32:
+ 1077 004f 52617743 		.ascii	"RawCountsRefCap\000"
+ 1077      6F756E74 
+ 1077      73526566 
+ 1077      43617000 
+ 1078              	.LASF23:
+ 1079 005f 50495252 		.ascii	"PIRRaw\000"
+ 1079      617700
+ 1080              	.LASF51:
+ 1081 0066 414C534F 		.ascii	"ALSOffsetCount\000"
+ 1081      66667365 
+ 1081      74436F75 
+ 1081      6E7400
+ 1082              	.LASF14:
+ 1083 0075 666C6F61 		.ascii	"float\000"
+ 1083      7400
+ 1084              	.LASF54:
+ 1085 007b 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 24
+
+
+ 1085      73657273 
+ 1085      5C436872 
+ 1085      6973746F 
+ 1085      70686572 
+ 1086 00aa 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 1086      456E7669 
+ 1086      726F6E6D 
+ 1086      656E7453 
+ 1086      656E7369 
+ 1087 00db 7964736E 		.ascii	"ydsn\000"
+ 1087      00
+ 1088              	.LASF48:
+ 1089 00e0 72657475 		.ascii	"returnValue\000"
+ 1089      726E5661 
+ 1089      6C756500 
+ 1090              	.LASF12:
+ 1091 00ec 696E7431 		.ascii	"int16\000"
+ 1091      3600
+ 1092              	.LASF5:
+ 1093 00f2 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1093      20756E73 
+ 1093      69676E65 
+ 1093      6420696E 
+ 1093      7400
+ 1094              	.LASF9:
+ 1095 0104 75696E74 		.ascii	"uint8\000"
+ 1095      3800
+ 1096              	.LASF49:
+ 1097 010a 50726F63 		.ascii	"ProcessValues\000"
+ 1097      65737356 
+ 1097      616C7565 
+ 1097      7300
+ 1098              	.LASF1:
+ 1099 0118 756E7369 		.ascii	"unsigned char\000"
+ 1099      676E6564 
+ 1099      20636861 
+ 1099      7200
+ 1100              	.LASF31:
+ 1101 0126 49505354 		.ascii	"IPSTrigger\000"
+ 1101      72696767 
+ 1101      657200
+ 1102              	.LASF15:
+ 1103 0131 646F7562 		.ascii	"double\000"
+ 1103      6C6500
+ 1104              	.LASF10:
+ 1105 0138 75696E74 		.ascii	"uint16\000"
+ 1105      313600
+ 1106              	.LASF40:
+ 1107 013f 43616C63 		.ascii	"CalculateAmbientLight\000"
+ 1107      756C6174 
+ 1107      65416D62 
+ 1107      69656E74 
+ 1107      4C696768 
+ 1108              	.LASF39:
+ 1109 0155 41444352 		.ascii	"ADCResult\000"
+ 1109      6573756C 
+ 1109      7400
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 25
+
+
+ 1110              	.LASF38:
+ 1111 015f 41444352 		.ascii	"ADCResult_ALS_Reverse\000"
+ 1111      6573756C 
+ 1111      745F414C 
+ 1111      535F5265 
+ 1111      76657273 
+ 1112              	.LASF17:
+ 1113 0175 63797374 		.ascii	"cystatus\000"
+ 1113      61747573 
+ 1113      00
+ 1114              	.LASF24:
+ 1115 017e 50495248 		.ascii	"PIRHpf\000"
+ 1115      706600
+ 1116              	.LASF11:
+ 1117 0185 75696E74 		.ascii	"uint32\000"
+ 1117      333200
+ 1118              	.LASF34:
+ 1119 018c 53656E73 		.ascii	"SensorCapacitance\000"
+ 1119      6F724361 
+ 1119      70616369 
+ 1119      74616E63 
+ 1119      6500
+ 1120              	.LASF25:
+ 1121 019e 50495257 		.ascii	"PIRWindowHigh\000"
+ 1121      696E646F 
+ 1121      77486967 
+ 1121      6800
+ 1122              	.LASF8:
+ 1123 01ac 756E7369 		.ascii	"unsigned int\000"
+ 1123      676E6564 
+ 1123      20696E74 
+ 1123      00
+ 1124              	.LASF16:
+ 1125 01b9 63686172 		.ascii	"char\000"
+ 1125      00
+ 1126              	.LASF22:
+ 1127 01be 4C696768 		.ascii	"LightIntensity\000"
+ 1127      74496E74 
+ 1127      656E7369 
+ 1127      747900
+ 1128              	.LASF50:
+ 1129 01cd 49324352 		.ascii	"I2CRegsCommand\000"
+ 1129      65677343 
+ 1129      6F6D6D61 
+ 1129      6E6400
+ 1130              	.LASF19:
+ 1131 01dc 56657273 		.ascii	"Version\000"
+ 1131      696F6E00 
+ 1132              	.LASF28:
+ 1133 01e4 49505352 		.ascii	"IPSRawCounts\000"
+ 1133      6177436F 
+ 1133      756E7473 
+ 1133      00
+ 1134              	.LASF52:
+ 1135 01f1 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1135      4320342E 
+ 1135      392E3320 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 26
+
+
+ 1135      32303135 
+ 1135      30333033 
+ 1136 0224 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 1136      20726576 
+ 1136      6973696F 
+ 1136      6E203232 
+ 1136      31323230 
+ 1137 0257 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 1137      30202D66 
+ 1137      66756E63 
+ 1137      74696F6E 
+ 1137      2D736563 
+ 1138              	.LASF13:
+ 1139 0283 696E7433 		.ascii	"int32\000"
+ 1139      3200
+ 1140              	.LASF18:
+ 1141 0289 73697A65 		.ascii	"sizetype\000"
+ 1141      74797065 
+ 1141      00
+ 1142              	.LASF43:
+ 1143 0292 416D6269 		.ascii	"AmbientLightSensor_Start\000"
+ 1143      656E744C 
+ 1143      69676874 
+ 1143      53656E73 
+ 1143      6F725F53 
+ 1144              	.LASF6:
+ 1145 02ab 6C6F6E67 		.ascii	"long long int\000"
+ 1145      206C6F6E 
+ 1145      6720696E 
+ 1145      7400
+ 1146              	.LASF37:
+ 1147 02b9 41444352 		.ascii	"ADCResult_ALS_Direct\000"
+ 1147      6573756C 
+ 1147      745F414C 
+ 1147      535F4469 
+ 1147      72656374 
+ 1148              	.LASF36:
+ 1149 02ce 50524F43 		.ascii	"PROCESS_VALUES\000"
+ 1149      4553535F 
+ 1149      56414C55 
+ 1149      455300
+ 1150              	.LASF30:
+ 1151 02dd 49505342 		.ascii	"IPSBaselineCounts\000"
+ 1151      6173656C 
+ 1151      696E6543 
+ 1151      6F756E74 
+ 1151      7300
+ 1152              	.LASF33:
+ 1153 02ef 52617743 		.ascii	"RawCountsHumidity\000"
+ 1153      6F756E74 
+ 1153      7348756D 
+ 1153      69646974 
+ 1153      7900
+ 1154              	.LASF45:
+ 1155 0301 416D6269 		.ascii	"AmbientLightSensorTask\000"
+ 1155      656E744C 
+ 1155      69676874 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 27
+
+
+ 1155      53656E73 
+ 1155      6F725461 
+ 1156              	.LASF2:
+ 1157 0318 73686F72 		.ascii	"short int\000"
+ 1157      7420696E 
+ 1157      7400
+ 1158              	.LASF29:
+ 1159 0322 49505344 		.ascii	"IPSDifferenceCounts\000"
+ 1159      69666665 
+ 1159      72656E63 
+ 1159      65436F75 
+ 1159      6E747300 
+ 1160              	.LASF41:
+ 1161 0336 43616C63 		.ascii	"CalculateAlsCurrent\000"
+ 1161      756C6174 
+ 1161      65416C73 
+ 1161      43757272 
+ 1161      656E7400 
+ 1162              	.LASF47:
+ 1163 034a 726F7750 		.ascii	"rowPattern\000"
+ 1163      61747465 
+ 1163      726E00
+ 1164              	.LASF44:
+ 1165 0355 416D6269 		.ascii	"AmbientLightSensor_Stop\000"
+ 1165      656E744C 
+ 1165      69676874 
+ 1165      53656E73 
+ 1165      6F725F53 
+ 1166              	.LASF4:
+ 1167 036d 6C6F6E67 		.ascii	"long int\000"
+ 1167      20696E74 
+ 1167      00
+ 1168              	.LASF0:
+ 1169 0376 7369676E 		.ascii	"signed char\000"
+ 1169      65642063 
+ 1169      68617200 
+ 1170              	.LASF46:
+ 1171 0382 57726974 		.ascii	"WriteALSOffset\000"
+ 1171      65414C53 
+ 1171      4F666673 
+ 1171      657400
+ 1172              	.LASF53:
+ 1173 0391 416D6269 		.ascii	"AmbientLightSensor.c\000"
+ 1173      656E744C 
+ 1173      69676874 
+ 1173      53656E73 
+ 1173      6F722E63 
+ 1174              	.LASF7:
+ 1175 03a6 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1175      206C6F6E 
+ 1175      6720756E 
+ 1175      7369676E 
+ 1175      65642069 
+ 1176              	.LASF35:
+ 1177 03bd 48756D69 		.ascii	"Humidity\000"
+ 1177      64697479 
+ 1177      00
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccnwnJfb.s 			page 28
+
+
+ 1178              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

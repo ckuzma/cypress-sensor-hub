@@ -1,0 +1,5 @@
+C:\Users\Christopher Kuzma\Downloads\Cypress Thing\EnvironmentSensing.cydsn\EnvironmentSensing.cydsn\EnvironmentSensing.cyprj|03fd711e-6d77-4f13-9050-117367dd6b23
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|17a9ad07-3497-4867-8754-78d1cb77a164
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|233dde8d-325e-45b4-bc7c-16927057b6e1
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|b81f7ae5-fd7d-47a0-bd8b-b06c43e76504
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|ac096c67-97ab-4be5-880c-7b0bdac589aa

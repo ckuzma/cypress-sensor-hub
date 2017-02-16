@@ -1,0 +1,3623 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"CSD_Control.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.bss
+  18              	CSD_InitVar:
+  19 0000 00       		.space	1
+  20              		.section	.text.CSD_Start,"ax",%progbits
+  21              		.align	2
+  22              		.global	CSD_Start
+  23              		.code	16
+  24              		.thumb_func
+  25              		.type	CSD_Start, %function
+  26              	CSD_Start:
+  27              	.LFB1:
+  28              		.file 1 "Generated_Source\\PSoC4\\CSD_Control.c"
+   1:Generated_Source\PSoC4/CSD_Control.c **** /***************************************************************************//**
+   2:Generated_Source\PSoC4/CSD_Control.c **** * \file CSD_Control.c
+   3:Generated_Source\PSoC4/CSD_Control.c **** * \version 3.0
+   4:Generated_Source\PSoC4/CSD_Control.c **** *
+   5:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+   6:Generated_Source\PSoC4/CSD_Control.c **** * This file provides the source code to the Control module API of the Component.
+   7:Generated_Source\PSoC4/CSD_Control.c **** *
+   8:Generated_Source\PSoC4/CSD_Control.c **** * \see CapSense P4 v3.0 Datasheet
+   9:Generated_Source\PSoC4/CSD_Control.c **** *
+  10:Generated_Source\PSoC4/CSD_Control.c **** *//*****************************************************************************
+  11:Generated_Source\PSoC4/CSD_Control.c **** * Copyright (2016), Cypress Semiconductor Corporation.
+  12:Generated_Source\PSoC4/CSD_Control.c **** ********************************************************************************
+  13:Generated_Source\PSoC4/CSD_Control.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  14:Generated_Source\PSoC4/CSD_Control.c **** * protected by and subject to worldwide patent protection (United States and
+  15:Generated_Source\PSoC4/CSD_Control.c **** * foreign), United States copyright laws and international treaty provisions.
+  16:Generated_Source\PSoC4/CSD_Control.c **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  17:Generated_Source\PSoC4/CSD_Control.c **** * license to copy, use, modify, create derivative works of, and compile the
+  18:Generated_Source\PSoC4/CSD_Control.c **** * Cypress Source Code and derivative works for the sole purpose of creating
+  19:Generated_Source\PSoC4/CSD_Control.c **** * custom software in support of licensee product to be used only in conjunction
+  20:Generated_Source\PSoC4/CSD_Control.c **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  21:Generated_Source\PSoC4/CSD_Control.c **** * Any reproduction, modification, translation, compilation, or representation of
+  22:Generated_Source\PSoC4/CSD_Control.c **** * this software except as specified above is prohibited without the express
+  23:Generated_Source\PSoC4/CSD_Control.c **** * written permission of Cypress.
+  24:Generated_Source\PSoC4/CSD_Control.c **** *
+  25:Generated_Source\PSoC4/CSD_Control.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  26:Generated_Source\PSoC4/CSD_Control.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  27:Generated_Source\PSoC4/CSD_Control.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  28:Generated_Source\PSoC4/CSD_Control.c **** * Cypress reserves the right to make changes without further notice to the
+  29:Generated_Source\PSoC4/CSD_Control.c **** * materials described herein. Cypress does not assume any liability arising out
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 2
+
+
+  30:Generated_Source\PSoC4/CSD_Control.c **** * of the application or use of any product or circuit described herein. Cypress
+  31:Generated_Source\PSoC4/CSD_Control.c **** * does not authorize its products for use as critical components in life-support
+  32:Generated_Source\PSoC4/CSD_Control.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  33:Generated_Source\PSoC4/CSD_Control.c **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  34:Generated_Source\PSoC4/CSD_Control.c **** * support systems application implies that the manufacturer assumes all risk of
+  35:Generated_Source\PSoC4/CSD_Control.c **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  36:Generated_Source\PSoC4/CSD_Control.c **** * limited by and subject to the applicable Cypress software license agreement.
+  37:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+  38:Generated_Source\PSoC4/CSD_Control.c **** 
+  39:Generated_Source\PSoC4/CSD_Control.c **** #include "cytypes.h"
+  40:Generated_Source\PSoC4/CSD_Control.c **** #include "CyLib.h"
+  41:Generated_Source\PSoC4/CSD_Control.c **** #include "cyPm.h"
+  42:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Configuration.h"
+  43:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Structure.h"
+  44:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Control.h"
+  45:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Processing.h"
+  46:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Filter.h"
+  47:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Sensing.h"
+  48:Generated_Source\PSoC4/CSD_Control.c **** #include "CSD_Tuner.h"
+  49:Generated_Source\PSoC4/CSD_Control.c **** 
+  50:Generated_Source\PSoC4/CSD_Control.c **** #if (0u != CSD_ADC_EN)
+  51:Generated_Source\PSoC4/CSD_Control.c ****     #include "CSD_Adc.h"
+  52:Generated_Source\PSoC4/CSD_Control.c **** #endif /* (0u != CSD_ADC_EN) */
+  53:Generated_Source\PSoC4/CSD_Control.c **** /**************************************************************************************************
+  54:Generated_Source\PSoC4/CSD_Control.c **** * Local definition
+  55:Generated_Source\PSoC4/CSD_Control.c **** ***************************************************************************************************
+  56:Generated_Source\PSoC4/CSD_Control.c **** #define CSD_INIT_DONE   (1u)
+  57:Generated_Source\PSoC4/CSD_Control.c **** #define CSD_INIT_NEEDED (0u)
+  58:Generated_Source\PSoC4/CSD_Control.c **** 
+  59:Generated_Source\PSoC4/CSD_Control.c **** /**************************************************************************************************
+  60:Generated_Source\PSoC4/CSD_Control.c **** * Local variables
+  61:Generated_Source\PSoC4/CSD_Control.c **** ***************************************************************************************************
+  62:Generated_Source\PSoC4/CSD_Control.c **** static uint8 CSD_InitVar = CSD_INIT_NEEDED;
+  63:Generated_Source\PSoC4/CSD_Control.c **** 
+  64:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+  65:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Start
+  66:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+  67:Generated_Source\PSoC4/CSD_Control.c **** *
+  68:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+  69:Generated_Source\PSoC4/CSD_Control.c **** *  Initializes component hardware and firmware modules. This function should be 
+  70:Generated_Source\PSoC4/CSD_Control.c **** *  called by the application program prior to calling any other function of the 
+  71:Generated_Source\PSoC4/CSD_Control.c **** *  component.
+  72:Generated_Source\PSoC4/CSD_Control.c **** *
+  73:Generated_Source\PSoC4/CSD_Control.c **** * \details
+  74:Generated_Source\PSoC4/CSD_Control.c **** *  This function initializes the component hardware and firmware modules and 
+  75:Generated_Source\PSoC4/CSD_Control.c **** *  should be called by the application program prior to calling any other API
+  76:Generated_Source\PSoC4/CSD_Control.c **** *  of the component. When this function is called, the following tasks are 
+  77:Generated_Source\PSoC4/CSD_Control.c **** *  executed as part of the initialization process:
+  78:Generated_Source\PSoC4/CSD_Control.c **** *    1. Initialize the registers of the \ref group_structures variable 
+  79:Generated_Source\PSoC4/CSD_Control.c **** *       CSD_dsRam based on the user selection in component 
+  80:Generated_Source\PSoC4/CSD_Control.c **** *       configuration wizard. 
+  81:Generated_Source\PSoC4/CSD_Control.c **** *    2. Configure the hardware to perform capacitive sensing.
+  82:Generated_Source\PSoC4/CSD_Control.c **** *    3. If SmartSense Auto-tuning is selected for the CSD Tuning mode in the 
+  83:Generated_Source\PSoC4/CSD_Control.c **** *       Basic tab, the auto-tuning algorithm is executed to set the optimal 
+  84:Generated_Source\PSoC4/CSD_Control.c **** *       values for the hardware parameters of the widgets/sensors.
+  85:Generated_Source\PSoC4/CSD_Control.c **** *    4. Calibrate the sensors and find the optimal values for IDACs of each 
+  86:Generated_Source\PSoC4/CSD_Control.c **** *       widget / sensor, if the Enable IDAC auto-calibration is enabled in the
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 3
+
+
+  87:Generated_Source\PSoC4/CSD_Control.c **** *       CSD Setting or CSX Setting tabs.
+  88:Generated_Source\PSoC4/CSD_Control.c **** *    5. Perform a scan for all sensors and initialize the baseline history. 
+  89:Generated_Source\PSoC4/CSD_Control.c **** *       During the scan, CPU is in the sleep mode to save power.
+  90:Generated_Source\PSoC4/CSD_Control.c **** *    6. If the firmware filters are enabled in the Advanced General tab, the 
+  91:Generated_Source\PSoC4/CSD_Control.c **** *       filter histories are also initialized.
+  92:Generated_Source\PSoC4/CSD_Control.c **** 
+  93:Generated_Source\PSoC4/CSD_Control.c **** *  Any next call of this API repeats an initialization process except for 
+  94:Generated_Source\PSoC4/CSD_Control.c **** *  data structure initialization. Therefore, it is possible to change the 
+  95:Generated_Source\PSoC4/CSD_Control.c **** *  component configuration from the application program by writing to the 
+  96:Generated_Source\PSoC4/CSD_Control.c **** *  data structure registers and calling this function again. This is also 
+  97:Generated_Source\PSoC4/CSD_Control.c **** *  done inside the CSD_RunTuner() function when a restart command 
+  98:Generated_Source\PSoC4/CSD_Control.c **** *  is received. 
+  99:Generated_Source\PSoC4/CSD_Control.c **** *
+ 100:Generated_Source\PSoC4/CSD_Control.c **** *  When the component operation is stopped by the CSD_Stop() 
+ 101:Generated_Source\PSoC4/CSD_Control.c **** *  function, the CSD_Start() function repeats an initialization 
+ 102:Generated_Source\PSoC4/CSD_Control.c **** *  process including data structure initialization.
+ 103:Generated_Source\PSoC4/CSD_Control.c **** *
+ 104:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 105:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the initialization process. If CYRET_SUCCESS is not 
+ 106:Generated_Source\PSoC4/CSD_Control.c **** *  received, some of the initialization fails and the component may not operate
+ 107:Generated_Source\PSoC4/CSD_Control.c **** *  as expected.
+ 108:Generated_Source\PSoC4/CSD_Control.c **** *
+ 109:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 110:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_Start(void)
+ 111:Generated_Source\PSoC4/CSD_Control.c **** {
+  29              		.loc 1 111 0
+  30              		.cfi_startproc
+  31 0000 90B5     		push	{r4, r7, lr}
+  32              		.cfi_def_cfa_offset 12
+  33              		.cfi_offset 4, -12
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+ 112:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result;
+ 113:Generated_Source\PSoC4/CSD_Control.c ****     uint8 interruptState;
+ 114:Generated_Source\PSoC4/CSD_Control.c **** 
+ 115:Generated_Source\PSoC4/CSD_Control.c ****     /* Initialize CSD modules */
+ 116:Generated_Source\PSoC4/CSD_Control.c ****     result = CSD_Initialize();
+  40              		.loc 1 116 0
+  41 0006 FFF7FEFF 		bl	CSD_Initialize
+  42 000a 031C     		mov	r3, r0
+  43 000c 7B60     		str	r3, [r7, #4]
+ 117:Generated_Source\PSoC4/CSD_Control.c **** 
+ 118:Generated_Source\PSoC4/CSD_Control.c ****     #if (0u != CSD_SELF_TEST_EN)
+ 119:Generated_Source\PSoC4/CSD_Control.c ****         if (CYRET_SUCCESS == result)
+ 120:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 121:Generated_Source\PSoC4/CSD_Control.c ****             result = CSD_RunSelfTest(CSD_TST_SHORTS);
+ 122:Generated_Source\PSoC4/CSD_Control.c **** 
+ 123:Generated_Source\PSoC4/CSD_Control.c ****             /* Verify if test succeed */
+ 124:Generated_Source\PSoC4/CSD_Control.c ****             if (0u != result)
+ 125:Generated_Source\PSoC4/CSD_Control.c ****             {
+ 126:Generated_Source\PSoC4/CSD_Control.c ****                 result = CYRET_UNKNOWN;
+ 127:Generated_Source\PSoC4/CSD_Control.c ****             }
+ 128:Generated_Source\PSoC4/CSD_Control.c ****         }
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 4
+
+
+ 129:Generated_Source\PSoC4/CSD_Control.c ****     #endif /* #if (0u != CSD_SELF_TEST_EN) */
+ 130:Generated_Source\PSoC4/CSD_Control.c **** 
+ 131:Generated_Source\PSoC4/CSD_Control.c ****     #if (CSD_CSD_AUTOTUNE != CSD_CSD_SS_DIS)
+ 132:Generated_Source\PSoC4/CSD_Control.c ****         if (CYRET_SUCCESS == result)
+ 133:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 134:Generated_Source\PSoC4/CSD_Control.c ****             result = CSD_SsAutoTune();
+ 135:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 136:Generated_Source\PSoC4/CSD_Control.c ****     #endif /* #if (CSD_CSD_AUTOTUNE != CSD_CSD_SS_DIS) */
+ 137:Generated_Source\PSoC4/CSD_Control.c **** 
+ 138:Generated_Source\PSoC4/CSD_Control.c ****     #if ((0u != CSD_CSX_IDAC_AUTOCAL_EN) || \
+ 139:Generated_Source\PSoC4/CSD_Control.c ****         ((CSD_CSD_AUTOTUNE == CSD_CSD_SS_DIS) && (0u != CSD_CSD_IDAC_AUTOCAL_EN)))
+ 140:Generated_Source\PSoC4/CSD_Control.c ****         if (CYRET_SUCCESS == result)
+  44              		.loc 1 140 0
+  45 000e 7B68     		ldr	r3, [r7, #4]
+  46 0010 002B     		cmp	r3, #0
+  47 0012 03D1     		bne	.L2
+ 141:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 142:Generated_Source\PSoC4/CSD_Control.c ****             result = CSD_CalibrateAllWidgets();
+  48              		.loc 1 142 0
+  49 0014 FFF7FEFF 		bl	CSD_CalibrateAllWidgets
+  50 0018 031C     		mov	r3, r0
+  51 001a 7B60     		str	r3, [r7, #4]
+  52              	.L2:
+ 143:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 144:Generated_Source\PSoC4/CSD_Control.c ****     #endif
+ 145:Generated_Source\PSoC4/CSD_Control.c **** 
+ 146:Generated_Source\PSoC4/CSD_Control.c ****     if (CYRET_SUCCESS == result)
+  53              		.loc 1 146 0
+  54 001c 7B68     		ldr	r3, [r7, #4]
+  55 001e 002B     		cmp	r3, #0
+  56 0020 03D1     		bne	.L3
+ 147:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 148:Generated_Source\PSoC4/CSD_Control.c ****         result = CSD_ScanAllWidgets();
+  57              		.loc 1 148 0
+  58 0022 FFF7FEFF 		bl	CSD_ScanAllWidgets
+  59 0026 031C     		mov	r3, r0
+  60 0028 7B60     		str	r3, [r7, #4]
+  61              	.L3:
+ 149:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 150:Generated_Source\PSoC4/CSD_Control.c **** 
+ 151:Generated_Source\PSoC4/CSD_Control.c ****     if (CYRET_SUCCESS == result)
+  62              		.loc 1 151 0
+  63 002a 7B68     		ldr	r3, [r7, #4]
+  64 002c 002B     		cmp	r3, #0
+  65 002e 1ED1     		bne	.L4
+ 152:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 153:Generated_Source\PSoC4/CSD_Control.c ****         /* Put CPU into sleep mode while scanning */
+ 154:Generated_Source\PSoC4/CSD_Control.c ****         interruptState = CyEnterCriticalSection();
+  66              		.loc 1 154 0
+  67 0030 FC1C     		add	r4, r7, #3
+  68 0032 FFF7FEFF 		bl	CyEnterCriticalSection
+  69 0036 031C     		mov	r3, r0
+  70 0038 2370     		strb	r3, [r4]
+ 155:Generated_Source\PSoC4/CSD_Control.c ****         while(CSD_NOT_BUSY != CSD_IsBusy())
+  71              		.loc 1 155 0
+  72 003a 0BE0     		b	.L5
+  73              	.L6:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 5
+
+
+ 156:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 157:Generated_Source\PSoC4/CSD_Control.c ****             CySysPmSleep();
+  74              		.loc 1 157 0
+  75 003c FFF7FEFF 		bl	CySysPmSleep
+ 158:Generated_Source\PSoC4/CSD_Control.c **** 
+ 159:Generated_Source\PSoC4/CSD_Control.c ****             /* Exit from the critical section to unblock processing pending interruprs. */
+ 160:Generated_Source\PSoC4/CSD_Control.c ****             CyExitCriticalSection(interruptState);
+  76              		.loc 1 160 0
+  77 0040 FB1C     		add	r3, r7, #3
+  78 0042 1B78     		ldrb	r3, [r3]
+  79 0044 181C     		mov	r0, r3
+  80 0046 FFF7FEFF 		bl	CyExitCriticalSection
+ 161:Generated_Source\PSoC4/CSD_Control.c ****             interruptState = CyEnterCriticalSection();
+  81              		.loc 1 161 0
+  82 004a FC1C     		add	r4, r7, #3
+  83 004c FFF7FEFF 		bl	CyEnterCriticalSection
+  84 0050 031C     		mov	r3, r0
+  85 0052 2370     		strb	r3, [r4]
+  86              	.L5:
+ 155:Generated_Source\PSoC4/CSD_Control.c ****         {
+  87              		.loc 1 155 0
+  88 0054 FFF7FEFF 		bl	CSD_IsBusy
+  89 0058 031E     		sub	r3, r0, #0
+  90 005a EFD1     		bne	.L6
+ 162:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 163:Generated_Source\PSoC4/CSD_Control.c ****         CyExitCriticalSection(interruptState);
+  91              		.loc 1 163 0
+  92 005c FB1C     		add	r3, r7, #3
+  93 005e 1B78     		ldrb	r3, [r3]
+  94 0060 181C     		mov	r0, r3
+  95 0062 FFF7FEFF 		bl	CyExitCriticalSection
+ 164:Generated_Source\PSoC4/CSD_Control.c **** 
+ 165:Generated_Source\PSoC4/CSD_Control.c ****         CSD_FtInitialize();
+  96              		.loc 1 165 0
+  97 0066 FFF7FEFF 		bl	CSD_FtInitialize
+ 166:Generated_Source\PSoC4/CSD_Control.c ****         CSD_InitializeAllBaselines();
+  98              		.loc 1 166 0
+  99 006a FFF7FEFF 		bl	CSD_InitializeAllBaselines
+ 100              	.L4:
+ 167:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 168:Generated_Source\PSoC4/CSD_Control.c **** 
+ 169:Generated_Source\PSoC4/CSD_Control.c ****     #if (0u != CSD_ADC_EN)
+ 170:Generated_Source\PSoC4/CSD_Control.c ****         CSD_AdcInitialize();
+ 171:Generated_Source\PSoC4/CSD_Control.c ****     #endif /* (0u != CSD_ADC_EN) */
+ 172:Generated_Source\PSoC4/CSD_Control.c **** 
+ 173:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 101              		.loc 1 173 0
+ 102 006e 7B68     		ldr	r3, [r7, #4]
+ 174:Generated_Source\PSoC4/CSD_Control.c **** }
+ 103              		.loc 1 174 0
+ 104 0070 181C     		mov	r0, r3
+ 105 0072 BD46     		mov	sp, r7
+ 106 0074 03B0     		add	sp, sp, #12
+ 107              		@ sp needed
+ 108 0076 90BD     		pop	{r4, r7, pc}
+ 109              		.cfi_endproc
+ 110              	.LFE1:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 6
+
+
+ 111              		.size	CSD_Start, .-CSD_Start
+ 112              		.section	.text.CSD_Initialize,"ax",%progbits
+ 113              		.align	2
+ 114              		.global	CSD_Initialize
+ 115              		.code	16
+ 116              		.thumb_func
+ 117              		.type	CSD_Initialize, %function
+ 118              	CSD_Initialize:
+ 119              	.LFB2:
+ 175:Generated_Source\PSoC4/CSD_Control.c **** 
+ 176:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 177:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Initialize
+ 178:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 179:Generated_Source\PSoC4/CSD_Control.c **** *
+ 180:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 181:Generated_Source\PSoC4/CSD_Control.c **** *  This function initializes the CSD component.
+ 182:Generated_Source\PSoC4/CSD_Control.c **** *
+ 183:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 184:Generated_Source\PSoC4/CSD_Control.c **** *  This API initializes all sub-modules of the CSD component:
+ 185:Generated_Source\PSoC4/CSD_Control.c **** *   - Data Structure - set the default component parameters defined in the Customizer.
+ 186:Generated_Source\PSoC4/CSD_Control.c **** *   - Data Processing - resets all widget statuses.
+ 187:Generated_Source\PSoC4/CSD_Control.c **** *   - Tuner - resets tuning state.
+ 188:Generated_Source\PSoC4/CSD_Control.c **** *   - Sensing - prepares CSD HW for operation.
+ 189:Generated_Source\PSoC4/CSD_Control.c **** *
+ 190:Generated_Source\PSoC4/CSD_Control.c **** *  Note that Data Structure module is initialized only once after the reset or
+ 191:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Stop() API is called. The repeated calls of Initialize API
+ 192:Generated_Source\PSoC4/CSD_Control.c **** *  will not re-initialize Data Structure. This is done to preserve component
+ 193:Generated_Source\PSoC4/CSD_Control.c **** *  parameters that user may set in runtime.
+ 194:Generated_Source\PSoC4/CSD_Control.c **** *
+ 195:Generated_Source\PSoC4/CSD_Control.c **** *  If default component parameters are needed the CSD_DsInitialize()
+ 196:Generated_Source\PSoC4/CSD_Control.c **** *  API must be called directly from the application code.
+ 197:Generated_Source\PSoC4/CSD_Control.c **** *
+ 198:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 199:Generated_Source\PSoC4/CSD_Control.c **** *  Return CYRET_SUCCESS if the initialization was successful.
+ 200:Generated_Source\PSoC4/CSD_Control.c **** *
+ 201:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 202:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_Initialize(void)
+ 203:Generated_Source\PSoC4/CSD_Control.c **** {
+ 120              		.loc 1 203 0
+ 121              		.cfi_startproc
+ 122 0000 80B5     		push	{r7, lr}
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 7, -8
+ 125              		.cfi_offset 14, -4
+ 126 0002 82B0     		sub	sp, sp, #8
+ 127              		.cfi_def_cfa_offset 16
+ 128 0004 00AF     		add	r7, sp, #0
+ 129              		.cfi_def_cfa_register 7
+ 204:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result;
+ 205:Generated_Source\PSoC4/CSD_Control.c **** 
+ 206:Generated_Source\PSoC4/CSD_Control.c ****     /* The Data Structure and Tuner are initialized only once */
+ 207:Generated_Source\PSoC4/CSD_Control.c ****     if (CSD_INIT_NEEDED == CSD_InitVar)
+ 130              		.loc 1 207 0
+ 131 0006 0B4B     		ldr	r3, .L11
+ 132 0008 1B78     		ldrb	r3, [r3]
+ 133 000a 002B     		cmp	r3, #0
+ 134 000c 06D1     		bne	.L9
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 7
+
+
+ 208:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 209:Generated_Source\PSoC4/CSD_Control.c ****         CSD_DsInitialize();
+ 135              		.loc 1 209 0
+ 136 000e FFF7FEFF 		bl	CSD_DsInitialize
+ 210:Generated_Source\PSoC4/CSD_Control.c ****         CSD_TuInitialize();
+ 137              		.loc 1 210 0
+ 138 0012 FFF7FEFF 		bl	CSD_TuInitialize
+ 211:Generated_Source\PSoC4/CSD_Control.c ****         CSD_InitVar = CSD_INIT_DONE;
+ 139              		.loc 1 211 0
+ 140 0016 074B     		ldr	r3, .L11
+ 141 0018 0122     		mov	r2, #1
+ 142 001a 1A70     		strb	r2, [r3]
+ 143              	.L9:
+ 212:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 213:Generated_Source\PSoC4/CSD_Control.c **** 
+ 214:Generated_Source\PSoC4/CSD_Control.c ****     CSD_DpInitialize();
+ 144              		.loc 1 214 0
+ 145 001c FFF7FEFF 		bl	CSD_DpInitialize
+ 215:Generated_Source\PSoC4/CSD_Control.c **** 
+ 216:Generated_Source\PSoC4/CSD_Control.c ****     result = CSD_SsInitialize();
+ 146              		.loc 1 216 0
+ 147 0020 FFF7FEFF 		bl	CSD_SsInitialize
+ 148 0024 031C     		mov	r3, r0
+ 149 0026 7B60     		str	r3, [r7, #4]
+ 217:Generated_Source\PSoC4/CSD_Control.c **** 
+ 218:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 150              		.loc 1 218 0
+ 151 0028 7B68     		ldr	r3, [r7, #4]
+ 219:Generated_Source\PSoC4/CSD_Control.c **** }
+ 152              		.loc 1 219 0
+ 153 002a 181C     		mov	r0, r3
+ 154 002c BD46     		mov	sp, r7
+ 155 002e 02B0     		add	sp, sp, #8
+ 156              		@ sp needed
+ 157 0030 80BD     		pop	{r7, pc}
+ 158              	.L12:
+ 159 0032 C046     		.align	2
+ 160              	.L11:
+ 161 0034 00000000 		.word	CSD_InitVar
+ 162              		.cfi_endproc
+ 163              	.LFE2:
+ 164              		.size	CSD_Initialize, .-CSD_Initialize
+ 165              		.section	.text.CSD_Stop,"ax",%progbits
+ 166              		.align	2
+ 167              		.global	CSD_Stop
+ 168              		.code	16
+ 169              		.thumb_func
+ 170              		.type	CSD_Stop, %function
+ 171              	CSD_Stop:
+ 172              	.LFB3:
+ 220:Generated_Source\PSoC4/CSD_Control.c **** 
+ 221:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 222:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Stop
+ 223:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 224:Generated_Source\PSoC4/CSD_Control.c **** *
+ 225:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 226:Generated_Source\PSoC4/CSD_Control.c **** *  Stops the component operation.
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 8
+
+
+ 227:Generated_Source\PSoC4/CSD_Control.c **** *
+ 228:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 229:Generated_Source\PSoC4/CSD_Control.c **** *  This function stops the component operation, no sensor scanning can be 
+ 230:Generated_Source\PSoC4/CSD_Control.c **** *  executed when the component is stopped. Once stopped, the hardware block may 
+ 231:Generated_Source\PSoC4/CSD_Control.c **** *  be reconfigured by the application program for any other special usage. The 
+ 232:Generated_Source\PSoC4/CSD_Control.c **** *  component operation can be resumed by calling the CSD_Resume() 
+ 233:Generated_Source\PSoC4/CSD_Control.c **** *  function or the component can be reset by calling the 
+ 234:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Start() function.
+ 235:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 236:Generated_Source\PSoC4/CSD_Control.c **** *  This function should be called when no scanning is in progress. 
+ 237:Generated_Source\PSoC4/CSD_Control.c **** *  I.e. CSD_IsBusy() returns a non-busy status.
+ 238:Generated_Source\PSoC4/CSD_Control.c **** *
+ 239:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 240:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the stop process. If CYRET_SUCCESS is not received, 
+ 241:Generated_Source\PSoC4/CSD_Control.c **** *  the stop process fails and retries may be required.
+ 242:Generated_Source\PSoC4/CSD_Control.c **** *
+ 243:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 244:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_Stop(void)
+ 245:Generated_Source\PSoC4/CSD_Control.c **** {
+ 173              		.loc 1 245 0
+ 174              		.cfi_startproc
+ 175 0000 80B5     		push	{r7, lr}
+ 176              		.cfi_def_cfa_offset 8
+ 177              		.cfi_offset 7, -8
+ 178              		.cfi_offset 14, -4
+ 179 0002 82B0     		sub	sp, sp, #8
+ 180              		.cfi_def_cfa_offset 16
+ 181 0004 00AF     		add	r7, sp, #0
+ 182              		.cfi_def_cfa_register 7
+ 246:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result = CYRET_SUCCESS;
+ 183              		.loc 1 246 0
+ 184 0006 0023     		mov	r3, #0
+ 185 0008 7B60     		str	r3, [r7, #4]
+ 247:Generated_Source\PSoC4/CSD_Control.c **** 
+ 248:Generated_Source\PSoC4/CSD_Control.c ****     #if (CSD_ENABLE == CSD_ADC_EN)
+ 249:Generated_Source\PSoC4/CSD_Control.c ****         /* Release CSD resources */
+ 250:Generated_Source\PSoC4/CSD_Control.c ****         result = CSD_SsReleaseResources();
+ 251:Generated_Source\PSoC4/CSD_Control.c **** 
+ 252:Generated_Source\PSoC4/CSD_Control.c ****         /* Release ADC resources */
+ 253:Generated_Source\PSoC4/CSD_Control.c ****         CSD_AdcStop();
+ 254:Generated_Source\PSoC4/CSD_Control.c ****     #endif /* (CSD_ENABLE == CSD_ADC_EN) */
+ 255:Generated_Source\PSoC4/CSD_Control.c **** 
+ 256:Generated_Source\PSoC4/CSD_Control.c ****     CSD_InitVar = CSD_INIT_NEEDED;
+ 186              		.loc 1 256 0
+ 187 000a 044B     		ldr	r3, .L15
+ 188 000c 0022     		mov	r2, #0
+ 189 000e 1A70     		strb	r2, [r3]
+ 257:Generated_Source\PSoC4/CSD_Control.c **** 
+ 258:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 190              		.loc 1 258 0
+ 191 0010 7B68     		ldr	r3, [r7, #4]
+ 259:Generated_Source\PSoC4/CSD_Control.c **** }
+ 192              		.loc 1 259 0
+ 193 0012 181C     		mov	r0, r3
+ 194 0014 BD46     		mov	sp, r7
+ 195 0016 02B0     		add	sp, sp, #8
+ 196              		@ sp needed
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 9
+
+
+ 197 0018 80BD     		pop	{r7, pc}
+ 198              	.L16:
+ 199 001a C046     		.align	2
+ 200              	.L15:
+ 201 001c 00000000 		.word	CSD_InitVar
+ 202              		.cfi_endproc
+ 203              	.LFE3:
+ 204              		.size	CSD_Stop, .-CSD_Stop
+ 205              		.section	.text.CSD_Resume,"ax",%progbits
+ 206              		.align	2
+ 207              		.global	CSD_Resume
+ 208              		.code	16
+ 209              		.thumb_func
+ 210              		.type	CSD_Resume, %function
+ 211              	CSD_Resume:
+ 212              	.LFB4:
+ 260:Generated_Source\PSoC4/CSD_Control.c **** 
+ 261:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 262:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Resume
+ 263:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 264:Generated_Source\PSoC4/CSD_Control.c **** *
+ 265:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 266:Generated_Source\PSoC4/CSD_Control.c **** *  Resumes the component operation if CSD_Stop() function was 
+ 267:Generated_Source\PSoC4/CSD_Control.c **** *  called previously.
+ 268:Generated_Source\PSoC4/CSD_Control.c **** *
+ 269:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 270:Generated_Source\PSoC4/CSD_Control.c **** *  This function resumes the component operation if the operation is stopped
+ 271:Generated_Source\PSoC4/CSD_Control.c **** *  previously by the CSD_Stop() function. The following tasks are 
+ 272:Generated_Source\PSoC4/CSD_Control.c **** *  executed as part of the operation resume process:
+ 273:Generated_Source\PSoC4/CSD_Control.c **** *    1. Reset all Widgets/Sensors status.
+ 274:Generated_Source\PSoC4/CSD_Control.c **** *    2. Configure the hardware to perform capacitive sensing.
+ 275:Generated_Source\PSoC4/CSD_Control.c **** *
+ 276:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 277:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the resume process. If CYRET_SUCCESS is not received,
+ 278:Generated_Source\PSoC4/CSD_Control.c **** *  the resume process fails and retries may be required.
+ 279:Generated_Source\PSoC4/CSD_Control.c **** *
+ 280:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 281:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_Resume(void)
+ 282:Generated_Source\PSoC4/CSD_Control.c **** {
+ 213              		.loc 1 282 0
+ 214              		.cfi_startproc
+ 215 0000 80B5     		push	{r7, lr}
+ 216              		.cfi_def_cfa_offset 8
+ 217              		.cfi_offset 7, -8
+ 218              		.cfi_offset 14, -4
+ 219 0002 82B0     		sub	sp, sp, #8
+ 220              		.cfi_def_cfa_offset 16
+ 221 0004 00AF     		add	r7, sp, #0
+ 222              		.cfi_def_cfa_register 7
+ 283:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result;
+ 284:Generated_Source\PSoC4/CSD_Control.c **** 
+ 285:Generated_Source\PSoC4/CSD_Control.c ****     CSD_DpInitialize();
+ 223              		.loc 1 285 0
+ 224 0006 FFF7FEFF 		bl	CSD_DpInitialize
+ 286:Generated_Source\PSoC4/CSD_Control.c ****     CSD_TuInitialize();
+ 225              		.loc 1 286 0
+ 226 000a FFF7FEFF 		bl	CSD_TuInitialize
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 10
+
+
+ 287:Generated_Source\PSoC4/CSD_Control.c **** 
+ 288:Generated_Source\PSoC4/CSD_Control.c ****     result = CSD_SsInitialize();
+ 227              		.loc 1 288 0
+ 228 000e FFF7FEFF 		bl	CSD_SsInitialize
+ 229 0012 031C     		mov	r3, r0
+ 230 0014 7B60     		str	r3, [r7, #4]
+ 289:Generated_Source\PSoC4/CSD_Control.c **** 
+ 290:Generated_Source\PSoC4/CSD_Control.c ****     CSD_InitVar = CSD_INIT_DONE;
+ 231              		.loc 1 290 0
+ 232 0016 044B     		ldr	r3, .L19
+ 233 0018 0122     		mov	r2, #1
+ 234 001a 1A70     		strb	r2, [r3]
+ 291:Generated_Source\PSoC4/CSD_Control.c **** 
+ 292:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 235              		.loc 1 292 0
+ 236 001c 7B68     		ldr	r3, [r7, #4]
+ 293:Generated_Source\PSoC4/CSD_Control.c **** }
+ 237              		.loc 1 293 0
+ 238 001e 181C     		mov	r0, r3
+ 239 0020 BD46     		mov	sp, r7
+ 240 0022 02B0     		add	sp, sp, #8
+ 241              		@ sp needed
+ 242 0024 80BD     		pop	{r7, pc}
+ 243              	.L20:
+ 244 0026 C046     		.align	2
+ 245              	.L19:
+ 246 0028 00000000 		.word	CSD_InitVar
+ 247              		.cfi_endproc
+ 248              	.LFE4:
+ 249              		.size	CSD_Resume, .-CSD_Resume
+ 250              		.section	.text.CSD_ProcessAllWidgets,"ax",%progbits
+ 251              		.align	2
+ 252              		.global	CSD_ProcessAllWidgets
+ 253              		.code	16
+ 254              		.thumb_func
+ 255              		.type	CSD_ProcessAllWidgets, %function
+ 256              	CSD_ProcessAllWidgets:
+ 257              	.LFB5:
+ 294:Generated_Source\PSoC4/CSD_Control.c **** 
+ 295:Generated_Source\PSoC4/CSD_Control.c **** 
+ 296:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 297:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_ProcessAllWidgets
+ 298:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 299:Generated_Source\PSoC4/CSD_Control.c **** *
+ 300:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 301:Generated_Source\PSoC4/CSD_Control.c **** *  Performs full data processing of all enabled widgets.
+ 302:Generated_Source\PSoC4/CSD_Control.c **** *
+ 303:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 304:Generated_Source\PSoC4/CSD_Control.c **** *  This function performs all data processes for all enabled widgets in the 
+ 305:Generated_Source\PSoC4/CSD_Control.c **** *  component. The following tasks are executed as part of processing all the 
+ 306:Generated_Source\PSoC4/CSD_Control.c **** *  widgets:
+ 307:Generated_Source\PSoC4/CSD_Control.c **** *    1. Apply raw0count filters to raw counts, if they are enabled in the 
+ 308:Generated_Source\PSoC4/CSD_Control.c **** *       customizer.
+ 309:Generated_Source\PSoC4/CSD_Control.c **** *    2. Update thresholds if the SmartSense uFll Auto-Tuning is enabled in
+ 310:Generated_Source\PSoC4/CSD_Control.c **** *       the customizer.
+ 311:Generated_Source\PSoC4/CSD_Control.c **** *    3. Update the Baselines and Difference counts for all sensors.
+ 312:Generated_Source\PSoC4/CSD_Control.c **** *    4. Update the sensor and widget status (on/off), update centroid for 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 11
+
+
+ 313:Generated_Source\PSoC4/CSD_Control.c **** *       sliders and X/Y position for touchpads.
+ 314:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 315:Generated_Source\PSoC4/CSD_Control.c **** *  Disabled widgets are not processed. To disable/enable a widget, set 
+ 316:Generated_Source\PSoC4/CSD_Control.c **** *  appropriate values in the 
+ 317:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_WDGT_ENABLE<RegisterNumber>_PARAM_ID register using the
+ 318:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_SetParam() function.
+ 319:Generated_Source\PSoC4/CSD_Control.c **** *  This function should be called only after all the sensors in the component
+ 320:Generated_Source\PSoC4/CSD_Control.c **** *  are scanned. Calling this function multiple times without sensor scanning
+ 321:Generated_Source\PSoC4/CSD_Control.c **** *  causes unexpected behavior.
+ 322:Generated_Source\PSoC4/CSD_Control.c **** *
+ 323:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 324:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the process operation. If CYRET_SUCCESS is not 
+ 325:Generated_Source\PSoC4/CSD_Control.c **** *  received, the process failed.
+ 326:Generated_Source\PSoC4/CSD_Control.c **** *
+ 327:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 328:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_ProcessAllWidgets(void)
+ 329:Generated_Source\PSoC4/CSD_Control.c **** {
+ 258              		.loc 1 329 0
+ 259              		.cfi_startproc
+ 260 0000 80B5     		push	{r7, lr}
+ 261              		.cfi_def_cfa_offset 8
+ 262              		.cfi_offset 7, -8
+ 263              		.cfi_offset 14, -4
+ 264 0002 84B0     		sub	sp, sp, #16
+ 265              		.cfi_def_cfa_offset 24
+ 266 0004 00AF     		add	r7, sp, #0
+ 267              		.cfi_def_cfa_register 7
+ 330:Generated_Source\PSoC4/CSD_Control.c ****     uint32 wdgtId;
+ 331:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result = CYRET_SUCCESS;
+ 268              		.loc 1 331 0
+ 269 0006 0023     		mov	r3, #0
+ 270 0008 7B60     		str	r3, [r7, #4]
+ 332:Generated_Source\PSoC4/CSD_Control.c ****     CSD_FLASH_WD_STRUCT const *ptrFlashWdgt;
+ 333:Generated_Source\PSoC4/CSD_Control.c **** 
+ 334:Generated_Source\PSoC4/CSD_Control.c ****     ptrFlashWdgt = CSD_dsFlash.wdgtArray;
+ 271              		.loc 1 334 0
+ 272 000a 164B     		ldr	r3, .L26
+ 273 000c BB60     		str	r3, [r7, #8]
+ 335:Generated_Source\PSoC4/CSD_Control.c **** 
+ 336:Generated_Source\PSoC4/CSD_Control.c ****     for (wdgtId = 0u; wdgtId < CSD_TOTAL_WIDGETS; wdgtId++)
+ 274              		.loc 1 336 0
+ 275 000e 0023     		mov	r3, #0
+ 276 0010 FB60     		str	r3, [r7, #12]
+ 277 0012 1FE0     		b	.L22
+ 278              	.L24:
+ 337:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 338:Generated_Source\PSoC4/CSD_Control.c ****         if (0u != CSD_GET_WIDGET_EN_STATUS(wdgtId))
+ 279              		.loc 1 338 0
+ 280 0014 FB68     		ldr	r3, [r7, #12]
+ 281 0016 5B09     		lsr	r3, r3, #5
+ 282 0018 134A     		ldr	r2, .L26+4
+ 283 001a 0233     		add	r3, r3, #2
+ 284 001c 9B00     		lsl	r3, r3, #2
+ 285 001e D318     		add	r3, r2, r3
+ 286 0020 5A68     		ldr	r2, [r3, #4]
+ 287 0022 FB68     		ldr	r3, [r7, #12]
+ 288 0024 1F21     		mov	r1, #31
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 12
+
+
+ 289 0026 0B40     		and	r3, r1
+ 290 0028 DA40     		lsr	r2, r2, r3
+ 291 002a 131C     		mov	r3, r2
+ 292 002c 0122     		mov	r2, #1
+ 293 002e 1340     		and	r3, r2
+ 294 0030 0AD0     		beq	.L23
+ 339:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 340:Generated_Source\PSoC4/CSD_Control.c ****             switch(CSD_GET_SENSE_METHOD(ptrFlashWdgt))
+ 341:Generated_Source\PSoC4/CSD_Control.c ****             {
+ 342:Generated_Source\PSoC4/CSD_Control.c ****             #if (0u != CSD_TOTAL_CSD_WIDGETS)
+ 343:Generated_Source\PSoC4/CSD_Control.c ****                 case CSD_SENSE_METHOD_CSD_E:
+ 344:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsdWidgetRawCounts(ptrFlashWdgt);
+ 295              		.loc 1 344 0
+ 296 0032 BB68     		ldr	r3, [r7, #8]
+ 297 0034 181C     		mov	r0, r3
+ 298 0036 FFF7FEFF 		bl	CSD_DpProcessCsdWidgetRawCounts
+ 345:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsdWidgetStatus(wdgtId, ptrFlashWdgt);
+ 299              		.loc 1 345 0
+ 300 003a FA68     		ldr	r2, [r7, #12]
+ 301 003c BB68     		ldr	r3, [r7, #8]
+ 302 003e 101C     		mov	r0, r2
+ 303 0040 191C     		mov	r1, r3
+ 304 0042 FFF7FEFF 		bl	CSD_DpProcessCsdWidgetStatus
+ 346:Generated_Source\PSoC4/CSD_Control.c ****                     break;
+ 305              		.loc 1 346 0
+ 306 0046 C046     		mov	r8, r8
+ 307              	.L23:
+ 347:Generated_Source\PSoC4/CSD_Control.c ****             #endif /* #if (0u != CSD_TOTAL_CSD_WIDGETS) */
+ 348:Generated_Source\PSoC4/CSD_Control.c **** 
+ 349:Generated_Source\PSoC4/CSD_Control.c ****             #if (0u != CSD_TOTAL_CSX_WIDGETS)
+ 350:Generated_Source\PSoC4/CSD_Control.c ****                 case CSD_SENSE_METHOD_CSX_E:
+ 351:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsxWidgetRawCounts(ptrFlashWdgt);
+ 352:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsxWidgetStatus(wdgtId, ptrFlashWdgt);
+ 353:Generated_Source\PSoC4/CSD_Control.c ****                     break;
+ 354:Generated_Source\PSoC4/CSD_Control.c ****             #endif /* #if (0u != CSD_TOTAL_CSX_WIDGETS) */
+ 355:Generated_Source\PSoC4/CSD_Control.c **** 
+ 356:Generated_Source\PSoC4/CSD_Control.c ****             default:
+ 357:Generated_Source\PSoC4/CSD_Control.c ****                 CYASSERT(0u);
+ 358:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 359:Generated_Source\PSoC4/CSD_Control.c ****             }
+ 360:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 361:Generated_Source\PSoC4/CSD_Control.c **** 
+ 362:Generated_Source\PSoC4/CSD_Control.c ****         ptrFlashWdgt++;
+ 308              		.loc 1 362 0 discriminator 2
+ 309 0048 BB68     		ldr	r3, [r7, #8]
+ 310 004a 1C33     		add	r3, r3, #28
+ 311 004c BB60     		str	r3, [r7, #8]
+ 336:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 312              		.loc 1 336 0 discriminator 2
+ 313 004e FB68     		ldr	r3, [r7, #12]
+ 314 0050 0133     		add	r3, r3, #1
+ 315 0052 FB60     		str	r3, [r7, #12]
+ 316              	.L22:
+ 336:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 317              		.loc 1 336 0 is_stmt 0 discriminator 1
+ 318 0054 FB68     		ldr	r3, [r7, #12]
+ 319 0056 002B     		cmp	r3, #0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 13
+
+
+ 320 0058 DCD0     		beq	.L24
+ 363:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 364:Generated_Source\PSoC4/CSD_Control.c **** 
+ 365:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 321              		.loc 1 365 0 is_stmt 1
+ 322 005a 7B68     		ldr	r3, [r7, #4]
+ 366:Generated_Source\PSoC4/CSD_Control.c **** }
+ 323              		.loc 1 366 0
+ 324 005c 181C     		mov	r0, r3
+ 325 005e BD46     		mov	sp, r7
+ 326 0060 04B0     		add	sp, sp, #16
+ 327              		@ sp needed
+ 328 0062 80BD     		pop	{r7, pc}
+ 329              	.L27:
+ 330              		.align	2
+ 331              	.L26:
+ 332 0064 00000000 		.word	CSD_dsFlash
+ 333 0068 00000000 		.word	CSD_dsRam
+ 334              		.cfi_endproc
+ 335              	.LFE5:
+ 336              		.size	CSD_ProcessAllWidgets, .-CSD_ProcessAllWidgets
+ 337              		.section	.text.CSD_ProcessWidget,"ax",%progbits
+ 338              		.align	2
+ 339              		.global	CSD_ProcessWidget
+ 340              		.code	16
+ 341              		.thumb_func
+ 342              		.type	CSD_ProcessWidget, %function
+ 343              	CSD_ProcessWidget:
+ 344              	.LFB6:
+ 367:Generated_Source\PSoC4/CSD_Control.c **** 
+ 368:Generated_Source\PSoC4/CSD_Control.c **** 
+ 369:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 370:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_ProcessWidget
+ 371:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 372:Generated_Source\PSoC4/CSD_Control.c **** *
+ 373:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 374:Generated_Source\PSoC4/CSD_Control.c **** *  Performs full data processing of the specified widget if it is enabled.
+ 375:Generated_Source\PSoC4/CSD_Control.c **** *
+ 376:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 377:Generated_Source\PSoC4/CSD_Control.c **** *  This function performs exactly the same tasks as 
+ 378:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_ProcessAllWidgets(), but only for a specified widget. This 
+ 379:Generated_Source\PSoC4/CSD_Control.c **** *  function can be used along with the CSD_SetupWidget() and 
+ 380:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Scan() functions to scan and process data for a specific
+ 381:Generated_Source\PSoC4/CSD_Control.c **** *  widget. This function should be called only after all the sensors in the 
+ 382:Generated_Source\PSoC4/CSD_Control.c **** *  widgets are scanned. A disabled widget is not processed by this function.
+ 383:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 384:Generated_Source\PSoC4/CSD_Control.c **** *  The pipeline scan method (i.e. during scanning of a widget perform processing
+ 385:Generated_Source\PSoC4/CSD_Control.c **** *  of the previously scanned widget) can be implemented using this function and
+ 386:Generated_Source\PSoC4/CSD_Control.c **** *  it may reduce the total scan/process time, increase the refresh rate and 
+ 387:Generated_Source\PSoC4/CSD_Control.c **** *  decrease the power consumption.
+ 388:Generated_Source\PSoC4/CSD_Control.c **** *
+ 389:Generated_Source\PSoC4/CSD_Control.c **** * \param widgetId 
+ 390:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the ID number of the widget to be processed. 
+ 391:Generated_Source\PSoC4/CSD_Control.c **** *  A macro for the widget ID can be found in the 
+ 392:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Configuration.h file defined as
+ 393:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_<WidgetName>_WDGT_ID
+ 394:Generated_Source\PSoC4/CSD_Control.c **** *
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 14
+
+
+ 395:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 396:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the widget processing:
+ 397:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_SUCCESS if operation is successfully completed.
+ 398:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_BAD_PARAM if the input parameter is invalid.
+ 399:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_INVALID_STATE if the specified widget is disabled.
+ 400:Generated_Source\PSoC4/CSD_Control.c **** *
+ 401:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 402:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_ProcessWidget(uint32 widgetId)
+ 403:Generated_Source\PSoC4/CSD_Control.c **** {
+ 345              		.loc 1 403 0
+ 346              		.cfi_startproc
+ 347 0000 80B5     		push	{r7, lr}
+ 348              		.cfi_def_cfa_offset 8
+ 349              		.cfi_offset 7, -8
+ 350              		.cfi_offset 14, -4
+ 351 0002 84B0     		sub	sp, sp, #16
+ 352              		.cfi_def_cfa_offset 24
+ 353 0004 00AF     		add	r7, sp, #0
+ 354              		.cfi_def_cfa_register 7
+ 355 0006 7860     		str	r0, [r7, #4]
+ 404:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result = CYRET_SUCCESS;
+ 356              		.loc 1 404 0
+ 357 0008 0023     		mov	r3, #0
+ 358 000a FB60     		str	r3, [r7, #12]
+ 405:Generated_Source\PSoC4/CSD_Control.c ****     CSD_FLASH_WD_STRUCT const *ptrFlashWdgt;
+ 406:Generated_Source\PSoC4/CSD_Control.c **** 
+ 407:Generated_Source\PSoC4/CSD_Control.c ****     if (widgetId >= CSD_TOTAL_WIDGETS)
+ 359              		.loc 1 407 0
+ 360 000c 7B68     		ldr	r3, [r7, #4]
+ 361 000e 002B     		cmp	r3, #0
+ 362 0010 01D0     		beq	.L29
+ 408:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 409:Generated_Source\PSoC4/CSD_Control.c ****         result = CYRET_BAD_PARAM;
+ 363              		.loc 1 409 0
+ 364 0012 0123     		mov	r3, #1
+ 365 0014 FB60     		str	r3, [r7, #12]
+ 366              	.L29:
+ 410:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 411:Generated_Source\PSoC4/CSD_Control.c **** 
+ 412:Generated_Source\PSoC4/CSD_Control.c ****     if ((CYRET_SUCCESS == result) && (0u == CSD_GET_WIDGET_EN_STATUS(widgetId)))
+ 367              		.loc 1 412 0
+ 368 0016 FB68     		ldr	r3, [r7, #12]
+ 369 0018 002B     		cmp	r3, #0
+ 370 001a 10D1     		bne	.L30
+ 371              		.loc 1 412 0 is_stmt 0 discriminator 1
+ 372 001c 7B68     		ldr	r3, [r7, #4]
+ 373 001e 5B09     		lsr	r3, r3, #5
+ 374 0020 144A     		ldr	r2, .L33
+ 375 0022 0233     		add	r3, r3, #2
+ 376 0024 9B00     		lsl	r3, r3, #2
+ 377 0026 D318     		add	r3, r2, r3
+ 378 0028 5A68     		ldr	r2, [r3, #4]
+ 379 002a 7B68     		ldr	r3, [r7, #4]
+ 380 002c 1F21     		mov	r1, #31
+ 381 002e 0B40     		and	r3, r1
+ 382 0030 DA40     		lsr	r2, r2, r3
+ 383 0032 131C     		mov	r3, r2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 15
+
+
+ 384 0034 0122     		mov	r2, #1
+ 385 0036 1340     		and	r3, r2
+ 386 0038 01D1     		bne	.L30
+ 413:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 414:Generated_Source\PSoC4/CSD_Control.c ****         result = CYRET_INVALID_STATE;
+ 387              		.loc 1 414 0 is_stmt 1
+ 388 003a 1123     		mov	r3, #17
+ 389 003c FB60     		str	r3, [r7, #12]
+ 390              	.L30:
+ 415:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 416:Generated_Source\PSoC4/CSD_Control.c **** 
+ 417:Generated_Source\PSoC4/CSD_Control.c ****     if (CYRET_SUCCESS == result)
+ 391              		.loc 1 417 0
+ 392 003e FB68     		ldr	r3, [r7, #12]
+ 393 0040 002B     		cmp	r3, #0
+ 394 0042 12D1     		bne	.L31
+ 418:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 419:Generated_Source\PSoC4/CSD_Control.c ****         ptrFlashWdgt = &CSD_dsFlash.wdgtArray[widgetId];
+ 395              		.loc 1 419 0
+ 396 0044 7A68     		ldr	r2, [r7, #4]
+ 397 0046 131C     		mov	r3, r2
+ 398 0048 DB00     		lsl	r3, r3, #3
+ 399 004a 9B1A     		sub	r3, r3, r2
+ 400 004c 9B00     		lsl	r3, r3, #2
+ 401 004e 0A4A     		ldr	r2, .L33+4
+ 402 0050 9B18     		add	r3, r3, r2
+ 403 0052 BB60     		str	r3, [r7, #8]
+ 420:Generated_Source\PSoC4/CSD_Control.c **** 
+ 421:Generated_Source\PSoC4/CSD_Control.c ****         switch(CSD_GET_SENSE_METHOD(ptrFlashWdgt))
+ 422:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 423:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSD_WIDGETS)
+ 424:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSD_E:
+ 425:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsdWidgetRawCounts(ptrFlashWdgt);
+ 404              		.loc 1 425 0
+ 405 0054 BB68     		ldr	r3, [r7, #8]
+ 406 0056 181C     		mov	r0, r3
+ 407 0058 FFF7FEFF 		bl	CSD_DpProcessCsdWidgetRawCounts
+ 426:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsdWidgetStatus(widgetId, ptrFlashWdgt);
+ 408              		.loc 1 426 0
+ 409 005c 7A68     		ldr	r2, [r7, #4]
+ 410 005e BB68     		ldr	r3, [r7, #8]
+ 411 0060 101C     		mov	r0, r2
+ 412 0062 191C     		mov	r1, r3
+ 413 0064 FFF7FEFF 		bl	CSD_DpProcessCsdWidgetStatus
+ 427:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 414              		.loc 1 427 0
+ 415 0068 C046     		mov	r8, r8
+ 416              	.L31:
+ 428:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSD_WIDGETS) */
+ 429:Generated_Source\PSoC4/CSD_Control.c **** 
+ 430:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSX_WIDGETS)
+ 431:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSX_E:
+ 432:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsxWidgetRawCounts(ptrFlashWdgt);
+ 433:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsxWidgetStatus(widgetId, ptrFlashWdgt);
+ 434:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 435:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSX_WIDGETS) */
+ 436:Generated_Source\PSoC4/CSD_Control.c **** 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 16
+
+
+ 437:Generated_Source\PSoC4/CSD_Control.c ****         default:
+ 438:Generated_Source\PSoC4/CSD_Control.c ****             CYASSERT(0u);
+ 439:Generated_Source\PSoC4/CSD_Control.c ****             break;
+ 440:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 441:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 442:Generated_Source\PSoC4/CSD_Control.c **** 
+ 443:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 417              		.loc 1 443 0
+ 418 006a FB68     		ldr	r3, [r7, #12]
+ 444:Generated_Source\PSoC4/CSD_Control.c **** }
+ 419              		.loc 1 444 0
+ 420 006c 181C     		mov	r0, r3
+ 421 006e BD46     		mov	sp, r7
+ 422 0070 04B0     		add	sp, sp, #16
+ 423              		@ sp needed
+ 424 0072 80BD     		pop	{r7, pc}
+ 425              	.L34:
+ 426              		.align	2
+ 427              	.L33:
+ 428 0074 00000000 		.word	CSD_dsRam
+ 429 0078 00000000 		.word	CSD_dsFlash
+ 430              		.cfi_endproc
+ 431              	.LFE6:
+ 432              		.size	CSD_ProcessWidget, .-CSD_ProcessWidget
+ 433              		.section	.text.CSD_ProcessWidgetExt,"ax",%progbits
+ 434              		.align	2
+ 435              		.global	CSD_ProcessWidgetExt
+ 436              		.code	16
+ 437              		.thumb_func
+ 438              		.type	CSD_ProcessWidgetExt, %function
+ 439              	CSD_ProcessWidgetExt:
+ 440              	.LFB7:
+ 445:Generated_Source\PSoC4/CSD_Control.c **** 
+ 446:Generated_Source\PSoC4/CSD_Control.c **** 
+ 447:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 448:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_ProcessWidgetExt
+ 449:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 450:Generated_Source\PSoC4/CSD_Control.c **** *
+ 451:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 452:Generated_Source\PSoC4/CSD_Control.c **** *  Performs customized data processing on the selected widget.
+ 453:Generated_Source\PSoC4/CSD_Control.c **** *
+ 454:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 455:Generated_Source\PSoC4/CSD_Control.c **** *  This function performs data processes for the specified widget specified by 
+ 456:Generated_Source\PSoC4/CSD_Control.c **** *  the mode parameter. The execution order of the requested operations is from 
+ 457:Generated_Source\PSoC4/CSD_Control.c **** *  LSB to MSB of the mode parameter. If a different order is needed, this API 
+ 458:Generated_Source\PSoC4/CSD_Control.c **** *  can be called multiple times with the required mode parameter. 
+ 459:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 460:Generated_Source\PSoC4/CSD_Control.c **** *  This function can be used with any of the available scan functions. This 
+ 461:Generated_Source\PSoC4/CSD_Control.c **** *  function should be called only after all sensors in the specified widget are
+ 462:Generated_Source\PSoC4/CSD_Control.c **** *  scanned. Calling this function multiple times with the same mode without 
+ 463:Generated_Source\PSoC4/CSD_Control.c **** *  sensor scanning causes unexpected behavior. This function ignores the value 
+ 464:Generated_Source\PSoC4/CSD_Control.c **** *  of the wdgtEnable register. 
+ 465:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 466:Generated_Source\PSoC4/CSD_Control.c **** *  The CSD_PROCESS_CALC_NOISE and 
+ 467:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_PROCESS_THRESHOLDS flags are supported by the CSD sensing
+ 468:Generated_Source\PSoC4/CSD_Control.c **** *  method only when the auto-tuning mode is enabled.
+ 469:Generated_Source\PSoC4/CSD_Control.c **** *  
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 17
+
+
+ 470:Generated_Source\PSoC4/CSD_Control.c **** *  The pipeline scan method (i.e. during scanning of a widget perform processing
+ 471:Generated_Source\PSoC4/CSD_Control.c **** *  of a previously scanned widget) can be implemented using this function and it
+ 472:Generated_Source\PSoC4/CSD_Control.c **** *  may reduce the total scan/process time, increase the refresh rate and 
+ 473:Generated_Source\PSoC4/CSD_Control.c **** *  decrease the power consumption.
+ 474:Generated_Source\PSoC4/CSD_Control.c **** *
+ 475:Generated_Source\PSoC4/CSD_Control.c **** * \param widgetId 
+ 476:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the ID number of the widget to be processed. 
+ 477:Generated_Source\PSoC4/CSD_Control.c **** *  A macro for the widget ID can be found in CSD_Configuration.h 
+ 478:Generated_Source\PSoC4/CSD_Control.c **** *  file defined as CSD_<WidgetName>_WDGT_ID.
+ 479:Generated_Source\PSoC4/CSD_Control.c **** 
+ 480:Generated_Source\PSoC4/CSD_Control.c **** * \param mode 
+ 481:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the type of widget processing that needs to be executed for the 
+ 482:Generated_Source\PSoC4/CSD_Control.c **** *  specified widget:
+ 483:Generated_Source\PSoC4/CSD_Control.c **** *    1.	Bits [31..6] - Reserved
+ 484:Generated_Source\PSoC4/CSD_Control.c **** *    2.	Bits [5..0] - CSD_PROCESS_ALL - Execute all tasks
+ 485:Generated_Source\PSoC4/CSD_Control.c **** *    3.	Bit [5] - CSD_PROCESS_STATUS - Update Status (on/off, 
+ 486:Generated_Source\PSoC4/CSD_Control.c **** *       centroid position)
+ 487:Generated_Source\PSoC4/CSD_Control.c **** *    4.	Bit [4] - CSD_PROCESS_THRESHOLDS - Update Thresholds 
+ 488:Generated_Source\PSoC4/CSD_Control.c **** *       (only in CSD auto-tuning mode)
+ 489:Generated_Source\PSoC4/CSD_Control.c **** *    5.	Bit [3] - CSD_PROCESS_CALC_NOISE - Calculate Noise (only in
+ 490:Generated_Source\PSoC4/CSD_Control.c **** *       CSD auto-tuning mode)
+ 491:Generated_Source\PSoC4/CSD_Control.c **** *    6.	Bit [2] - CSD_PROCESS_DIFFCOUNTS - Update Difference Counts
+ 492:Generated_Source\PSoC4/CSD_Control.c **** *    7.	Bit [1] - CSD_PROCESS_BASELINE - Update Baselines
+ 493:Generated_Source\PSoC4/CSD_Control.c **** *    8.	Bit [0] - CSD_PROCESS_FILTER - Run Firmware Filter
+ 494:Generated_Source\PSoC4/CSD_Control.c **** *
+ 495:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 496:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the widget processing operation:
+ 497:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_SUCCESS if processing is successfully performed.
+ 498:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_BAD_PARAM if the input parameter is invalid.
+ 499:Generated_Source\PSoC4/CSD_Control.c **** *
+ 500:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 501:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_ProcessWidgetExt(uint32 widgetId, uint32 mode)
+ 502:Generated_Source\PSoC4/CSD_Control.c **** {
+ 441              		.loc 1 502 0
+ 442              		.cfi_startproc
+ 443 0000 80B5     		push	{r7, lr}
+ 444              		.cfi_def_cfa_offset 8
+ 445              		.cfi_offset 7, -8
+ 446              		.cfi_offset 14, -4
+ 447 0002 88B0     		sub	sp, sp, #32
+ 448              		.cfi_def_cfa_offset 40
+ 449 0004 00AF     		add	r7, sp, #0
+ 450              		.cfi_def_cfa_register 7
+ 451 0006 7860     		str	r0, [r7, #4]
+ 452 0008 3960     		str	r1, [r7]
+ 503:Generated_Source\PSoC4/CSD_Control.c ****     uint32 snsCount;
+ 504:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result = CYRET_BAD_PARAM;
+ 453              		.loc 1 504 0
+ 454 000a 0123     		mov	r3, #1
+ 455 000c BB61     		str	r3, [r7, #24]
+ 505:Generated_Source\PSoC4/CSD_Control.c ****     CSD_FLASH_WD_STRUCT const *ptrFlashWdgt;
+ 506:Generated_Source\PSoC4/CSD_Control.c ****     CSD_PTR_FILTER_VARIANT fltrHistV;
+ 507:Generated_Source\PSoC4/CSD_Control.c ****     CSD_RAM_SNS_STRUCT *ptrSns;
+ 508:Generated_Source\PSoC4/CSD_Control.c **** 
+ 509:Generated_Source\PSoC4/CSD_Control.c ****     #if (0u != CSD_TOTAL_CSD_WIDGETS)
+ 510:Generated_Source\PSoC4/CSD_Control.c ****         uint32 isProxWdgt;
+ 511:Generated_Source\PSoC4/CSD_Control.c ****     #endif
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 18
+
+
+ 512:Generated_Source\PSoC4/CSD_Control.c **** 
+ 513:Generated_Source\PSoC4/CSD_Control.c ****     if (widgetId < CSD_TOTAL_WIDGETS)
+ 456              		.loc 1 513 0
+ 457 000e 7B68     		ldr	r3, [r7, #4]
+ 458 0010 002B     		cmp	r3, #0
+ 459 0012 3AD1     		bne	.L36
+ 514:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 515:Generated_Source\PSoC4/CSD_Control.c ****         ptrFlashWdgt = &CSD_dsFlash.wdgtArray[widgetId];
+ 460              		.loc 1 515 0
+ 461 0014 7A68     		ldr	r2, [r7, #4]
+ 462 0016 131C     		mov	r3, r2
+ 463 0018 DB00     		lsl	r3, r3, #3
+ 464 001a 9B1A     		sub	r3, r3, r2
+ 465 001c 9B00     		lsl	r3, r3, #2
+ 466 001e 1D4A     		ldr	r2, .L43
+ 467 0020 9B18     		add	r3, r3, r2
+ 468 0022 3B61     		str	r3, [r7, #16]
+ 516:Generated_Source\PSoC4/CSD_Control.c ****         snsCount = CSD_GET_SNS_CNT_BY_PTR(ptrFlashWdgt);
+ 469              		.loc 1 516 0
+ 470 0024 3B69     		ldr	r3, [r7, #16]
+ 471 0026 DB8A     		ldrh	r3, [r3, #22]
+ 472 0028 FB61     		str	r3, [r7, #28]
+ 517:Generated_Source\PSoC4/CSD_Control.c ****         ptrSns = ptrFlashWdgt->ptr2SnsRam;
+ 473              		.loc 1 517 0
+ 474 002a 3B69     		ldr	r3, [r7, #16]
+ 475 002c 9B68     		ldr	r3, [r3, #8]
+ 476 002e 7B61     		str	r3, [r7, #20]
+ 518:Generated_Source\PSoC4/CSD_Control.c ****         fltrHistV.ptr = ptrFlashWdgt->ptr2FltrHistory;
+ 477              		.loc 1 518 0
+ 478 0030 3B69     		ldr	r3, [r7, #16]
+ 479 0032 DB68     		ldr	r3, [r3, #12]
+ 480 0034 BB60     		str	r3, [r7, #8]
+ 519:Generated_Source\PSoC4/CSD_Control.c **** 
+ 520:Generated_Source\PSoC4/CSD_Control.c ****         switch(CSD_GET_SENSE_METHOD(ptrFlashWdgt))
+ 521:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 522:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSD_WIDGETS)
+ 523:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSD_E:
+ 524:Generated_Source\PSoC4/CSD_Control.c ****             {
+ 525:Generated_Source\PSoC4/CSD_Control.c ****                 /* Determine if widget is type of proximity.
+ 526:Generated_Source\PSoC4/CSD_Control.c ****                  * The Proximity widgets use different filters and
+ 527:Generated_Source\PSoC4/CSD_Control.c ****                  * therefore have different filter history object structure */
+ 528:Generated_Source\PSoC4/CSD_Control.c ****                 isProxWdgt =
+ 529:Generated_Source\PSoC4/CSD_Control.c ****                     (CSD_GET_WIDGET_TYPE(ptrFlashWdgt) == CSD_WD_PROXIMITY_E) ? 1Lu : 0Lu;
+ 481              		.loc 1 529 0
+ 482 0036 3B69     		ldr	r3, [r7, #16]
+ 483 0038 1B7E     		ldrb	r3, [r3, #24]
+ 484 003a 062B     		cmp	r3, #6
+ 485 003c 01D1     		bne	.L37
+ 486              		.loc 1 529 0 is_stmt 0 discriminator 1
+ 487 003e 0123     		mov	r3, #1
+ 488 0040 00E0     		b	.L38
+ 489              	.L37:
+ 490              		.loc 1 529 0 discriminator 2
+ 491 0042 0023     		mov	r3, #0
+ 492              	.L38:
+ 528:Generated_Source\PSoC4/CSD_Control.c ****                     (CSD_GET_WIDGET_TYPE(ptrFlashWdgt) == CSD_WD_PROXIMITY_E) ? 1Lu : 0Lu;
+ 493              		.loc 1 528 0 is_stmt 1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 19
+
+
+ 494 0044 FB60     		str	r3, [r7, #12]
+ 530:Generated_Source\PSoC4/CSD_Control.c **** 
+ 531:Generated_Source\PSoC4/CSD_Control.c ****                 /* Run the desired processing for the all CSD widget sensors */
+ 532:Generated_Source\PSoC4/CSD_Control.c ****                 for (;snsCount-- > 0u;)
+ 495              		.loc 1 532 0
+ 496 0046 0EE0     		b	.L39
+ 497              	.L40:
+ 533:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 534:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsdSensorRawCountsExt(ptrFlashWdgt, ptrSns, fltrHistV, mode);
+ 498              		.loc 1 534 0
+ 499 0048 3869     		ldr	r0, [r7, #16]
+ 500 004a 7969     		ldr	r1, [r7, #20]
+ 501 004c BA68     		ldr	r2, [r7, #8]
+ 502 004e 3B68     		ldr	r3, [r7]
+ 503 0050 FFF7FEFF 		bl	CSD_DpProcessCsdSensorRawCountsExt
+ 535:Generated_Source\PSoC4/CSD_Control.c **** 
+ 536:Generated_Source\PSoC4/CSD_Control.c ****                     /* Move to the next sensor and filter history objects */
+ 537:Generated_Source\PSoC4/CSD_Control.c ****                     ptrSns++;
+ 504              		.loc 1 537 0
+ 505 0054 7B69     		ldr	r3, [r7, #20]
+ 506 0056 0A33     		add	r3, r3, #10
+ 507 0058 7B61     		str	r3, [r7, #20]
+ 538:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_INC_FLTR_OBJ_VARIANT(isProxWdgt, fltrHistV);
+ 508              		.loc 1 538 0
+ 509 005a FB68     		ldr	r3, [r7, #12]
+ 510 005c 002B     		cmp	r3, #0
+ 511 005e 02D1     		bne	.L39
+ 512              		.loc 1 538 0 is_stmt 0 discriminator 1
+ 513 0060 BB68     		ldr	r3, [r7, #8]
+ 514 0062 0233     		add	r3, r3, #2
+ 515 0064 BB60     		str	r3, [r7, #8]
+ 516              	.L39:
+ 532:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 517              		.loc 1 532 0 is_stmt 1
+ 518 0066 FB69     		ldr	r3, [r7, #28]
+ 519 0068 5A1E     		sub	r2, r3, #1
+ 520 006a FA61     		str	r2, [r7, #28]
+ 521 006c 002B     		cmp	r3, #0
+ 522 006e EBD1     		bne	.L40
+ 539:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ 540:Generated_Source\PSoC4/CSD_Control.c **** 
+ 541:Generated_Source\PSoC4/CSD_Control.c ****                 if (0u != (mode & CSD_PROCESS_STATUS))
+ 523              		.loc 1 541 0
+ 524 0070 3B68     		ldr	r3, [r7]
+ 525 0072 2022     		mov	r2, #32
+ 526 0074 1340     		and	r3, r2
+ 527 0076 05D0     		beq	.L41
+ 542:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 543:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsdWidgetStatus(widgetId, ptrFlashWdgt);
+ 528              		.loc 1 543 0
+ 529 0078 7A68     		ldr	r2, [r7, #4]
+ 530 007a 3B69     		ldr	r3, [r7, #16]
+ 531 007c 101C     		mov	r0, r2
+ 532 007e 191C     		mov	r1, r3
+ 533 0080 FFF7FEFF 		bl	CSD_DpProcessCsdWidgetStatus
+ 534              	.L41:
+ 544:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 20
+
+
+ 545:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 535              		.loc 1 545 0
+ 536 0084 C046     		mov	r8, r8
+ 546:Generated_Source\PSoC4/CSD_Control.c ****             }
+ 547:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSD_WIDGETS) */
+ 548:Generated_Source\PSoC4/CSD_Control.c **** 
+ 549:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSX_WIDGETS)
+ 550:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSX_E:
+ 551:Generated_Source\PSoC4/CSD_Control.c **** 
+ 552:Generated_Source\PSoC4/CSD_Control.c ****                 #if (0u != CSD_CSX_MULTIPHASE_TX_EN)
+ 553:Generated_Source\PSoC4/CSD_Control.c ****                     if ((0u != (mode & CSD_PROCESS_DECONVOLUTION)) &&
+ 554:Generated_Source\PSoC4/CSD_Control.c ****                         (0u != (ptrFlashWdgt->staticConfig & CSD_MULTIPHASE_TX_MASK)))
+ 555:Generated_Source\PSoC4/CSD_Control.c ****                     {
+ 556:Generated_Source\PSoC4/CSD_Control.c ****                         CSD_DpDeconvolution(ptrFlashWdgt);
+ 557:Generated_Source\PSoC4/CSD_Control.c ****                     }
+ 558:Generated_Source\PSoC4/CSD_Control.c ****                 #endif /* #if (0u != CSD_CSX_MULTIPHASE_TX_EN) */
+ 559:Generated_Source\PSoC4/CSD_Control.c **** 
+ 560:Generated_Source\PSoC4/CSD_Control.c ****                 /* Run the desired processing for the all CSX widget sensors */
+ 561:Generated_Source\PSoC4/CSD_Control.c ****                 for (;snsCount-- > 0u;)
+ 562:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 563:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsxSensorRawCountsExt(ptrFlashWdgt, ptrSns, fltrHistV, mode);
+ 564:Generated_Source\PSoC4/CSD_Control.c **** 
+ 565:Generated_Source\PSoC4/CSD_Control.c ****                     /* Move to the next sensor and filter history objects */
+ 566:Generated_Source\PSoC4/CSD_Control.c ****                     ptrSns++;
+ 567:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_INC_FLTR_OBJ_VARIANT(0u, fltrHistV);
+ 568:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ 569:Generated_Source\PSoC4/CSD_Control.c **** 
+ 570:Generated_Source\PSoC4/CSD_Control.c ****                 if (0u != (mode & CSD_PROCESS_STATUS))
+ 571:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 572:Generated_Source\PSoC4/CSD_Control.c ****                     CSD_DpProcessCsxWidgetStatus(widgetId, ptrFlashWdgt);
+ 573:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ 574:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 575:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSX_WIDGETS) */
+ 576:Generated_Source\PSoC4/CSD_Control.c **** 
+ 577:Generated_Source\PSoC4/CSD_Control.c ****         default:
+ 578:Generated_Source\PSoC4/CSD_Control.c ****             CYASSERT(0u);
+ 579:Generated_Source\PSoC4/CSD_Control.c ****             break;
+ 580:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 581:Generated_Source\PSoC4/CSD_Control.c **** 
+ 582:Generated_Source\PSoC4/CSD_Control.c ****         result = CYRET_SUCCESS;
+ 537              		.loc 1 582 0
+ 538 0086 0023     		mov	r3, #0
+ 539 0088 BB61     		str	r3, [r7, #24]
+ 540              	.L36:
+ 583:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 584:Generated_Source\PSoC4/CSD_Control.c **** 
+ 585:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 541              		.loc 1 585 0
+ 542 008a BB69     		ldr	r3, [r7, #24]
+ 586:Generated_Source\PSoC4/CSD_Control.c **** }
+ 543              		.loc 1 586 0
+ 544 008c 181C     		mov	r0, r3
+ 545 008e BD46     		mov	sp, r7
+ 546 0090 08B0     		add	sp, sp, #32
+ 547              		@ sp needed
+ 548 0092 80BD     		pop	{r7, pc}
+ 549              	.L44:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 21
+
+
+ 550              		.align	2
+ 551              	.L43:
+ 552 0094 00000000 		.word	CSD_dsFlash
+ 553              		.cfi_endproc
+ 554              	.LFE7:
+ 555              		.size	CSD_ProcessWidgetExt, .-CSD_ProcessWidgetExt
+ 556              		.section	.text.CSD_ProcessSensorExt,"ax",%progbits
+ 557              		.align	2
+ 558              		.global	CSD_ProcessSensorExt
+ 559              		.code	16
+ 560              		.thumb_func
+ 561              		.type	CSD_ProcessSensorExt, %function
+ 562              	CSD_ProcessSensorExt:
+ 563              	.LFB8:
+ 587:Generated_Source\PSoC4/CSD_Control.c **** 
+ 588:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 589:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_ProcessSensorExt
+ 590:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 591:Generated_Source\PSoC4/CSD_Control.c **** *
+ 592:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 593:Generated_Source\PSoC4/CSD_Control.c **** *  Performs customized data processing on the selected widget's sensor.
+ 594:Generated_Source\PSoC4/CSD_Control.c **** *
+ 595:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 596:Generated_Source\PSoC4/CSD_Control.c **** *  This function performs data processes for the specified sensor specified by
+ 597:Generated_Source\PSoC4/CSD_Control.c **** *  the mode parameter. The execution order of the requested operations is from 
+ 598:Generated_Source\PSoC4/CSD_Control.c **** *  LSB to MSB of the mode parameter. If a different order is needed, this 
+ 599:Generated_Source\PSoC4/CSD_Control.c **** *  function can be called multiple times with the required mode parameter.
+ 600:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 601:Generated_Source\PSoC4/CSD_Control.c **** *  This function can be used with any of the available scan functions. This 
+ 602:Generated_Source\PSoC4/CSD_Control.c **** *  function should be called only after a specified sensor in the widget is 
+ 603:Generated_Source\PSoC4/CSD_Control.c **** *  scanned. Calling this function multiple times with the same mode without 
+ 604:Generated_Source\PSoC4/CSD_Control.c **** *  sensor scanning causes unexpected behavior. This function ignores the value 
+ 605:Generated_Source\PSoC4/CSD_Control.c **** *  of the wdgtEnable register. 
+ 606:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 607:Generated_Source\PSoC4/CSD_Control.c **** *  The CSD_PROCESS_CALC_NOISE and 
+ 608:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_PROCESS_THRESHOLDS flags are supported by the CSD sensing 
+ 609:Generated_Source\PSoC4/CSD_Control.c **** *  method only when the auto-tuning mode is enabled.
+ 610:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 611:Generated_Source\PSoC4/CSD_Control.c **** *  The pipeline scan method (i.e. during scanning of a sensor perform processing
+ 612:Generated_Source\PSoC4/CSD_Control.c **** *  of a previously scanned sensor) can be implemented using this function and it
+ 613:Generated_Source\PSoC4/CSD_Control.c **** *  may reduce the total scan/process time, increase the refresh rate and 
+ 614:Generated_Source\PSoC4/CSD_Control.c **** *  decrease the power consumption.
+ 615:Generated_Source\PSoC4/CSD_Control.c **** *
+ 616:Generated_Source\PSoC4/CSD_Control.c **** * \param widgetId  
+ 617:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the ID number of the widget to process one of its sensors. 
+ 618:Generated_Source\PSoC4/CSD_Control.c **** *  A macro for the widget ID can be found in the 
+ 619:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Configuration.h file defined as 
+ 620:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_<WidgetName>_WDGT_ID
+ 621:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 622:Generated_Source\PSoC4/CSD_Control.c **** * \param sensorId  
+ 623:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the ID number of the sensor within the widget to process it.
+ 624:Generated_Source\PSoC4/CSD_Control.c **** *  A macro for the sensor ID within a specified widget can be found in the
+ 625:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_Configuration.h file defined as 
+ 626:Generated_Source\PSoC4/CSD_Control.c **** *  CSD_<WidgetName>_SNS<SensorNumber>_ID
+ 627:Generated_Source\PSoC4/CSD_Control.c **** *  
+ 628:Generated_Source\PSoC4/CSD_Control.c **** * \param mode      
+ 629:Generated_Source\PSoC4/CSD_Control.c **** *  Specify the type of the sensor processing that needs to be executed for the
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 22
+
+
+ 630:Generated_Source\PSoC4/CSD_Control.c **** *  specified sensor:
+ 631:Generated_Source\PSoC4/CSD_Control.c **** *    1. Bits [31..5] - Reserved
+ 632:Generated_Source\PSoC4/CSD_Control.c **** *    2. Bits [4..0] - CSD_PROCESS_ALL - Executes all tasks
+ 633:Generated_Source\PSoC4/CSD_Control.c **** *    3. Bit [4] - CSD_PROCESS_THRESHOLDS - Updates Thresholds (only
+ 634:Generated_Source\PSoC4/CSD_Control.c **** *       in auto-tuning mode)
+ 635:Generated_Source\PSoC4/CSD_Control.c **** *    4. Bit [3] - CSD_PROCESS_CALC_NOISE - Calculates Noise (only 
+ 636:Generated_Source\PSoC4/CSD_Control.c **** *       in auto-tuning mode)
+ 637:Generated_Source\PSoC4/CSD_Control.c **** *    5. Bit [2] - CSD_PROCESS_DIFFCOUNTS - Updates Difference Count
+ 638:Generated_Source\PSoC4/CSD_Control.c **** *    6. Bit [1] - CSD_PROCESS_BASELINE - Updates Baseline
+ 639:Generated_Source\PSoC4/CSD_Control.c **** *    7. Bit [0] - CSD_PROCESS_FILTER - Runs Firmware Filter
+ 640:Generated_Source\PSoC4/CSD_Control.c **** *
+ 641:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 642:Generated_Source\PSoC4/CSD_Control.c **** *  Returns the status of the sensor process operation:
+ 643:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_SUCCESS if processing is successfully performed.
+ 644:Generated_Source\PSoC4/CSD_Control.c **** *    - CYRET_BAD_PARAM if the input parameter is invalid.
+ 645:Generated_Source\PSoC4/CSD_Control.c **** *
+ 646:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 647:Generated_Source\PSoC4/CSD_Control.c **** cystatus CSD_ProcessSensorExt(uint32 widgetId, uint32 sensorId, uint32 mode)
+ 648:Generated_Source\PSoC4/CSD_Control.c **** {
+ 564              		.loc 1 648 0
+ 565              		.cfi_startproc
+ 566 0000 80B5     		push	{r7, lr}
+ 567              		.cfi_def_cfa_offset 8
+ 568              		.cfi_offset 7, -8
+ 569              		.cfi_offset 14, -4
+ 570 0002 88B0     		sub	sp, sp, #32
+ 571              		.cfi_def_cfa_offset 40
+ 572 0004 00AF     		add	r7, sp, #0
+ 573              		.cfi_def_cfa_register 7
+ 574 0006 F860     		str	r0, [r7, #12]
+ 575 0008 B960     		str	r1, [r7, #8]
+ 576 000a 7A60     		str	r2, [r7, #4]
+ 649:Generated_Source\PSoC4/CSD_Control.c ****     cystatus result = CYRET_BAD_PARAM;
+ 577              		.loc 1 649 0
+ 578 000c 0123     		mov	r3, #1
+ 579 000e FB61     		str	r3, [r7, #28]
+ 650:Generated_Source\PSoC4/CSD_Control.c ****     CSD_FLASH_WD_STRUCT const *ptrFlashWdgt;
+ 651:Generated_Source\PSoC4/CSD_Control.c ****     CSD_PTR_FILTER_VARIANT fltrHistV;
+ 652:Generated_Source\PSoC4/CSD_Control.c ****     CSD_RAM_SNS_STRUCT *ptrSns;
+ 653:Generated_Source\PSoC4/CSD_Control.c **** 
+ 654:Generated_Source\PSoC4/CSD_Control.c ****     if ((widgetId < CSD_TOTAL_WIDGETS) && (sensorId < CSD_GET_SENSOR_COUNT(widgetId)))
+ 580              		.loc 1 654 0
+ 581 0010 FB68     		ldr	r3, [r7, #12]
+ 582 0012 002B     		cmp	r3, #0
+ 583 0014 35D1     		bne	.L46
+ 584              		.loc 1 654 0 is_stmt 0 discriminator 1
+ 585 0016 1D49     		ldr	r1, .L49
+ 586 0018 FA68     		ldr	r2, [r7, #12]
+ 587 001a 131C     		mov	r3, r2
+ 588 001c DB00     		lsl	r3, r3, #3
+ 589 001e 9B1A     		sub	r3, r3, r2
+ 590 0020 9B00     		lsl	r3, r3, #2
+ 591 0022 CB18     		add	r3, r1, r3
+ 592 0024 1033     		add	r3, r3, #16
+ 593 0026 DB88     		ldrh	r3, [r3, #6]
+ 594 0028 1A1E     		sub	r2, r3, #0
+ 595 002a BB68     		ldr	r3, [r7, #8]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 23
+
+
+ 596 002c 9A42     		cmp	r2, r3
+ 597 002e 28D9     		bls	.L46
+ 655:Generated_Source\PSoC4/CSD_Control.c ****     {
+ 656:Generated_Source\PSoC4/CSD_Control.c ****         ptrFlashWdgt = &CSD_dsFlash.wdgtArray[widgetId];
+ 598              		.loc 1 656 0 is_stmt 1
+ 599 0030 FA68     		ldr	r2, [r7, #12]
+ 600 0032 131C     		mov	r3, r2
+ 601 0034 DB00     		lsl	r3, r3, #3
+ 602 0036 9B1A     		sub	r3, r3, r2
+ 603 0038 9B00     		lsl	r3, r3, #2
+ 604 003a 144A     		ldr	r2, .L49
+ 605 003c 9B18     		add	r3, r3, r2
+ 606 003e BB61     		str	r3, [r7, #24]
+ 657:Generated_Source\PSoC4/CSD_Control.c ****         fltrHistV.ptr = ptrFlashWdgt->ptr2FltrHistory;
+ 607              		.loc 1 657 0
+ 608 0040 BB69     		ldr	r3, [r7, #24]
+ 609 0042 DB68     		ldr	r3, [r3, #12]
+ 610 0044 3B61     		str	r3, [r7, #16]
+ 658:Generated_Source\PSoC4/CSD_Control.c ****         ptrSns = ptrFlashWdgt->ptr2SnsRam;
+ 611              		.loc 1 658 0
+ 612 0046 BB69     		ldr	r3, [r7, #24]
+ 613 0048 9B68     		ldr	r3, [r3, #8]
+ 614 004a 7B61     		str	r3, [r7, #20]
+ 659:Generated_Source\PSoC4/CSD_Control.c ****         ptrSns += sensorId;
+ 615              		.loc 1 659 0
+ 616 004c BA68     		ldr	r2, [r7, #8]
+ 617 004e 131C     		mov	r3, r2
+ 618 0050 9B00     		lsl	r3, r3, #2
+ 619 0052 9B18     		add	r3, r3, r2
+ 620 0054 5B00     		lsl	r3, r3, #1
+ 621 0056 1A1C     		mov	r2, r3
+ 622 0058 7B69     		ldr	r3, [r7, #20]
+ 623 005a 9B18     		add	r3, r3, r2
+ 624 005c 7B61     		str	r3, [r7, #20]
+ 660:Generated_Source\PSoC4/CSD_Control.c **** 
+ 661:Generated_Source\PSoC4/CSD_Control.c ****         switch(CSD_GET_SENSE_METHOD(ptrFlashWdgt))
+ 662:Generated_Source\PSoC4/CSD_Control.c ****         {
+ 663:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSD_WIDGETS)
+ 664:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSD_E:
+ 665:Generated_Source\PSoC4/CSD_Control.c ****                 if (CSD_WD_PROXIMITY_E == (CSD_WD_TYPE_ENUM)ptrFlashWdgt->wdgtType)
+ 625              		.loc 1 665 0
+ 626 005e BB69     		ldr	r3, [r7, #24]
+ 627 0060 1B7E     		ldrb	r3, [r3, #24]
+ 628 0062 062B     		cmp	r3, #6
+ 629 0064 04D0     		beq	.L47
+ 666:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 667:Generated_Source\PSoC4/CSD_Control.c ****                     #if (0u != CSD_PROX_RC_FILTER_EN)
+ 668:Generated_Source\PSoC4/CSD_Control.c ****                         fltrHistV.ptr = &fltrHistV.ptrProx[sensorId];
+ 669:Generated_Source\PSoC4/CSD_Control.c ****                     #endif /* #if (0u != CSD_PROX_RC_FILTER_EN) */
+ 670:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ 671:Generated_Source\PSoC4/CSD_Control.c ****                 else
+ 672:Generated_Source\PSoC4/CSD_Control.c ****                 {
+ 673:Generated_Source\PSoC4/CSD_Control.c ****                     #if (0u != CSD_REGULAR_RC_FILTER_EN)
+ 674:Generated_Source\PSoC4/CSD_Control.c ****                         fltrHistV.ptr = &fltrHistV.ptrRegular[sensorId];
+ 630              		.loc 1 674 0
+ 631 0066 3A69     		ldr	r2, [r7, #16]
+ 632 0068 BB68     		ldr	r3, [r7, #8]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 24
+
+
+ 633 006a 5B00     		lsl	r3, r3, #1
+ 634 006c D318     		add	r3, r2, r3
+ 635 006e 3B61     		str	r3, [r7, #16]
+ 636              	.L47:
+ 675:Generated_Source\PSoC4/CSD_Control.c ****                     #endif /* #if (0u != CSD_REGULAR_RC_FILTER_EN) */
+ 676:Generated_Source\PSoC4/CSD_Control.c ****                 }
+ 677:Generated_Source\PSoC4/CSD_Control.c **** 
+ 678:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsdSensorRawCountsExt(ptrFlashWdgt, ptrSns, fltrHistV, mode);
+ 637              		.loc 1 678 0
+ 638 0070 B869     		ldr	r0, [r7, #24]
+ 639 0072 7969     		ldr	r1, [r7, #20]
+ 640 0074 3A69     		ldr	r2, [r7, #16]
+ 641 0076 7B68     		ldr	r3, [r7, #4]
+ 642 0078 FFF7FEFF 		bl	CSD_DpProcessCsdSensorRawCountsExt
+ 679:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 643              		.loc 1 679 0
+ 644 007c C046     		mov	r8, r8
+ 680:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSD_WIDGETS) */
+ 681:Generated_Source\PSoC4/CSD_Control.c **** 
+ 682:Generated_Source\PSoC4/CSD_Control.c ****         #if (0u != CSD_TOTAL_CSX_WIDGETS)
+ 683:Generated_Source\PSoC4/CSD_Control.c ****             case CSD_SENSE_METHOD_CSX_E:
+ 684:Generated_Source\PSoC4/CSD_Control.c ****                 #if (0u != CSD_REGULAR_RC_FILTER_EN)
+ 685:Generated_Source\PSoC4/CSD_Control.c ****                     fltrHistV.ptr = &fltrHistV.ptrRegular[sensorId];
+ 686:Generated_Source\PSoC4/CSD_Control.c ****                 #endif /* #if (0u != CSD_REGULAR_RC_FILTER_EN) */
+ 687:Generated_Source\PSoC4/CSD_Control.c **** 
+ 688:Generated_Source\PSoC4/CSD_Control.c ****                 CSD_DpProcessCsxSensorRawCountsExt(ptrFlashWdgt, ptrSns, fltrHistV, mode);
+ 689:Generated_Source\PSoC4/CSD_Control.c ****                 break;
+ 690:Generated_Source\PSoC4/CSD_Control.c ****         #endif /* #if (0u != CSD_TOTAL_CSX_WIDGETS) */
+ 691:Generated_Source\PSoC4/CSD_Control.c **** 
+ 692:Generated_Source\PSoC4/CSD_Control.c ****         default:
+ 693:Generated_Source\PSoC4/CSD_Control.c ****             CYASSERT(0u);
+ 694:Generated_Source\PSoC4/CSD_Control.c ****             break;
+ 695:Generated_Source\PSoC4/CSD_Control.c ****         }
+ 696:Generated_Source\PSoC4/CSD_Control.c **** 
+ 697:Generated_Source\PSoC4/CSD_Control.c ****         result = CYRET_SUCCESS;
+ 645              		.loc 1 697 0
+ 646 007e 0023     		mov	r3, #0
+ 647 0080 FB61     		str	r3, [r7, #28]
+ 648              	.L46:
+ 698:Generated_Source\PSoC4/CSD_Control.c ****     }
+ 699:Generated_Source\PSoC4/CSD_Control.c **** 
+ 700:Generated_Source\PSoC4/CSD_Control.c ****     return result;
+ 649              		.loc 1 700 0
+ 650 0082 FB69     		ldr	r3, [r7, #28]
+ 701:Generated_Source\PSoC4/CSD_Control.c **** }
+ 651              		.loc 1 701 0
+ 652 0084 181C     		mov	r0, r3
+ 653 0086 BD46     		mov	sp, r7
+ 654 0088 08B0     		add	sp, sp, #32
+ 655              		@ sp needed
+ 656 008a 80BD     		pop	{r7, pc}
+ 657              	.L50:
+ 658              		.align	2
+ 659              	.L49:
+ 660 008c 00000000 		.word	CSD_dsFlash
+ 661              		.cfi_endproc
+ 662              	.LFE8:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 25
+
+
+ 663              		.size	CSD_ProcessSensorExt, .-CSD_ProcessSensorExt
+ 664              		.section	.text.CSD_Sleep,"ax",%progbits
+ 665              		.align	2
+ 666              		.global	CSD_Sleep
+ 667              		.code	16
+ 668              		.thumb_func
+ 669              		.type	CSD_Sleep, %function
+ 670              	CSD_Sleep:
+ 671              	.LFB9:
+ 702:Generated_Source\PSoC4/CSD_Control.c **** 
+ 703:Generated_Source\PSoC4/CSD_Control.c **** #if (0u != CSD_SELF_TEST_EN)
+ 704:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 705:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_RunSelfTest
+ 706:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 707:Generated_Source\PSoC4/CSD_Control.c **** *
+ 708:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 709:Generated_Source\PSoC4/CSD_Control.c **** *  Run-self tests based on the test-enable mask.
+ 710:Generated_Source\PSoC4/CSD_Control.c **** *
+ 711:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 712:Generated_Source\PSoC4/CSD_Control.c **** *  The test bit-mask can take the following values:
+ 713:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_SHORTS        - A test for the sensor shorts.
+ 714:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_GLOBAL_CRC    - Verify CRC of RAM and FLASH global parameters.
+ 715:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_BSL_RAW_LIMTS - Verify Baseline and Raw Counts limits.
+ 716:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_WIDGET_CRC    - Verify CRC of the widget's configuration in RAM.
+ 717:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_CSD_CAPS      - Measure the Cmod and Ctank capacitance.
+ 718:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_CSX_CAPS      - Measure the Cint1 and Cint2 capacitance.
+ 719:Generated_Source\PSoC4/CSD_Control.c **** *   - CSD_TST_BASELINES     - Verify the baselines consistency (inverse copy).
+ 720:Generated_Source\PSoC4/CSD_Control.c **** *
+ 721:Generated_Source\PSoC4/CSD_Control.c **** *  The results of the capacitance measurements are stored into the corresponding
+ 722:Generated_Source\PSoC4/CSD_Control.c **** *  registers of the data structure.
+ 723:Generated_Source\PSoC4/CSD_Control.c **** *
+ 724:Generated_Source\PSoC4/CSD_Control.c **** * \param testEnMask The bit-mask with the requested tests to be executed.
+ 725:Generated_Source\PSoC4/CSD_Control.c **** *
+ 726:Generated_Source\PSoC4/CSD_Control.c **** * \return
+ 727:Generated_Source\PSoC4/CSD_Control.c **** *  Bitmask that contains 0 for passed tests (or not selected with the testEnMask)
+ 728:Generated_Source\PSoC4/CSD_Control.c **** *  and 1 for the failed tests.
+ 729:Generated_Source\PSoC4/CSD_Control.c **** *
+ 730:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 731:Generated_Source\PSoC4/CSD_Control.c **** uint32 CSD_RunSelfTest(uint32 testEnMask)
+ 732:Generated_Source\PSoC4/CSD_Control.c **** {
+ 733:Generated_Source\PSoC4/CSD_Control.c ****     /* The implementation of this API will be
+ 734:Generated_Source\PSoC4/CSD_Control.c ****      * provided in the FUTURE version of the
+ 735:Generated_Source\PSoC4/CSD_Control.c ****      * CSD component */
+ 736:Generated_Source\PSoC4/CSD_Control.c ****     (void)testEnMask;
+ 737:Generated_Source\PSoC4/CSD_Control.c ****     return 0Lu;
+ 738:Generated_Source\PSoC4/CSD_Control.c **** }
+ 739:Generated_Source\PSoC4/CSD_Control.c **** #endif /* #if CSD_SELF_TEST_EN */
+ 740:Generated_Source\PSoC4/CSD_Control.c **** 
+ 741:Generated_Source\PSoC4/CSD_Control.c **** 
+ 742:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 743:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Sleep
+ 744:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 745:Generated_Source\PSoC4/CSD_Control.c **** *
+ 746:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 747:Generated_Source\PSoC4/CSD_Control.c **** *  Prepares the component to deep sleep.
+ 748:Generated_Source\PSoC4/CSD_Control.c **** *
+ 749:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 26
+
+
+ 750:Generated_Source\PSoC4/CSD_Control.c **** *  Currently this function is empty and exists as a place for future updates, 
+ 751:Generated_Source\PSoC4/CSD_Control.c **** *  this function shall be used to prepare the component to enter deep sleep.
+ 752:Generated_Source\PSoC4/CSD_Control.c **** *
+ 753:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 754:Generated_Source\PSoC4/CSD_Control.c **** void CSD_Sleep(void)
+ 755:Generated_Source\PSoC4/CSD_Control.c **** {
+ 672              		.loc 1 755 0
+ 673              		.cfi_startproc
+ 674 0000 80B5     		push	{r7, lr}
+ 675              		.cfi_def_cfa_offset 8
+ 676              		.cfi_offset 7, -8
+ 677              		.cfi_offset 14, -4
+ 678 0002 00AF     		add	r7, sp, #0
+ 679              		.cfi_def_cfa_register 7
+ 756:Generated_Source\PSoC4/CSD_Control.c **** }
+ 680              		.loc 1 756 0
+ 681 0004 BD46     		mov	sp, r7
+ 682              		@ sp needed
+ 683 0006 80BD     		pop	{r7, pc}
+ 684              		.cfi_endproc
+ 685              	.LFE9:
+ 686              		.size	CSD_Sleep, .-CSD_Sleep
+ 687              		.section	.text.CSD_Wakeup,"ax",%progbits
+ 688              		.align	2
+ 689              		.global	CSD_Wakeup
+ 690              		.code	16
+ 691              		.thumb_func
+ 692              		.type	CSD_Wakeup, %function
+ 693              	CSD_Wakeup:
+ 694              	.LFB10:
+ 757:Generated_Source\PSoC4/CSD_Control.c **** 
+ 758:Generated_Source\PSoC4/CSD_Control.c **** 
+ 759:Generated_Source\PSoC4/CSD_Control.c **** /*******************************************************************************
+ 760:Generated_Source\PSoC4/CSD_Control.c **** * Function Name: CSD_Wakeup
+ 761:Generated_Source\PSoC4/CSD_Control.c **** ****************************************************************************//**
+ 762:Generated_Source\PSoC4/CSD_Control.c **** *
+ 763:Generated_Source\PSoC4/CSD_Control.c **** * \brief
+ 764:Generated_Source\PSoC4/CSD_Control.c **** *  Currently this function is empty and exists as a place for future updates,
+ 765:Generated_Source\PSoC4/CSD_Control.c **** *  this function shall be used to resume the component after exiting deep sleep.
+ 766:Generated_Source\PSoC4/CSD_Control.c **** *
+ 767:Generated_Source\PSoC4/CSD_Control.c **** * \details
+ 768:Generated_Source\PSoC4/CSD_Control.c **** *  This function resumes the component after sleep.
+ 769:Generated_Source\PSoC4/CSD_Control.c **** *
+ 770:Generated_Source\PSoC4/CSD_Control.c **** *******************************************************************************/
+ 771:Generated_Source\PSoC4/CSD_Control.c **** void CSD_Wakeup(void)
+ 772:Generated_Source\PSoC4/CSD_Control.c **** {
+ 695              		.loc 1 772 0
+ 696              		.cfi_startproc
+ 697 0000 80B5     		push	{r7, lr}
+ 698              		.cfi_def_cfa_offset 8
+ 699              		.cfi_offset 7, -8
+ 700              		.cfi_offset 14, -4
+ 701 0002 00AF     		add	r7, sp, #0
+ 702              		.cfi_def_cfa_register 7
+ 773:Generated_Source\PSoC4/CSD_Control.c **** }
+ 703              		.loc 1 773 0
+ 704 0004 BD46     		mov	sp, r7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 27
+
+
+ 705              		@ sp needed
+ 706 0006 80BD     		pop	{r7, pc}
+ 707              		.cfi_endproc
+ 708              	.LFE10:
+ 709              		.size	CSD_Wakeup, .-CSD_Wakeup
+ 710              		.text
+ 711              	.Letext0:
+ 712              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 713              		.file 3 "Generated_Source\\PSoC4\\CSD_Configuration.h"
+ 714              		.file 4 "Generated_Source\\PSoC4\\CSD_Structure.h"
+ 715              		.section	.debug_info,"",%progbits
+ 716              	.Ldebug_info0:
+ 717 0000 A6070000 		.4byte	0x7a6
+ 718 0004 0400     		.2byte	0x4
+ 719 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 720 000a 04       		.byte	0x4
+ 721 000b 01       		.uleb128 0x1
+ 722 000c A4020000 		.4byte	.LASF109
+ 723 0010 01       		.byte	0x1
+ 724 0011 1D000000 		.4byte	.LASF110
+ 725 0015 29020000 		.4byte	.LASF111
+ 726 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 727 001d 00000000 		.4byte	0
+ 728 0021 00000000 		.4byte	.Ldebug_line0
+ 729 0025 02       		.uleb128 0x2
+ 730 0026 01       		.byte	0x1
+ 731 0027 06       		.byte	0x6
+ 732 0028 B8000000 		.4byte	.LASF0
+ 733 002c 02       		.uleb128 0x2
+ 734 002d 01       		.byte	0x1
+ 735 002e 08       		.byte	0x8
+ 736 002f AB040000 		.4byte	.LASF1
+ 737 0033 02       		.uleb128 0x2
+ 738 0034 02       		.byte	0x2
+ 739 0035 05       		.byte	0x5
+ 740 0036 D0040000 		.4byte	.LASF2
+ 741 003a 02       		.uleb128 0x2
+ 742 003b 02       		.byte	0x2
+ 743 003c 07       		.byte	0x7
+ 744 003d 7F030000 		.4byte	.LASF3
+ 745 0041 02       		.uleb128 0x2
+ 746 0042 04       		.byte	0x4
+ 747 0043 05       		.byte	0x5
+ 748 0044 06010000 		.4byte	.LASF4
+ 749 0048 02       		.uleb128 0x2
+ 750 0049 04       		.byte	0x4
+ 751 004a 07       		.byte	0x7
+ 752 004b 89050000 		.4byte	.LASF5
+ 753 004f 02       		.uleb128 0x2
+ 754 0050 08       		.byte	0x8
+ 755 0051 05       		.byte	0x5
+ 756 0052 AA000000 		.4byte	.LASF6
+ 757 0056 02       		.uleb128 0x2
+ 758 0057 08       		.byte	0x8
+ 759 0058 07       		.byte	0x7
+ 760 0059 57000000 		.4byte	.LASF7
+ 761 005d 03       		.uleb128 0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 28
+
+
+ 762 005e 04       		.byte	0x4
+ 763 005f 05       		.byte	0x5
+ 764 0060 696E7400 		.ascii	"int\000"
+ 765 0064 02       		.uleb128 0x2
+ 766 0065 04       		.byte	0x4
+ 767 0066 07       		.byte	0x7
+ 768 0067 0C020000 		.4byte	.LASF8
+ 769 006b 04       		.uleb128 0x4
+ 770 006c 2E010000 		.4byte	.LASF9
+ 771 0070 02       		.byte	0x2
+ 772 0071 9801     		.2byte	0x198
+ 773 0073 2C000000 		.4byte	0x2c
+ 774 0077 04       		.uleb128 0x4
+ 775 0078 00000000 		.4byte	.LASF10
+ 776 007c 02       		.byte	0x2
+ 777 007d 9901     		.2byte	0x199
+ 778 007f 3A000000 		.4byte	0x3a
+ 779 0083 04       		.uleb128 0x4
+ 780 0084 77010000 		.4byte	.LASF11
+ 781 0088 02       		.byte	0x2
+ 782 0089 9A01     		.2byte	0x19a
+ 783 008b 48000000 		.4byte	0x48
+ 784 008f 02       		.uleb128 0x2
+ 785 0090 04       		.byte	0x4
+ 786 0091 04       		.byte	0x4
+ 787 0092 67040000 		.4byte	.LASF12
+ 788 0096 02       		.uleb128 0x2
+ 789 0097 08       		.byte	0x8
+ 790 0098 04       		.byte	0x4
+ 791 0099 47010000 		.4byte	.LASF13
+ 792 009d 02       		.uleb128 0x2
+ 793 009e 01       		.byte	0x1
+ 794 009f 08       		.byte	0x8
+ 795 00a0 A5050000 		.4byte	.LASF14
+ 796 00a4 04       		.uleb128 0x4
+ 797 00a5 54060000 		.4byte	.LASF15
+ 798 00a9 02       		.byte	0x2
+ 799 00aa 3A02     		.2byte	0x23a
+ 800 00ac 48000000 		.4byte	0x48
+ 801 00b0 02       		.uleb128 0x2
+ 802 00b1 04       		.byte	0x4
+ 803 00b2 07       		.byte	0x7
+ 804 00b3 FE030000 		.4byte	.LASF16
+ 805 00b7 05       		.uleb128 0x5
+ 806 00b8 04       		.byte	0x4
+ 807 00b9 06       		.uleb128 0x6
+ 808 00ba 7E010000 		.4byte	.LASF17
+ 809 00be 03       		.byte	0x3
+ 810 00bf D8       		.byte	0xd8
+ 811 00c0 77000000 		.4byte	0x77
+ 812 00c4 06       		.uleb128 0x6
+ 813 00c5 8E020000 		.4byte	.LASF18
+ 814 00c9 03       		.byte	0x3
+ 815 00ca DC       		.byte	0xdc
+ 816 00cb 6B000000 		.4byte	0x6b
+ 817 00cf 07       		.uleb128 0x7
+ 818 00d0 01       		.byte	0x1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 29
+
+
+ 819 00d1 04       		.byte	0x4
+ 820 00d2 4F       		.byte	0x4f
+ 821 00d3 FC000000 		.4byte	0xfc
+ 822 00d7 08       		.uleb128 0x8
+ 823 00d8 4E010000 		.4byte	.LASF19
+ 824 00dc 01       		.sleb128 1
+ 825 00dd 08       		.uleb128 0x8
+ 826 00de C1050000 		.4byte	.LASF20
+ 827 00e2 02       		.sleb128 2
+ 828 00e3 08       		.uleb128 0x8
+ 829 00e4 84060000 		.4byte	.LASF21
+ 830 00e8 03       		.sleb128 3
+ 831 00e9 08       		.uleb128 0x8
+ 832 00ea F6040000 		.4byte	.LASF22
+ 833 00ee 04       		.sleb128 4
+ 834 00ef 08       		.uleb128 0x8
+ 835 00f0 F4000000 		.4byte	.LASF23
+ 836 00f4 05       		.sleb128 5
+ 837 00f5 08       		.uleb128 0x8
+ 838 00f6 80000000 		.4byte	.LASF24
+ 839 00fa 06       		.sleb128 6
+ 840 00fb 00       		.byte	0
+ 841 00fc 06       		.uleb128 0x6
+ 842 00fd 2F040000 		.4byte	.LASF25
+ 843 0101 04       		.byte	0x4
+ 844 0102 56       		.byte	0x56
+ 845 0103 CF000000 		.4byte	0xcf
+ 846 0107 07       		.uleb128 0x7
+ 847 0108 01       		.byte	0x1
+ 848 0109 04       		.byte	0x4
+ 849 010a 5D       		.byte	0x5d
+ 850 010b 22010000 		.4byte	0x122
+ 851 010f 08       		.uleb128 0x8
+ 852 0110 0D050000 		.4byte	.LASF26
+ 853 0114 00       		.sleb128 0
+ 854 0115 08       		.uleb128 0x8
+ 855 0116 36030000 		.4byte	.LASF27
+ 856 011a 01       		.sleb128 1
+ 857 011b 08       		.uleb128 0x8
+ 858 011c 72050000 		.4byte	.LASF28
+ 859 0120 02       		.sleb128 2
+ 860 0121 00       		.byte	0
+ 861 0122 09       		.uleb128 0x9
+ 862 0123 6B000000 		.4byte	0x6b
+ 863 0127 32010000 		.4byte	0x132
+ 864 012b 0A       		.uleb128 0xa
+ 865 012c B0000000 		.4byte	0xb0
+ 866 0130 00       		.byte	0
+ 867 0131 00       		.byte	0
+ 868 0132 0B       		.uleb128 0xb
+ 869 0133 0E       		.byte	0xe
+ 870 0134 04       		.byte	0x4
+ 871 0135 BE       		.byte	0xbe
+ 872 0136 BF010000 		.4byte	0x1bf
+ 873 013a 0C       		.uleb128 0xc
+ 874 013b 31050000 		.4byte	.LASF29
+ 875 013f 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 30
+
+
+ 876 0140 C4       		.byte	0xc4
+ 877 0141 77000000 		.4byte	0x77
+ 878 0145 00       		.byte	0
+ 879 0146 0C       		.uleb128 0xc
+ 880 0147 68060000 		.4byte	.LASF30
+ 881 014b 04       		.byte	0x4
+ 882 014c C9       		.byte	0xc9
+ 883 014d B9000000 		.4byte	0xb9
+ 884 0151 02       		.byte	0x2
+ 885 0152 0C       		.uleb128 0xc
+ 886 0153 AD060000 		.4byte	.LASF31
+ 887 0157 04       		.byte	0x4
+ 888 0158 CE       		.byte	0xce
+ 889 0159 6B000000 		.4byte	0x6b
+ 890 015d 04       		.byte	0x4
+ 891 015e 0C       		.uleb128 0xc
+ 892 015f 1D040000 		.4byte	.LASF32
+ 893 0163 04       		.byte	0x4
+ 894 0164 D3       		.byte	0xd3
+ 895 0165 6B000000 		.4byte	0x6b
+ 896 0169 05       		.byte	0x5
+ 897 016a 0C       		.uleb128 0xc
+ 898 016b A0040000 		.4byte	.LASF33
+ 899 016f 04       		.byte	0x4
+ 900 0170 D8       		.byte	0xd8
+ 901 0171 6B000000 		.4byte	0x6b
+ 902 0175 06       		.byte	0x6
+ 903 0176 0C       		.uleb128 0xc
+ 904 0177 B6050000 		.4byte	.LASF34
+ 905 017b 04       		.byte	0x4
+ 906 017c DD       		.byte	0xdd
+ 907 017d 6B000000 		.4byte	0x6b
+ 908 0181 07       		.byte	0x7
+ 909 0182 0C       		.uleb128 0xc
+ 910 0183 4D030000 		.4byte	.LASF35
+ 911 0187 04       		.byte	0x4
+ 912 0188 E3       		.byte	0xe3
+ 913 0189 C4000000 		.4byte	0xc4
+ 914 018d 08       		.byte	0x8
+ 915 018e 0C       		.uleb128 0xc
+ 916 018f 7C040000 		.4byte	.LASF36
+ 917 0193 04       		.byte	0x4
+ 918 0194 E8       		.byte	0xe8
+ 919 0195 6B000000 		.4byte	0x6b
+ 920 0199 09       		.byte	0x9
+ 921 019a 0C       		.uleb128 0xc
+ 922 019b E3030000 		.4byte	.LASF37
+ 923 019f 04       		.byte	0x4
+ 924 01a0 EF       		.byte	0xef
+ 925 01a1 22010000 		.4byte	0x122
+ 926 01a5 0A       		.byte	0xa
+ 927 01a6 0C       		.uleb128 0xc
+ 928 01a7 AF050000 		.4byte	.LASF38
+ 929 01ab 04       		.byte	0x4
+ 930 01ac F6       		.byte	0xf6
+ 931 01ad 6B000000 		.4byte	0x6b
+ 932 01b1 0B       		.byte	0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 31
+
+
+ 933 01b2 0C       		.uleb128 0xc
+ 934 01b3 47060000 		.4byte	.LASF39
+ 935 01b7 04       		.byte	0x4
+ 936 01b8 FB       		.byte	0xfb
+ 937 01b9 6B000000 		.4byte	0x6b
+ 938 01bd 0C       		.byte	0xc
+ 939 01be 00       		.byte	0
+ 940 01bf 06       		.uleb128 0x6
+ 941 01c0 D8050000 		.4byte	.LASF40
+ 942 01c4 04       		.byte	0x4
+ 943 01c5 FC       		.byte	0xfc
+ 944 01c6 32010000 		.4byte	0x132
+ 945 01ca 0D       		.uleb128 0xd
+ 946 01cb 0E       		.byte	0xe
+ 947 01cc 04       		.byte	0x4
+ 948 01cd 0201     		.2byte	0x102
+ 949 01cf E1010000 		.4byte	0x1e1
+ 950 01d3 0E       		.uleb128 0xe
+ 951 01d4 C4000000 		.4byte	.LASF41
+ 952 01d8 04       		.byte	0x4
+ 953 01d9 0701     		.2byte	0x107
+ 954 01db BF010000 		.4byte	0x1bf
+ 955 01df 00       		.byte	0
+ 956 01e0 00       		.byte	0
+ 957 01e1 04       		.uleb128 0x4
+ 958 01e2 B9040000 		.4byte	.LASF42
+ 959 01e6 04       		.byte	0x4
+ 960 01e7 0801     		.2byte	0x108
+ 961 01e9 CA010000 		.4byte	0x1ca
+ 962 01ed 0D       		.uleb128 0xd
+ 963 01ee 0A       		.byte	0xa
+ 964 01ef 04       		.byte	0x4
+ 965 01f0 0E01     		.2byte	0x10e
+ 966 01f2 45020000 		.4byte	0x245
+ 967 01f6 0F       		.uleb128 0xf
+ 968 01f7 72617700 		.ascii	"raw\000"
+ 969 01fb 04       		.byte	0x4
+ 970 01fc 1301     		.2byte	0x113
+ 971 01fe 45020000 		.4byte	0x245
+ 972 0202 00       		.byte	0
+ 973 0203 0E       		.uleb128 0xe
+ 974 0204 FA010000 		.4byte	.LASF43
+ 975 0208 04       		.byte	0x4
+ 976 0209 1801     		.2byte	0x118
+ 977 020b 45020000 		.4byte	0x245
+ 978 020f 02       		.byte	0x2
+ 979 0210 0E       		.uleb128 0xe
+ 980 0211 C8010000 		.4byte	.LASF44
+ 981 0215 04       		.byte	0x4
+ 982 0216 1E01     		.2byte	0x11e
+ 983 0218 22010000 		.4byte	0x122
+ 984 021c 04       		.byte	0x4
+ 985 021d 0E       		.uleb128 0xe
+ 986 021e F1050000 		.4byte	.LASF45
+ 987 0222 04       		.byte	0x4
+ 988 0223 2401     		.2byte	0x124
+ 989 0225 22010000 		.4byte	0x122
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 32
+
+
+ 990 0229 05       		.byte	0x5
+ 991 022a 0E       		.uleb128 0xe
+ 992 022b 7B000000 		.4byte	.LASF46
+ 993 022f 04       		.byte	0x4
+ 994 0230 2901     		.2byte	0x129
+ 995 0232 B9000000 		.4byte	0xb9
+ 996 0236 06       		.byte	0x6
+ 997 0237 0E       		.uleb128 0xe
+ 998 0238 FA050000 		.4byte	.LASF47
+ 999 023c 04       		.byte	0x4
+ 1000 023d 2E01     		.2byte	0x12e
+ 1001 023f 55020000 		.4byte	0x255
+ 1002 0243 08       		.byte	0x8
+ 1003 0244 00       		.byte	0
+ 1004 0245 09       		.uleb128 0x9
+ 1005 0246 77000000 		.4byte	0x77
+ 1006 024a 55020000 		.4byte	0x255
+ 1007 024e 0A       		.uleb128 0xa
+ 1008 024f B0000000 		.4byte	0xb0
+ 1009 0253 00       		.byte	0
+ 1010 0254 00       		.byte	0
+ 1011 0255 09       		.uleb128 0x9
+ 1012 0256 C4000000 		.4byte	0xc4
+ 1013 025a 65020000 		.4byte	0x265
+ 1014 025e 0A       		.uleb128 0xa
+ 1015 025f B0000000 		.4byte	0xb0
+ 1016 0263 00       		.byte	0
+ 1017 0264 00       		.byte	0
+ 1018 0265 04       		.uleb128 0x4
+ 1019 0266 34010000 		.4byte	.LASF48
+ 1020 026a 04       		.byte	0x4
+ 1021 026b 2F01     		.2byte	0x12f
+ 1022 026d ED010000 		.4byte	0x1ed
+ 1023 0271 0D       		.uleb128 0xd
+ 1024 0272 14       		.byte	0x14
+ 1025 0273 04       		.byte	0x4
+ 1026 0274 3501     		.2byte	0x135
+ 1027 0276 88020000 		.4byte	0x288
+ 1028 027a 0E       		.uleb128 0xe
+ 1029 027b C4000000 		.4byte	.LASF41
+ 1030 027f 04       		.byte	0x4
+ 1031 0280 3A01     		.2byte	0x13a
+ 1032 0282 88020000 		.4byte	0x288
+ 1033 0286 00       		.byte	0
+ 1034 0287 00       		.byte	0
+ 1035 0288 09       		.uleb128 0x9
+ 1036 0289 65020000 		.4byte	0x265
+ 1037 028d 98020000 		.4byte	0x298
+ 1038 0291 0A       		.uleb128 0xa
+ 1039 0292 B0000000 		.4byte	0xb0
+ 1040 0296 01       		.byte	0x1
+ 1041 0297 00       		.byte	0
+ 1042 0298 04       		.uleb128 0x4
+ 1043 0299 45050000 		.4byte	.LASF49
+ 1044 029d 04       		.byte	0x4
+ 1045 029e 3B01     		.2byte	0x13b
+ 1046 02a0 71020000 		.4byte	0x271
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 33
+
+
+ 1047 02a4 0D       		.uleb128 0xd
+ 1048 02a5 44       		.byte	0x44
+ 1049 02a6 04       		.byte	0x4
+ 1050 02a7 4101     		.2byte	0x141
+ 1051 02a9 7E030000 		.4byte	0x37e
+ 1052 02ad 0E       		.uleb128 0xe
+ 1053 02ae B1030000 		.4byte	.LASF50
+ 1054 02b2 04       		.byte	0x4
+ 1055 02b3 4701     		.2byte	0x147
+ 1056 02b5 77000000 		.4byte	0x77
+ 1057 02b9 00       		.byte	0
+ 1058 02ba 0E       		.uleb128 0xe
+ 1059 02bb D1030000 		.4byte	.LASF51
+ 1060 02bf 04       		.byte	0x4
+ 1061 02c0 4C01     		.2byte	0x14c
+ 1062 02c2 77000000 		.4byte	0x77
+ 1063 02c6 02       		.byte	0x2
+ 1064 02c7 0E       		.uleb128 0xe
+ 1065 02c8 5E040000 		.4byte	.LASF52
+ 1066 02cc 04       		.byte	0x4
+ 1067 02cd 5201     		.2byte	0x152
+ 1068 02cf 77000000 		.4byte	0x77
+ 1069 02d3 04       		.byte	0x4
+ 1070 02d4 0E       		.uleb128 0xe
+ 1071 02d5 40040000 		.4byte	.LASF53
+ 1072 02d9 04       		.byte	0x4
+ 1073 02da 5701     		.2byte	0x157
+ 1074 02dc 77000000 		.4byte	0x77
+ 1075 02e0 06       		.byte	0x6
+ 1076 02e1 0E       		.uleb128 0xe
+ 1077 02e2 24060000 		.4byte	.LASF54
+ 1078 02e6 04       		.byte	0x4
+ 1079 02e7 5C01     		.2byte	0x15c
+ 1080 02e9 83000000 		.4byte	0x83
+ 1081 02ed 08       		.byte	0x8
+ 1082 02ee 0E       		.uleb128 0xe
+ 1083 02ef 3C060000 		.4byte	.LASF55
+ 1084 02f3 04       		.byte	0x4
+ 1085 02f4 6101     		.2byte	0x161
+ 1086 02f6 7E030000 		.4byte	0x37e
+ 1087 02fa 0C       		.byte	0xc
+ 1088 02fb 0E       		.uleb128 0xe
+ 1089 02fc D0010000 		.4byte	.LASF56
+ 1090 0300 04       		.byte	0x4
+ 1091 0301 6601     		.2byte	0x166
+ 1092 0303 7E030000 		.4byte	0x37e
+ 1093 0307 10       		.byte	0x10
+ 1094 0308 0E       		.uleb128 0xe
+ 1095 0309 EA000000 		.4byte	.LASF57
+ 1096 030d 04       		.byte	0x4
+ 1097 030e 7401     		.2byte	0x174
+ 1098 0310 22010000 		.4byte	0x122
+ 1099 0314 14       		.byte	0x14
+ 1100 0315 0E       		.uleb128 0xe
+ 1101 0316 BA030000 		.4byte	.LASF58
+ 1102 031a 04       		.byte	0x4
+ 1103 031b 7901     		.2byte	0x179
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 34
+
+
+ 1104 031d 77000000 		.4byte	0x77
+ 1105 0321 16       		.byte	0x16
+ 1106 0322 0E       		.uleb128 0xe
+ 1107 0323 19010000 		.4byte	.LASF59
+ 1108 0327 04       		.byte	0x4
+ 1109 0328 7E01     		.2byte	0x17e
+ 1110 032a 6B000000 		.4byte	0x6b
+ 1111 032e 18       		.byte	0x18
+ 1112 032f 0E       		.uleb128 0xe
+ 1113 0330 3C050000 		.4byte	.LASF60
+ 1114 0334 04       		.byte	0x4
+ 1115 0335 8301     		.2byte	0x183
+ 1116 0337 E1010000 		.4byte	0x1e1
+ 1117 033b 1A       		.byte	0x1a
+ 1118 033c 0E       		.uleb128 0xe
+ 1119 033d A9030000 		.4byte	.LASF61
+ 1120 0341 04       		.byte	0x4
+ 1121 0342 8801     		.2byte	0x188
+ 1122 0344 98020000 		.4byte	0x298
+ 1123 0348 28       		.byte	0x28
+ 1124 0349 0E       		.uleb128 0xe
+ 1125 034a 19020000 		.4byte	.LASF62
+ 1126 034e 04       		.byte	0x4
+ 1127 034f 8D01     		.2byte	0x18d
+ 1128 0351 6B000000 		.4byte	0x6b
+ 1129 0355 3C       		.byte	0x3c
+ 1130 0356 0E       		.uleb128 0xe
+ 1131 0357 93000000 		.4byte	.LASF63
+ 1132 035b 04       		.byte	0x4
+ 1133 035c 9201     		.2byte	0x192
+ 1134 035e 6B000000 		.4byte	0x6b
+ 1135 0362 3D       		.byte	0x3d
+ 1136 0363 0E       		.uleb128 0xe
+ 1137 0364 71060000 		.4byte	.LASF64
+ 1138 0368 04       		.byte	0x4
+ 1139 0369 9701     		.2byte	0x197
+ 1140 036b 77000000 		.4byte	0x77
+ 1141 036f 3E       		.byte	0x3e
+ 1142 0370 0E       		.uleb128 0xe
+ 1143 0371 5E010000 		.4byte	.LASF65
+ 1144 0375 04       		.byte	0x4
+ 1145 0376 9C01     		.2byte	0x19c
+ 1146 0378 45020000 		.4byte	0x245
+ 1147 037c 40       		.byte	0x40
+ 1148 037d 00       		.byte	0
+ 1149 037e 09       		.uleb128 0x9
+ 1150 037f 83000000 		.4byte	0x83
+ 1151 0383 8E030000 		.4byte	0x38e
+ 1152 0387 0A       		.uleb128 0xa
+ 1153 0388 B0000000 		.4byte	0xb0
+ 1154 038c 00       		.byte	0
+ 1155 038d 00       		.byte	0
+ 1156 038e 04       		.uleb128 0x4
+ 1157 038f 6D040000 		.4byte	.LASF66
+ 1158 0393 04       		.byte	0x4
+ 1159 0394 9D01     		.2byte	0x19d
+ 1160 0396 A4020000 		.4byte	0x2a4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 35
+
+
+ 1161 039a 0D       		.uleb128 0xd
+ 1162 039b 1C       		.byte	0x1c
+ 1163 039c 04       		.byte	0x4
+ 1164 039d FC01     		.2byte	0x1fc
+ 1165 039f 19040000 		.4byte	0x419
+ 1166 03a3 0E       		.uleb128 0xe
+ 1167 03a4 6E000000 		.4byte	.LASF67
+ 1168 03a8 04       		.byte	0x4
+ 1169 03a9 0502     		.2byte	0x205
+ 1170 03ab 19040000 		.4byte	0x419
+ 1171 03af 00       		.byte	0
+ 1172 03b0 0E       		.uleb128 0xe
+ 1173 03b1 C5030000 		.4byte	.LASF68
+ 1174 03b5 04       		.byte	0x4
+ 1175 03b6 0B02     		.2byte	0x20b
+ 1176 03b8 B7000000 		.4byte	0xb7
+ 1177 03bc 04       		.byte	0x4
+ 1178 03bd 0E       		.uleb128 0xe
+ 1179 03be 23010000 		.4byte	.LASF69
+ 1180 03c2 04       		.byte	0x4
+ 1181 03c3 1102     		.2byte	0x211
+ 1182 03c5 20040000 		.4byte	0x420
+ 1183 03c9 08       		.byte	0x8
+ 1184 03ca 0E       		.uleb128 0xe
+ 1185 03cb E6040000 		.4byte	.LASF70
+ 1186 03cf 04       		.byte	0x4
+ 1187 03d0 1602     		.2byte	0x216
+ 1188 03d2 B7000000 		.4byte	0xb7
+ 1189 03d6 0C       		.byte	0xc
+ 1190 03d7 0E       		.uleb128 0xe
+ 1191 03d8 14060000 		.4byte	.LASF71
+ 1192 03dc 04       		.byte	0x4
+ 1193 03dd 1D02     		.2byte	0x21d
+ 1194 03df 26040000 		.4byte	0x426
+ 1195 03e3 10       		.byte	0x10
+ 1196 03e4 0E       		.uleb128 0xe
+ 1197 03e5 10040000 		.4byte	.LASF72
+ 1198 03e9 04       		.byte	0x4
+ 1199 03ea 2202     		.2byte	0x222
+ 1200 03ec 77000000 		.4byte	0x77
+ 1201 03f0 14       		.byte	0x14
+ 1202 03f1 0E       		.uleb128 0xe
+ 1203 03f2 08060000 		.4byte	.LASF73
+ 1204 03f6 04       		.byte	0x4
+ 1205 03f7 2902     		.2byte	0x229
+ 1206 03f9 77000000 		.4byte	0x77
+ 1207 03fd 16       		.byte	0x16
+ 1208 03fe 0E       		.uleb128 0xe
+ 1209 03ff 26040000 		.4byte	.LASF74
+ 1210 0403 04       		.byte	0x4
+ 1211 0404 3402     		.2byte	0x234
+ 1212 0406 6B000000 		.4byte	0x6b
+ 1213 040a 18       		.byte	0x18
+ 1214 040b 0E       		.uleb128 0xe
+ 1215 040c F6030000 		.4byte	.LASF75
+ 1216 0410 04       		.byte	0x4
+ 1217 0411 3C02     		.2byte	0x23c
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 36
+
+
+ 1218 0413 6B000000 		.4byte	0x6b
+ 1219 0417 19       		.byte	0x19
+ 1220 0418 00       		.byte	0
+ 1221 0419 10       		.uleb128 0x10
+ 1222 041a 04       		.byte	0x4
+ 1223 041b 1F040000 		.4byte	0x41f
+ 1224 041f 11       		.uleb128 0x11
+ 1225 0420 10       		.uleb128 0x10
+ 1226 0421 04       		.byte	0x4
+ 1227 0422 65020000 		.4byte	0x265
+ 1228 0426 10       		.uleb128 0x10
+ 1229 0427 04       		.byte	0x4
+ 1230 0428 6B000000 		.4byte	0x6b
+ 1231 042c 04       		.uleb128 0x4
+ 1232 042d 1D050000 		.4byte	.LASF76
+ 1233 0431 04       		.byte	0x4
+ 1234 0432 3D02     		.2byte	0x23d
+ 1235 0434 9A030000 		.4byte	0x39a
+ 1236 0438 0D       		.uleb128 0xd
+ 1237 0439 1C       		.byte	0x1c
+ 1238 043a 04       		.byte	0x4
+ 1239 043b 4302     		.2byte	0x243
+ 1240 043d 4F040000 		.4byte	0x44f
+ 1241 0441 0E       		.uleb128 0xe
+ 1242 0442 DB010000 		.4byte	.LASF77
+ 1243 0446 04       		.byte	0x4
+ 1244 0447 4802     		.2byte	0x248
+ 1245 0449 4F040000 		.4byte	0x44f
+ 1246 044d 00       		.byte	0
+ 1247 044e 00       		.byte	0
+ 1248 044f 09       		.uleb128 0x9
+ 1249 0450 2C040000 		.4byte	0x42c
+ 1250 0454 5F040000 		.4byte	0x45f
+ 1251 0458 0A       		.uleb128 0xa
+ 1252 0459 B0000000 		.4byte	0xb0
+ 1253 045d 00       		.byte	0
+ 1254 045e 00       		.byte	0
+ 1255 045f 04       		.uleb128 0x4
+ 1256 0460 2B060000 		.4byte	.LASF78
+ 1257 0464 04       		.byte	0x4
+ 1258 0465 4902     		.2byte	0x249
+ 1259 0467 38040000 		.4byte	0x438
+ 1260 046b 0D       		.uleb128 0xd
+ 1261 046c 02       		.byte	0x2
+ 1262 046d 04       		.byte	0x4
+ 1263 046e 6302     		.2byte	0x263
+ 1264 0470 82040000 		.4byte	0x482
+ 1265 0474 0E       		.uleb128 0xe
+ 1266 0475 E5010000 		.4byte	.LASF79
+ 1267 0479 04       		.byte	0x4
+ 1268 047a 6802     		.2byte	0x268
+ 1269 047c 77000000 		.4byte	0x77
+ 1270 0480 00       		.byte	0
+ 1271 0481 00       		.byte	0
+ 1272 0482 04       		.uleb128 0x4
+ 1273 0483 5F030000 		.4byte	.LASF80
+ 1274 0487 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 37
+
+
+ 1275 0488 6902     		.2byte	0x269
+ 1276 048a 6B040000 		.4byte	0x46b
+ 1277 048e 0D       		.uleb128 0xd
+ 1278 048f 02       		.byte	0x2
+ 1279 0490 04       		.byte	0x4
+ 1280 0491 6E02     		.2byte	0x26e
+ 1281 0493 A5040000 		.4byte	0x4a5
+ 1282 0497 0E       		.uleb128 0xe
+ 1283 0498 91040000 		.4byte	.LASF81
+ 1284 049c 04       		.byte	0x4
+ 1285 049d 7302     		.2byte	0x273
+ 1286 049f A5040000 		.4byte	0x4a5
+ 1287 04a3 00       		.byte	0
+ 1288 04a4 00       		.byte	0
+ 1289 04a5 09       		.uleb128 0x9
+ 1290 04a6 82040000 		.4byte	0x482
+ 1291 04aa B5040000 		.4byte	0x4b5
+ 1292 04ae 0A       		.uleb128 0xa
+ 1293 04af B0000000 		.4byte	0xb0
+ 1294 04b3 00       		.byte	0
+ 1295 04b4 00       		.byte	0
+ 1296 04b5 04       		.uleb128 0x4
+ 1297 04b6 A7010000 		.4byte	.LASF82
+ 1298 04ba 04       		.byte	0x4
+ 1299 04bb 7402     		.2byte	0x274
+ 1300 04bd 8E040000 		.4byte	0x48e
+ 1301 04c1 12       		.uleb128 0x12
+ 1302 04c2 04       		.byte	0x4
+ 1303 04c3 04       		.byte	0x4
+ 1304 04c4 7902     		.2byte	0x279
+ 1305 04c6 E3040000 		.4byte	0x4e3
+ 1306 04ca 13       		.uleb128 0x13
+ 1307 04cb 70747200 		.ascii	"ptr\000"
+ 1308 04cf 04       		.byte	0x4
+ 1309 04d0 7E02     		.2byte	0x27e
+ 1310 04d2 B7000000 		.4byte	0xb7
+ 1311 04d6 14       		.uleb128 0x14
+ 1312 04d7 9B060000 		.4byte	.LASF83
+ 1313 04db 04       		.byte	0x4
+ 1314 04dc 8302     		.2byte	0x283
+ 1315 04de E3040000 		.4byte	0x4e3
+ 1316 04e2 00       		.byte	0
+ 1317 04e3 10       		.uleb128 0x10
+ 1318 04e4 04       		.byte	0x4
+ 1319 04e5 B5040000 		.4byte	0x4b5
+ 1320 04e9 04       		.uleb128 0x4
+ 1321 04ea 92030000 		.4byte	.LASF84
+ 1322 04ee 04       		.byte	0x4
+ 1323 04ef 8402     		.2byte	0x284
+ 1324 04f1 C1040000 		.4byte	0x4c1
+ 1325 04f5 15       		.uleb128 0x15
+ 1326 04f6 9B050000 		.4byte	.LASF87
+ 1327 04fa 01       		.byte	0x1
+ 1328 04fb 6E       		.byte	0x6e
+ 1329 04fc A4000000 		.4byte	0xa4
+ 1330 0500 00000000 		.4byte	.LFB1
+ 1331 0504 78000000 		.4byte	.LFE1-.LFB1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 38
+
+
+ 1332 0508 01       		.uleb128 0x1
+ 1333 0509 9C       		.byte	0x9c
+ 1334 050a 2B050000 		.4byte	0x52b
+ 1335 050e 16       		.uleb128 0x16
+ 1336 050f A6060000 		.4byte	.LASF85
+ 1337 0513 01       		.byte	0x1
+ 1338 0514 70       		.byte	0x70
+ 1339 0515 A4000000 		.4byte	0xa4
+ 1340 0519 02       		.uleb128 0x2
+ 1341 051a 91       		.byte	0x91
+ 1342 051b 6C       		.sleb128 -20
+ 1343 051c 16       		.uleb128 0x16
+ 1344 051d CC000000 		.4byte	.LASF86
+ 1345 0521 01       		.byte	0x1
+ 1346 0522 71       		.byte	0x71
+ 1347 0523 6B000000 		.4byte	0x6b
+ 1348 0527 02       		.uleb128 0x2
+ 1349 0528 91       		.byte	0x91
+ 1350 0529 6B       		.sleb128 -21
+ 1351 052a 00       		.byte	0
+ 1352 052b 15       		.uleb128 0x15
+ 1353 052c DB000000 		.4byte	.LASF88
+ 1354 0530 01       		.byte	0x1
+ 1355 0531 CA       		.byte	0xca
+ 1356 0532 A4000000 		.4byte	0xa4
+ 1357 0536 00000000 		.4byte	.LFB2
+ 1358 053a 38000000 		.4byte	.LFE2-.LFB2
+ 1359 053e 01       		.uleb128 0x1
+ 1360 053f 9C       		.byte	0x9c
+ 1361 0540 53050000 		.4byte	0x553
+ 1362 0544 16       		.uleb128 0x16
+ 1363 0545 A6060000 		.4byte	.LASF85
+ 1364 0549 01       		.byte	0x1
+ 1365 054a CC       		.byte	0xcc
+ 1366 054b A4000000 		.4byte	0xa4
+ 1367 054f 02       		.uleb128 0x2
+ 1368 0550 91       		.byte	0x91
+ 1369 0551 74       		.sleb128 -12
+ 1370 0552 00       		.byte	0
+ 1371 0553 17       		.uleb128 0x17
+ 1372 0554 07040000 		.4byte	.LASF89
+ 1373 0558 01       		.byte	0x1
+ 1374 0559 F4       		.byte	0xf4
+ 1375 055a A4000000 		.4byte	0xa4
+ 1376 055e 00000000 		.4byte	.LFB3
+ 1377 0562 20000000 		.4byte	.LFE3-.LFB3
+ 1378 0566 01       		.uleb128 0x1
+ 1379 0567 9C       		.byte	0x9c
+ 1380 0568 7B050000 		.4byte	0x57b
+ 1381 056c 16       		.uleb128 0x16
+ 1382 056d A6060000 		.4byte	.LASF85
+ 1383 0571 01       		.byte	0x1
+ 1384 0572 F6       		.byte	0xf6
+ 1385 0573 A4000000 		.4byte	0xa4
+ 1386 0577 02       		.uleb128 0x2
+ 1387 0578 91       		.byte	0x91
+ 1388 0579 74       		.sleb128 -12
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 39
+
+
+ 1389 057a 00       		.byte	0
+ 1390 057b 18       		.uleb128 0x18
+ 1391 057c 5D060000 		.4byte	.LASF90
+ 1392 0580 01       		.byte	0x1
+ 1393 0581 1901     		.2byte	0x119
+ 1394 0583 A4000000 		.4byte	0xa4
+ 1395 0587 00000000 		.4byte	.LFB4
+ 1396 058b 2C000000 		.4byte	.LFE4-.LFB4
+ 1397 058f 01       		.uleb128 0x1
+ 1398 0590 9C       		.byte	0x9c
+ 1399 0591 A5050000 		.4byte	0x5a5
+ 1400 0595 19       		.uleb128 0x19
+ 1401 0596 A6060000 		.4byte	.LASF85
+ 1402 059a 01       		.byte	0x1
+ 1403 059b 1B01     		.2byte	0x11b
+ 1404 059d A4000000 		.4byte	0xa4
+ 1405 05a1 02       		.uleb128 0x2
+ 1406 05a2 91       		.byte	0x91
+ 1407 05a3 74       		.sleb128 -12
+ 1408 05a4 00       		.byte	0
+ 1409 05a5 18       		.uleb128 0x18
+ 1410 05a6 91010000 		.4byte	.LASF91
+ 1411 05aa 01       		.byte	0x1
+ 1412 05ab 4801     		.2byte	0x148
+ 1413 05ad A4000000 		.4byte	0xa4
+ 1414 05b1 00000000 		.4byte	.LFB5
+ 1415 05b5 6C000000 		.4byte	.LFE5-.LFB5
+ 1416 05b9 01       		.uleb128 0x1
+ 1417 05ba 9C       		.byte	0x9c
+ 1418 05bb ED050000 		.4byte	0x5ed
+ 1419 05bf 19       		.uleb128 0x19
+ 1420 05c0 A3000000 		.4byte	.LASF92
+ 1421 05c4 01       		.byte	0x1
+ 1422 05c5 4A01     		.2byte	0x14a
+ 1423 05c7 83000000 		.4byte	0x83
+ 1424 05cb 02       		.uleb128 0x2
+ 1425 05cc 91       		.byte	0x91
+ 1426 05cd 74       		.sleb128 -12
+ 1427 05ce 19       		.uleb128 0x19
+ 1428 05cf A6060000 		.4byte	.LASF85
+ 1429 05d3 01       		.byte	0x1
+ 1430 05d4 4B01     		.2byte	0x14b
+ 1431 05d6 A4000000 		.4byte	0xa4
+ 1432 05da 02       		.uleb128 0x2
+ 1433 05db 91       		.byte	0x91
+ 1434 05dc 6C       		.sleb128 -20
+ 1435 05dd 19       		.uleb128 0x19
+ 1436 05de FF010000 		.4byte	.LASF93
+ 1437 05e2 01       		.byte	0x1
+ 1438 05e3 4C01     		.2byte	0x14c
+ 1439 05e5 ED050000 		.4byte	0x5ed
+ 1440 05e9 02       		.uleb128 0x2
+ 1441 05ea 91       		.byte	0x91
+ 1442 05eb 70       		.sleb128 -16
+ 1443 05ec 00       		.byte	0
+ 1444 05ed 10       		.uleb128 0x10
+ 1445 05ee 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 40
+
+
+ 1446 05ef F3050000 		.4byte	0x5f3
+ 1447 05f3 1A       		.uleb128 0x1a
+ 1448 05f4 2C040000 		.4byte	0x42c
+ 1449 05f8 18       		.uleb128 0x18
+ 1450 05f9 4C040000 		.4byte	.LASF94
+ 1451 05fd 01       		.byte	0x1
+ 1452 05fe 9201     		.2byte	0x192
+ 1453 0600 A4000000 		.4byte	0xa4
+ 1454 0604 00000000 		.4byte	.LFB6
+ 1455 0608 7C000000 		.4byte	.LFE6-.LFB6
+ 1456 060c 01       		.uleb128 0x1
+ 1457 060d 9C       		.byte	0x9c
+ 1458 060e 40060000 		.4byte	0x640
+ 1459 0612 1B       		.uleb128 0x1b
+ 1460 0613 DA030000 		.4byte	.LASF96
+ 1461 0617 01       		.byte	0x1
+ 1462 0618 9201     		.2byte	0x192
+ 1463 061a 83000000 		.4byte	0x83
+ 1464 061e 02       		.uleb128 0x2
+ 1465 061f 91       		.byte	0x91
+ 1466 0620 6C       		.sleb128 -20
+ 1467 0621 19       		.uleb128 0x19
+ 1468 0622 A6060000 		.4byte	.LASF85
+ 1469 0626 01       		.byte	0x1
+ 1470 0627 9401     		.2byte	0x194
+ 1471 0629 A4000000 		.4byte	0xa4
+ 1472 062d 02       		.uleb128 0x2
+ 1473 062e 91       		.byte	0x91
+ 1474 062f 74       		.sleb128 -12
+ 1475 0630 19       		.uleb128 0x19
+ 1476 0631 FF010000 		.4byte	.LASF93
+ 1477 0635 01       		.byte	0x1
+ 1478 0636 9501     		.2byte	0x195
+ 1479 0638 ED050000 		.4byte	0x5ed
+ 1480 063c 02       		.uleb128 0x2
+ 1481 063d 91       		.byte	0x91
+ 1482 063e 70       		.sleb128 -16
+ 1483 063f 00       		.byte	0
+ 1484 0640 18       		.uleb128 0x18
+ 1485 0641 42000000 		.4byte	.LASF95
+ 1486 0645 01       		.byte	0x1
+ 1487 0646 F501     		.2byte	0x1f5
+ 1488 0648 A4000000 		.4byte	0xa4
+ 1489 064c 00000000 		.4byte	.LFB7
+ 1490 0650 98000000 		.4byte	.LFE7-.LFB7
+ 1491 0654 01       		.uleb128 0x1
+ 1492 0655 9C       		.byte	0x9c
+ 1493 0656 D3060000 		.4byte	0x6d3
+ 1494 065a 1B       		.uleb128 0x1b
+ 1495 065b DA030000 		.4byte	.LASF96
+ 1496 065f 01       		.byte	0x1
+ 1497 0660 F501     		.2byte	0x1f5
+ 1498 0662 83000000 		.4byte	0x83
+ 1499 0666 02       		.uleb128 0x2
+ 1500 0667 91       		.byte	0x91
+ 1501 0668 5C       		.sleb128 -36
+ 1502 0669 1B       		.uleb128 0x1b
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 41
+
+
+ 1503 066a AA050000 		.4byte	.LASF97
+ 1504 066e 01       		.byte	0x1
+ 1505 066f F501     		.2byte	0x1f5
+ 1506 0671 83000000 		.4byte	0x83
+ 1507 0675 02       		.uleb128 0x2
+ 1508 0676 91       		.byte	0x91
+ 1509 0677 58       		.sleb128 -40
+ 1510 0678 19       		.uleb128 0x19
+ 1511 0679 BF010000 		.4byte	.LASF98
+ 1512 067d 01       		.byte	0x1
+ 1513 067e F701     		.2byte	0x1f7
+ 1514 0680 83000000 		.4byte	0x83
+ 1515 0684 02       		.uleb128 0x2
+ 1516 0685 91       		.byte	0x91
+ 1517 0686 74       		.sleb128 -12
+ 1518 0687 19       		.uleb128 0x19
+ 1519 0688 A6060000 		.4byte	.LASF85
+ 1520 068c 01       		.byte	0x1
+ 1521 068d F801     		.2byte	0x1f8
+ 1522 068f A4000000 		.4byte	0xa4
+ 1523 0693 02       		.uleb128 0x2
+ 1524 0694 91       		.byte	0x91
+ 1525 0695 70       		.sleb128 -16
+ 1526 0696 19       		.uleb128 0x19
+ 1527 0697 FF010000 		.4byte	.LASF93
+ 1528 069b 01       		.byte	0x1
+ 1529 069c F901     		.2byte	0x1f9
+ 1530 069e ED050000 		.4byte	0x5ed
+ 1531 06a2 02       		.uleb128 0x2
+ 1532 06a3 91       		.byte	0x91
+ 1533 06a4 68       		.sleb128 -24
+ 1534 06a5 19       		.uleb128 0x19
+ 1535 06a6 F0010000 		.4byte	.LASF99
+ 1536 06aa 01       		.byte	0x1
+ 1537 06ab FA01     		.2byte	0x1fa
+ 1538 06ad E9040000 		.4byte	0x4e9
+ 1539 06b1 02       		.uleb128 0x2
+ 1540 06b2 91       		.byte	0x91
+ 1541 06b3 60       		.sleb128 -32
+ 1542 06b4 19       		.uleb128 0x19
+ 1543 06b5 58030000 		.4byte	.LASF100
+ 1544 06b9 01       		.byte	0x1
+ 1545 06ba FB01     		.2byte	0x1fb
+ 1546 06bc 20040000 		.4byte	0x420
+ 1547 06c0 02       		.uleb128 0x2
+ 1548 06c1 91       		.byte	0x91
+ 1549 06c2 6C       		.sleb128 -20
+ 1550 06c3 19       		.uleb128 0x19
+ 1551 06c4 86040000 		.4byte	.LASF101
+ 1552 06c8 01       		.byte	0x1
+ 1553 06c9 FE01     		.2byte	0x1fe
+ 1554 06cb 83000000 		.4byte	0x83
+ 1555 06cf 02       		.uleb128 0x2
+ 1556 06d0 91       		.byte	0x91
+ 1557 06d1 64       		.sleb128 -28
+ 1558 06d2 00       		.byte	0
+ 1559 06d3 18       		.uleb128 0x18
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 42
+
+
+ 1560 06d4 5D050000 		.4byte	.LASF102
+ 1561 06d8 01       		.byte	0x1
+ 1562 06d9 8702     		.2byte	0x287
+ 1563 06db A4000000 		.4byte	0xa4
+ 1564 06df 00000000 		.4byte	.LFB8
+ 1565 06e3 90000000 		.4byte	.LFE8-.LFB8
+ 1566 06e7 01       		.uleb128 0x1
+ 1567 06e8 9C       		.byte	0x9c
+ 1568 06e9 57070000 		.4byte	0x757
+ 1569 06ed 1B       		.uleb128 0x1b
+ 1570 06ee DA030000 		.4byte	.LASF96
+ 1571 06f2 01       		.byte	0x1
+ 1572 06f3 8702     		.2byte	0x287
+ 1573 06f5 83000000 		.4byte	0x83
+ 1574 06f9 02       		.uleb128 0x2
+ 1575 06fa 91       		.byte	0x91
+ 1576 06fb 64       		.sleb128 -28
+ 1577 06fc 1B       		.uleb128 0x1b
+ 1578 06fd 6E010000 		.4byte	.LASF103
+ 1579 0701 01       		.byte	0x1
+ 1580 0702 8702     		.2byte	0x287
+ 1581 0704 83000000 		.4byte	0x83
+ 1582 0708 02       		.uleb128 0x2
+ 1583 0709 91       		.byte	0x91
+ 1584 070a 60       		.sleb128 -32
+ 1585 070b 1B       		.uleb128 0x1b
+ 1586 070c AA050000 		.4byte	.LASF97
+ 1587 0710 01       		.byte	0x1
+ 1588 0711 8702     		.2byte	0x287
+ 1589 0713 83000000 		.4byte	0x83
+ 1590 0717 02       		.uleb128 0x2
+ 1591 0718 91       		.byte	0x91
+ 1592 0719 5C       		.sleb128 -36
+ 1593 071a 19       		.uleb128 0x19
+ 1594 071b A6060000 		.4byte	.LASF85
+ 1595 071f 01       		.byte	0x1
+ 1596 0720 8902     		.2byte	0x289
+ 1597 0722 A4000000 		.4byte	0xa4
+ 1598 0726 02       		.uleb128 0x2
+ 1599 0727 91       		.byte	0x91
+ 1600 0728 74       		.sleb128 -12
+ 1601 0729 19       		.uleb128 0x19
+ 1602 072a FF010000 		.4byte	.LASF93
+ 1603 072e 01       		.byte	0x1
+ 1604 072f 8A02     		.2byte	0x28a
+ 1605 0731 ED050000 		.4byte	0x5ed
+ 1606 0735 02       		.uleb128 0x2
+ 1607 0736 91       		.byte	0x91
+ 1608 0737 70       		.sleb128 -16
+ 1609 0738 19       		.uleb128 0x19
+ 1610 0739 F0010000 		.4byte	.LASF99
+ 1611 073d 01       		.byte	0x1
+ 1612 073e 8B02     		.2byte	0x28b
+ 1613 0740 E9040000 		.4byte	0x4e9
+ 1614 0744 02       		.uleb128 0x2
+ 1615 0745 91       		.byte	0x91
+ 1616 0746 68       		.sleb128 -24
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 43
+
+
+ 1617 0747 19       		.uleb128 0x19
+ 1618 0748 58030000 		.4byte	.LASF100
+ 1619 074c 01       		.byte	0x1
+ 1620 074d 8C02     		.2byte	0x28c
+ 1621 074f 20040000 		.4byte	0x420
+ 1622 0753 02       		.uleb128 0x2
+ 1623 0754 91       		.byte	0x91
+ 1624 0755 6C       		.sleb128 -20
+ 1625 0756 00       		.byte	0
+ 1626 0757 1C       		.uleb128 0x1c
+ 1627 0758 0F010000 		.4byte	.LASF104
+ 1628 075c 01       		.byte	0x1
+ 1629 075d F202     		.2byte	0x2f2
+ 1630 075f 00000000 		.4byte	.LFB9
+ 1631 0763 08000000 		.4byte	.LFE9-.LFB9
+ 1632 0767 01       		.uleb128 0x1
+ 1633 0768 9C       		.byte	0x9c
+ 1634 0769 1C       		.uleb128 0x1c
+ 1635 076a EB030000 		.4byte	.LASF105
+ 1636 076e 01       		.byte	0x1
+ 1637 076f 0303     		.2byte	0x303
+ 1638 0771 00000000 		.4byte	.LFB10
+ 1639 0775 08000000 		.4byte	.LFE10-.LFB10
+ 1640 0779 01       		.uleb128 0x1
+ 1641 077a 9C       		.byte	0x9c
+ 1642 077b 16       		.uleb128 0x16
+ 1643 077c 11000000 		.4byte	.LASF106
+ 1644 0780 01       		.byte	0x1
+ 1645 0781 3E       		.byte	0x3e
+ 1646 0782 6B000000 		.4byte	0x6b
+ 1647 0786 05       		.uleb128 0x5
+ 1648 0787 03       		.byte	0x3
+ 1649 0788 00000000 		.4byte	CSD_InitVar
+ 1650 078c 1D       		.uleb128 0x1d
+ 1651 078d 07000000 		.4byte	.LASF107
+ 1652 0791 04       		.byte	0x4
+ 1653 0792 8103     		.2byte	0x381
+ 1654 0794 8E030000 		.4byte	0x38e
+ 1655 0798 1D       		.uleb128 0x1d
+ 1656 0799 DA040000 		.4byte	.LASF108
+ 1657 079d 04       		.byte	0x4
+ 1658 079e 8203     		.2byte	0x382
+ 1659 07a0 A4070000 		.4byte	0x7a4
+ 1660 07a4 1A       		.uleb128 0x1a
+ 1661 07a5 5F040000 		.4byte	0x45f
+ 1662 07a9 00       		.byte	0
+ 1663              		.section	.debug_abbrev,"",%progbits
+ 1664              	.Ldebug_abbrev0:
+ 1665 0000 01       		.uleb128 0x1
+ 1666 0001 11       		.uleb128 0x11
+ 1667 0002 01       		.byte	0x1
+ 1668 0003 25       		.uleb128 0x25
+ 1669 0004 0E       		.uleb128 0xe
+ 1670 0005 13       		.uleb128 0x13
+ 1671 0006 0B       		.uleb128 0xb
+ 1672 0007 03       		.uleb128 0x3
+ 1673 0008 0E       		.uleb128 0xe
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 44
+
+
+ 1674 0009 1B       		.uleb128 0x1b
+ 1675 000a 0E       		.uleb128 0xe
+ 1676 000b 55       		.uleb128 0x55
+ 1677 000c 17       		.uleb128 0x17
+ 1678 000d 11       		.uleb128 0x11
+ 1679 000e 01       		.uleb128 0x1
+ 1680 000f 10       		.uleb128 0x10
+ 1681 0010 17       		.uleb128 0x17
+ 1682 0011 00       		.byte	0
+ 1683 0012 00       		.byte	0
+ 1684 0013 02       		.uleb128 0x2
+ 1685 0014 24       		.uleb128 0x24
+ 1686 0015 00       		.byte	0
+ 1687 0016 0B       		.uleb128 0xb
+ 1688 0017 0B       		.uleb128 0xb
+ 1689 0018 3E       		.uleb128 0x3e
+ 1690 0019 0B       		.uleb128 0xb
+ 1691 001a 03       		.uleb128 0x3
+ 1692 001b 0E       		.uleb128 0xe
+ 1693 001c 00       		.byte	0
+ 1694 001d 00       		.byte	0
+ 1695 001e 03       		.uleb128 0x3
+ 1696 001f 24       		.uleb128 0x24
+ 1697 0020 00       		.byte	0
+ 1698 0021 0B       		.uleb128 0xb
+ 1699 0022 0B       		.uleb128 0xb
+ 1700 0023 3E       		.uleb128 0x3e
+ 1701 0024 0B       		.uleb128 0xb
+ 1702 0025 03       		.uleb128 0x3
+ 1703 0026 08       		.uleb128 0x8
+ 1704 0027 00       		.byte	0
+ 1705 0028 00       		.byte	0
+ 1706 0029 04       		.uleb128 0x4
+ 1707 002a 16       		.uleb128 0x16
+ 1708 002b 00       		.byte	0
+ 1709 002c 03       		.uleb128 0x3
+ 1710 002d 0E       		.uleb128 0xe
+ 1711 002e 3A       		.uleb128 0x3a
+ 1712 002f 0B       		.uleb128 0xb
+ 1713 0030 3B       		.uleb128 0x3b
+ 1714 0031 05       		.uleb128 0x5
+ 1715 0032 49       		.uleb128 0x49
+ 1716 0033 13       		.uleb128 0x13
+ 1717 0034 00       		.byte	0
+ 1718 0035 00       		.byte	0
+ 1719 0036 05       		.uleb128 0x5
+ 1720 0037 0F       		.uleb128 0xf
+ 1721 0038 00       		.byte	0
+ 1722 0039 0B       		.uleb128 0xb
+ 1723 003a 0B       		.uleb128 0xb
+ 1724 003b 00       		.byte	0
+ 1725 003c 00       		.byte	0
+ 1726 003d 06       		.uleb128 0x6
+ 1727 003e 16       		.uleb128 0x16
+ 1728 003f 00       		.byte	0
+ 1729 0040 03       		.uleb128 0x3
+ 1730 0041 0E       		.uleb128 0xe
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 45
+
+
+ 1731 0042 3A       		.uleb128 0x3a
+ 1732 0043 0B       		.uleb128 0xb
+ 1733 0044 3B       		.uleb128 0x3b
+ 1734 0045 0B       		.uleb128 0xb
+ 1735 0046 49       		.uleb128 0x49
+ 1736 0047 13       		.uleb128 0x13
+ 1737 0048 00       		.byte	0
+ 1738 0049 00       		.byte	0
+ 1739 004a 07       		.uleb128 0x7
+ 1740 004b 04       		.uleb128 0x4
+ 1741 004c 01       		.byte	0x1
+ 1742 004d 0B       		.uleb128 0xb
+ 1743 004e 0B       		.uleb128 0xb
+ 1744 004f 3A       		.uleb128 0x3a
+ 1745 0050 0B       		.uleb128 0xb
+ 1746 0051 3B       		.uleb128 0x3b
+ 1747 0052 0B       		.uleb128 0xb
+ 1748 0053 01       		.uleb128 0x1
+ 1749 0054 13       		.uleb128 0x13
+ 1750 0055 00       		.byte	0
+ 1751 0056 00       		.byte	0
+ 1752 0057 08       		.uleb128 0x8
+ 1753 0058 28       		.uleb128 0x28
+ 1754 0059 00       		.byte	0
+ 1755 005a 03       		.uleb128 0x3
+ 1756 005b 0E       		.uleb128 0xe
+ 1757 005c 1C       		.uleb128 0x1c
+ 1758 005d 0D       		.uleb128 0xd
+ 1759 005e 00       		.byte	0
+ 1760 005f 00       		.byte	0
+ 1761 0060 09       		.uleb128 0x9
+ 1762 0061 01       		.uleb128 0x1
+ 1763 0062 01       		.byte	0x1
+ 1764 0063 49       		.uleb128 0x49
+ 1765 0064 13       		.uleb128 0x13
+ 1766 0065 01       		.uleb128 0x1
+ 1767 0066 13       		.uleb128 0x13
+ 1768 0067 00       		.byte	0
+ 1769 0068 00       		.byte	0
+ 1770 0069 0A       		.uleb128 0xa
+ 1771 006a 21       		.uleb128 0x21
+ 1772 006b 00       		.byte	0
+ 1773 006c 49       		.uleb128 0x49
+ 1774 006d 13       		.uleb128 0x13
+ 1775 006e 2F       		.uleb128 0x2f
+ 1776 006f 0B       		.uleb128 0xb
+ 1777 0070 00       		.byte	0
+ 1778 0071 00       		.byte	0
+ 1779 0072 0B       		.uleb128 0xb
+ 1780 0073 13       		.uleb128 0x13
+ 1781 0074 01       		.byte	0x1
+ 1782 0075 0B       		.uleb128 0xb
+ 1783 0076 0B       		.uleb128 0xb
+ 1784 0077 3A       		.uleb128 0x3a
+ 1785 0078 0B       		.uleb128 0xb
+ 1786 0079 3B       		.uleb128 0x3b
+ 1787 007a 0B       		.uleb128 0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 46
+
+
+ 1788 007b 01       		.uleb128 0x1
+ 1789 007c 13       		.uleb128 0x13
+ 1790 007d 00       		.byte	0
+ 1791 007e 00       		.byte	0
+ 1792 007f 0C       		.uleb128 0xc
+ 1793 0080 0D       		.uleb128 0xd
+ 1794 0081 00       		.byte	0
+ 1795 0082 03       		.uleb128 0x3
+ 1796 0083 0E       		.uleb128 0xe
+ 1797 0084 3A       		.uleb128 0x3a
+ 1798 0085 0B       		.uleb128 0xb
+ 1799 0086 3B       		.uleb128 0x3b
+ 1800 0087 0B       		.uleb128 0xb
+ 1801 0088 49       		.uleb128 0x49
+ 1802 0089 13       		.uleb128 0x13
+ 1803 008a 38       		.uleb128 0x38
+ 1804 008b 0B       		.uleb128 0xb
+ 1805 008c 00       		.byte	0
+ 1806 008d 00       		.byte	0
+ 1807 008e 0D       		.uleb128 0xd
+ 1808 008f 13       		.uleb128 0x13
+ 1809 0090 01       		.byte	0x1
+ 1810 0091 0B       		.uleb128 0xb
+ 1811 0092 0B       		.uleb128 0xb
+ 1812 0093 3A       		.uleb128 0x3a
+ 1813 0094 0B       		.uleb128 0xb
+ 1814 0095 3B       		.uleb128 0x3b
+ 1815 0096 05       		.uleb128 0x5
+ 1816 0097 01       		.uleb128 0x1
+ 1817 0098 13       		.uleb128 0x13
+ 1818 0099 00       		.byte	0
+ 1819 009a 00       		.byte	0
+ 1820 009b 0E       		.uleb128 0xe
+ 1821 009c 0D       		.uleb128 0xd
+ 1822 009d 00       		.byte	0
+ 1823 009e 03       		.uleb128 0x3
+ 1824 009f 0E       		.uleb128 0xe
+ 1825 00a0 3A       		.uleb128 0x3a
+ 1826 00a1 0B       		.uleb128 0xb
+ 1827 00a2 3B       		.uleb128 0x3b
+ 1828 00a3 05       		.uleb128 0x5
+ 1829 00a4 49       		.uleb128 0x49
+ 1830 00a5 13       		.uleb128 0x13
+ 1831 00a6 38       		.uleb128 0x38
+ 1832 00a7 0B       		.uleb128 0xb
+ 1833 00a8 00       		.byte	0
+ 1834 00a9 00       		.byte	0
+ 1835 00aa 0F       		.uleb128 0xf
+ 1836 00ab 0D       		.uleb128 0xd
+ 1837 00ac 00       		.byte	0
+ 1838 00ad 03       		.uleb128 0x3
+ 1839 00ae 08       		.uleb128 0x8
+ 1840 00af 3A       		.uleb128 0x3a
+ 1841 00b0 0B       		.uleb128 0xb
+ 1842 00b1 3B       		.uleb128 0x3b
+ 1843 00b2 05       		.uleb128 0x5
+ 1844 00b3 49       		.uleb128 0x49
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 47
+
+
+ 1845 00b4 13       		.uleb128 0x13
+ 1846 00b5 38       		.uleb128 0x38
+ 1847 00b6 0B       		.uleb128 0xb
+ 1848 00b7 00       		.byte	0
+ 1849 00b8 00       		.byte	0
+ 1850 00b9 10       		.uleb128 0x10
+ 1851 00ba 0F       		.uleb128 0xf
+ 1852 00bb 00       		.byte	0
+ 1853 00bc 0B       		.uleb128 0xb
+ 1854 00bd 0B       		.uleb128 0xb
+ 1855 00be 49       		.uleb128 0x49
+ 1856 00bf 13       		.uleb128 0x13
+ 1857 00c0 00       		.byte	0
+ 1858 00c1 00       		.byte	0
+ 1859 00c2 11       		.uleb128 0x11
+ 1860 00c3 26       		.uleb128 0x26
+ 1861 00c4 00       		.byte	0
+ 1862 00c5 00       		.byte	0
+ 1863 00c6 00       		.byte	0
+ 1864 00c7 12       		.uleb128 0x12
+ 1865 00c8 17       		.uleb128 0x17
+ 1866 00c9 01       		.byte	0x1
+ 1867 00ca 0B       		.uleb128 0xb
+ 1868 00cb 0B       		.uleb128 0xb
+ 1869 00cc 3A       		.uleb128 0x3a
+ 1870 00cd 0B       		.uleb128 0xb
+ 1871 00ce 3B       		.uleb128 0x3b
+ 1872 00cf 05       		.uleb128 0x5
+ 1873 00d0 01       		.uleb128 0x1
+ 1874 00d1 13       		.uleb128 0x13
+ 1875 00d2 00       		.byte	0
+ 1876 00d3 00       		.byte	0
+ 1877 00d4 13       		.uleb128 0x13
+ 1878 00d5 0D       		.uleb128 0xd
+ 1879 00d6 00       		.byte	0
+ 1880 00d7 03       		.uleb128 0x3
+ 1881 00d8 08       		.uleb128 0x8
+ 1882 00d9 3A       		.uleb128 0x3a
+ 1883 00da 0B       		.uleb128 0xb
+ 1884 00db 3B       		.uleb128 0x3b
+ 1885 00dc 05       		.uleb128 0x5
+ 1886 00dd 49       		.uleb128 0x49
+ 1887 00de 13       		.uleb128 0x13
+ 1888 00df 00       		.byte	0
+ 1889 00e0 00       		.byte	0
+ 1890 00e1 14       		.uleb128 0x14
+ 1891 00e2 0D       		.uleb128 0xd
+ 1892 00e3 00       		.byte	0
+ 1893 00e4 03       		.uleb128 0x3
+ 1894 00e5 0E       		.uleb128 0xe
+ 1895 00e6 3A       		.uleb128 0x3a
+ 1896 00e7 0B       		.uleb128 0xb
+ 1897 00e8 3B       		.uleb128 0x3b
+ 1898 00e9 05       		.uleb128 0x5
+ 1899 00ea 49       		.uleb128 0x49
+ 1900 00eb 13       		.uleb128 0x13
+ 1901 00ec 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 48
+
+
+ 1902 00ed 00       		.byte	0
+ 1903 00ee 15       		.uleb128 0x15
+ 1904 00ef 2E       		.uleb128 0x2e
+ 1905 00f0 01       		.byte	0x1
+ 1906 00f1 3F       		.uleb128 0x3f
+ 1907 00f2 19       		.uleb128 0x19
+ 1908 00f3 03       		.uleb128 0x3
+ 1909 00f4 0E       		.uleb128 0xe
+ 1910 00f5 3A       		.uleb128 0x3a
+ 1911 00f6 0B       		.uleb128 0xb
+ 1912 00f7 3B       		.uleb128 0x3b
+ 1913 00f8 0B       		.uleb128 0xb
+ 1914 00f9 27       		.uleb128 0x27
+ 1915 00fa 19       		.uleb128 0x19
+ 1916 00fb 49       		.uleb128 0x49
+ 1917 00fc 13       		.uleb128 0x13
+ 1918 00fd 11       		.uleb128 0x11
+ 1919 00fe 01       		.uleb128 0x1
+ 1920 00ff 12       		.uleb128 0x12
+ 1921 0100 06       		.uleb128 0x6
+ 1922 0101 40       		.uleb128 0x40
+ 1923 0102 18       		.uleb128 0x18
+ 1924 0103 9642     		.uleb128 0x2116
+ 1925 0105 19       		.uleb128 0x19
+ 1926 0106 01       		.uleb128 0x1
+ 1927 0107 13       		.uleb128 0x13
+ 1928 0108 00       		.byte	0
+ 1929 0109 00       		.byte	0
+ 1930 010a 16       		.uleb128 0x16
+ 1931 010b 34       		.uleb128 0x34
+ 1932 010c 00       		.byte	0
+ 1933 010d 03       		.uleb128 0x3
+ 1934 010e 0E       		.uleb128 0xe
+ 1935 010f 3A       		.uleb128 0x3a
+ 1936 0110 0B       		.uleb128 0xb
+ 1937 0111 3B       		.uleb128 0x3b
+ 1938 0112 0B       		.uleb128 0xb
+ 1939 0113 49       		.uleb128 0x49
+ 1940 0114 13       		.uleb128 0x13
+ 1941 0115 02       		.uleb128 0x2
+ 1942 0116 18       		.uleb128 0x18
+ 1943 0117 00       		.byte	0
+ 1944 0118 00       		.byte	0
+ 1945 0119 17       		.uleb128 0x17
+ 1946 011a 2E       		.uleb128 0x2e
+ 1947 011b 01       		.byte	0x1
+ 1948 011c 3F       		.uleb128 0x3f
+ 1949 011d 19       		.uleb128 0x19
+ 1950 011e 03       		.uleb128 0x3
+ 1951 011f 0E       		.uleb128 0xe
+ 1952 0120 3A       		.uleb128 0x3a
+ 1953 0121 0B       		.uleb128 0xb
+ 1954 0122 3B       		.uleb128 0x3b
+ 1955 0123 0B       		.uleb128 0xb
+ 1956 0124 27       		.uleb128 0x27
+ 1957 0125 19       		.uleb128 0x19
+ 1958 0126 49       		.uleb128 0x49
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 49
+
+
+ 1959 0127 13       		.uleb128 0x13
+ 1960 0128 11       		.uleb128 0x11
+ 1961 0129 01       		.uleb128 0x1
+ 1962 012a 12       		.uleb128 0x12
+ 1963 012b 06       		.uleb128 0x6
+ 1964 012c 40       		.uleb128 0x40
+ 1965 012d 18       		.uleb128 0x18
+ 1966 012e 9742     		.uleb128 0x2117
+ 1967 0130 19       		.uleb128 0x19
+ 1968 0131 01       		.uleb128 0x1
+ 1969 0132 13       		.uleb128 0x13
+ 1970 0133 00       		.byte	0
+ 1971 0134 00       		.byte	0
+ 1972 0135 18       		.uleb128 0x18
+ 1973 0136 2E       		.uleb128 0x2e
+ 1974 0137 01       		.byte	0x1
+ 1975 0138 3F       		.uleb128 0x3f
+ 1976 0139 19       		.uleb128 0x19
+ 1977 013a 03       		.uleb128 0x3
+ 1978 013b 0E       		.uleb128 0xe
+ 1979 013c 3A       		.uleb128 0x3a
+ 1980 013d 0B       		.uleb128 0xb
+ 1981 013e 3B       		.uleb128 0x3b
+ 1982 013f 05       		.uleb128 0x5
+ 1983 0140 27       		.uleb128 0x27
+ 1984 0141 19       		.uleb128 0x19
+ 1985 0142 49       		.uleb128 0x49
+ 1986 0143 13       		.uleb128 0x13
+ 1987 0144 11       		.uleb128 0x11
+ 1988 0145 01       		.uleb128 0x1
+ 1989 0146 12       		.uleb128 0x12
+ 1990 0147 06       		.uleb128 0x6
+ 1991 0148 40       		.uleb128 0x40
+ 1992 0149 18       		.uleb128 0x18
+ 1993 014a 9642     		.uleb128 0x2116
+ 1994 014c 19       		.uleb128 0x19
+ 1995 014d 01       		.uleb128 0x1
+ 1996 014e 13       		.uleb128 0x13
+ 1997 014f 00       		.byte	0
+ 1998 0150 00       		.byte	0
+ 1999 0151 19       		.uleb128 0x19
+ 2000 0152 34       		.uleb128 0x34
+ 2001 0153 00       		.byte	0
+ 2002 0154 03       		.uleb128 0x3
+ 2003 0155 0E       		.uleb128 0xe
+ 2004 0156 3A       		.uleb128 0x3a
+ 2005 0157 0B       		.uleb128 0xb
+ 2006 0158 3B       		.uleb128 0x3b
+ 2007 0159 05       		.uleb128 0x5
+ 2008 015a 49       		.uleb128 0x49
+ 2009 015b 13       		.uleb128 0x13
+ 2010 015c 02       		.uleb128 0x2
+ 2011 015d 18       		.uleb128 0x18
+ 2012 015e 00       		.byte	0
+ 2013 015f 00       		.byte	0
+ 2014 0160 1A       		.uleb128 0x1a
+ 2015 0161 26       		.uleb128 0x26
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 50
+
+
+ 2016 0162 00       		.byte	0
+ 2017 0163 49       		.uleb128 0x49
+ 2018 0164 13       		.uleb128 0x13
+ 2019 0165 00       		.byte	0
+ 2020 0166 00       		.byte	0
+ 2021 0167 1B       		.uleb128 0x1b
+ 2022 0168 05       		.uleb128 0x5
+ 2023 0169 00       		.byte	0
+ 2024 016a 03       		.uleb128 0x3
+ 2025 016b 0E       		.uleb128 0xe
+ 2026 016c 3A       		.uleb128 0x3a
+ 2027 016d 0B       		.uleb128 0xb
+ 2028 016e 3B       		.uleb128 0x3b
+ 2029 016f 05       		.uleb128 0x5
+ 2030 0170 49       		.uleb128 0x49
+ 2031 0171 13       		.uleb128 0x13
+ 2032 0172 02       		.uleb128 0x2
+ 2033 0173 18       		.uleb128 0x18
+ 2034 0174 00       		.byte	0
+ 2035 0175 00       		.byte	0
+ 2036 0176 1C       		.uleb128 0x1c
+ 2037 0177 2E       		.uleb128 0x2e
+ 2038 0178 00       		.byte	0
+ 2039 0179 3F       		.uleb128 0x3f
+ 2040 017a 19       		.uleb128 0x19
+ 2041 017b 03       		.uleb128 0x3
+ 2042 017c 0E       		.uleb128 0xe
+ 2043 017d 3A       		.uleb128 0x3a
+ 2044 017e 0B       		.uleb128 0xb
+ 2045 017f 3B       		.uleb128 0x3b
+ 2046 0180 05       		.uleb128 0x5
+ 2047 0181 27       		.uleb128 0x27
+ 2048 0182 19       		.uleb128 0x19
+ 2049 0183 11       		.uleb128 0x11
+ 2050 0184 01       		.uleb128 0x1
+ 2051 0185 12       		.uleb128 0x12
+ 2052 0186 06       		.uleb128 0x6
+ 2053 0187 40       		.uleb128 0x40
+ 2054 0188 18       		.uleb128 0x18
+ 2055 0189 9742     		.uleb128 0x2117
+ 2056 018b 19       		.uleb128 0x19
+ 2057 018c 00       		.byte	0
+ 2058 018d 00       		.byte	0
+ 2059 018e 1D       		.uleb128 0x1d
+ 2060 018f 34       		.uleb128 0x34
+ 2061 0190 00       		.byte	0
+ 2062 0191 03       		.uleb128 0x3
+ 2063 0192 0E       		.uleb128 0xe
+ 2064 0193 3A       		.uleb128 0x3a
+ 2065 0194 0B       		.uleb128 0xb
+ 2066 0195 3B       		.uleb128 0x3b
+ 2067 0196 05       		.uleb128 0x5
+ 2068 0197 49       		.uleb128 0x49
+ 2069 0198 13       		.uleb128 0x13
+ 2070 0199 3F       		.uleb128 0x3f
+ 2071 019a 19       		.uleb128 0x19
+ 2072 019b 3C       		.uleb128 0x3c
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 51
+
+
+ 2073 019c 19       		.uleb128 0x19
+ 2074 019d 00       		.byte	0
+ 2075 019e 00       		.byte	0
+ 2076 019f 00       		.byte	0
+ 2077              		.section	.debug_aranges,"",%progbits
+ 2078 0000 64000000 		.4byte	0x64
+ 2079 0004 0200     		.2byte	0x2
+ 2080 0006 00000000 		.4byte	.Ldebug_info0
+ 2081 000a 04       		.byte	0x4
+ 2082 000b 00       		.byte	0
+ 2083 000c 0000     		.2byte	0
+ 2084 000e 0000     		.2byte	0
+ 2085 0010 00000000 		.4byte	.LFB1
+ 2086 0014 78000000 		.4byte	.LFE1-.LFB1
+ 2087 0018 00000000 		.4byte	.LFB2
+ 2088 001c 38000000 		.4byte	.LFE2-.LFB2
+ 2089 0020 00000000 		.4byte	.LFB3
+ 2090 0024 20000000 		.4byte	.LFE3-.LFB3
+ 2091 0028 00000000 		.4byte	.LFB4
+ 2092 002c 2C000000 		.4byte	.LFE4-.LFB4
+ 2093 0030 00000000 		.4byte	.LFB5
+ 2094 0034 6C000000 		.4byte	.LFE5-.LFB5
+ 2095 0038 00000000 		.4byte	.LFB6
+ 2096 003c 7C000000 		.4byte	.LFE6-.LFB6
+ 2097 0040 00000000 		.4byte	.LFB7
+ 2098 0044 98000000 		.4byte	.LFE7-.LFB7
+ 2099 0048 00000000 		.4byte	.LFB8
+ 2100 004c 90000000 		.4byte	.LFE8-.LFB8
+ 2101 0050 00000000 		.4byte	.LFB9
+ 2102 0054 08000000 		.4byte	.LFE9-.LFB9
+ 2103 0058 00000000 		.4byte	.LFB10
+ 2104 005c 08000000 		.4byte	.LFE10-.LFB10
+ 2105 0060 00000000 		.4byte	0
+ 2106 0064 00000000 		.4byte	0
+ 2107              		.section	.debug_ranges,"",%progbits
+ 2108              	.Ldebug_ranges0:
+ 2109 0000 00000000 		.4byte	.LFB1
+ 2110 0004 78000000 		.4byte	.LFE1
+ 2111 0008 00000000 		.4byte	.LFB2
+ 2112 000c 38000000 		.4byte	.LFE2
+ 2113 0010 00000000 		.4byte	.LFB3
+ 2114 0014 20000000 		.4byte	.LFE3
+ 2115 0018 00000000 		.4byte	.LFB4
+ 2116 001c 2C000000 		.4byte	.LFE4
+ 2117 0020 00000000 		.4byte	.LFB5
+ 2118 0024 6C000000 		.4byte	.LFE5
+ 2119 0028 00000000 		.4byte	.LFB6
+ 2120 002c 7C000000 		.4byte	.LFE6
+ 2121 0030 00000000 		.4byte	.LFB7
+ 2122 0034 98000000 		.4byte	.LFE7
+ 2123 0038 00000000 		.4byte	.LFB8
+ 2124 003c 90000000 		.4byte	.LFE8
+ 2125 0040 00000000 		.4byte	.LFB9
+ 2126 0044 08000000 		.4byte	.LFE9
+ 2127 0048 00000000 		.4byte	.LFB10
+ 2128 004c 08000000 		.4byte	.LFE10
+ 2129 0050 00000000 		.4byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 52
+
+
+ 2130 0054 00000000 		.4byte	0
+ 2131              		.section	.debug_line,"",%progbits
+ 2132              	.Ldebug_line0:
+ 2133 0000 C0010000 		.section	.debug_str,"MS",%progbits,1
+ 2133      02007200 
+ 2133      00000201 
+ 2133      FB0E0D00 
+ 2133      01010101 
+ 2134              	.LASF10:
+ 2135 0000 75696E74 		.ascii	"uint16\000"
+ 2135      313600
+ 2136              	.LASF107:
+ 2137 0007 4353445F 		.ascii	"CSD_dsRam\000"
+ 2137      64735261 
+ 2137      6D00
+ 2138              	.LASF106:
+ 2139 0011 4353445F 		.ascii	"CSD_InitVar\000"
+ 2139      496E6974 
+ 2139      56617200 
+ 2140              	.LASF110:
+ 2141 001d 47656E65 		.ascii	"Generated_Source\\PSoC4\\CSD_Control.c\000"
+ 2141      72617465 
+ 2141      645F536F 
+ 2141      75726365 
+ 2141      5C50536F 
+ 2142              	.LASF95:
+ 2143 0042 4353445F 		.ascii	"CSD_ProcessWidgetExt\000"
+ 2143      50726F63 
+ 2143      65737357 
+ 2143      69646765 
+ 2143      74457874 
+ 2144              	.LASF7:
+ 2145 0057 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2145      206C6F6E 
+ 2145      6720756E 
+ 2145      7369676E 
+ 2145      65642069 
+ 2146              	.LASF67:
+ 2147 006e 70747232 		.ascii	"ptr2SnsFlash\000"
+ 2147      536E7346 
+ 2147      6C617368 
+ 2147      00
+ 2148              	.LASF46:
+ 2149 007b 64696666 		.ascii	"diff\000"
+ 2149      00
+ 2150              	.LASF24:
+ 2151 0080 4353445F 		.ascii	"CSD_WD_PROXIMITY_E\000"
+ 2151      57445F50 
+ 2151      524F5849 
+ 2151      4D495459 
+ 2151      5F4500
+ 2152              	.LASF63:
+ 2153 0093 736E7254 		.ascii	"snrTestSensorId\000"
+ 2153      65737453 
+ 2153      656E736F 
+ 2153      72496400 
+ 2154              	.LASF92:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 53
+
+
+ 2155 00a3 77646774 		.ascii	"wdgtId\000"
+ 2155      496400
+ 2156              	.LASF6:
+ 2157 00aa 6C6F6E67 		.ascii	"long long int\000"
+ 2157      206C6F6E 
+ 2157      6720696E 
+ 2157      7400
+ 2158              	.LASF0:
+ 2159 00b8 7369676E 		.ascii	"signed char\000"
+ 2159      65642063 
+ 2159      68617200 
+ 2160              	.LASF41:
+ 2161 00c4 62757474 		.ascii	"button0\000"
+ 2161      6F6E3000 
+ 2162              	.LASF86:
+ 2163 00cc 696E7465 		.ascii	"interruptState\000"
+ 2163      72727570 
+ 2163      74537461 
+ 2163      746500
+ 2164              	.LASF88:
+ 2165 00db 4353445F 		.ascii	"CSD_Initialize\000"
+ 2165      496E6974 
+ 2165      69616C69 
+ 2165      7A6500
+ 2166              	.LASF57:
+ 2167 00ea 736E7353 		.ascii	"snsStatus\000"
+ 2167      74617475 
+ 2167      7300
+ 2168              	.LASF23:
+ 2169 00f4 4353445F 		.ascii	"CSD_WD_TOUCHPAD_E\000"
+ 2169      57445F54 
+ 2169      4F554348 
+ 2169      5041445F 
+ 2169      4500
+ 2170              	.LASF4:
+ 2171 0106 6C6F6E67 		.ascii	"long int\000"
+ 2171      20696E74 
+ 2171      00
+ 2172              	.LASF104:
+ 2173 010f 4353445F 		.ascii	"CSD_Sleep\000"
+ 2173      536C6565 
+ 2173      7000
+ 2174              	.LASF59:
+ 2175 0119 6D6F6443 		.ascii	"modCsdClk\000"
+ 2175      7364436C 
+ 2175      6B00
+ 2176              	.LASF69:
+ 2177 0123 70747232 		.ascii	"ptr2SnsRam\000"
+ 2177      536E7352 
+ 2177      616D00
+ 2178              	.LASF9:
+ 2179 012e 75696E74 		.ascii	"uint8\000"
+ 2179      3800
+ 2180              	.LASF48:
+ 2181 0134 4353445F 		.ascii	"CSD_RAM_SNS_STRUCT\000"
+ 2181      52414D5F 
+ 2181      534E535F 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 54
+
+
+ 2181      53545255 
+ 2181      435400
+ 2182              	.LASF13:
+ 2183 0147 646F7562 		.ascii	"double\000"
+ 2183      6C6500
+ 2184              	.LASF19:
+ 2185 014e 4353445F 		.ascii	"CSD_WD_BUTTON_E\000"
+ 2185      57445F42 
+ 2185      5554544F 
+ 2185      4E5F4500 
+ 2186              	.LASF65:
+ 2187 015e 736E7254 		.ascii	"snrTestRawCount\000"
+ 2187      65737452 
+ 2187      6177436F 
+ 2187      756E7400 
+ 2188              	.LASF103:
+ 2189 016e 73656E73 		.ascii	"sensorId\000"
+ 2189      6F724964 
+ 2189      00
+ 2190              	.LASF11:
+ 2191 0177 75696E74 		.ascii	"uint32\000"
+ 2191      333200
+ 2192              	.LASF17:
+ 2193 017e 4353445F 		.ascii	"CSD_THRESHOLD_TYPE\000"
+ 2193      54485245 
+ 2193      53484F4C 
+ 2193      445F5459 
+ 2193      504500
+ 2194              	.LASF91:
+ 2195 0191 4353445F 		.ascii	"CSD_ProcessAllWidgets\000"
+ 2195      50726F63 
+ 2195      65737341 
+ 2195      6C6C5769 
+ 2195      64676574 
+ 2196              	.LASF82:
+ 2197 01a7 4353445F 		.ascii	"CSD_REGULAR_FLTR_STRUCT\000"
+ 2197      52454755 
+ 2197      4C41525F 
+ 2197      464C5452 
+ 2197      5F535452 
+ 2198              	.LASF98:
+ 2199 01bf 736E7343 		.ascii	"snsCount\000"
+ 2199      6F756E74 
+ 2199      00
+ 2200              	.LASF44:
+ 2201 01c8 62736C6E 		.ascii	"bslnExt\000"
+ 2201      45787400 
+ 2202              	.LASF56:
+ 2203 01d0 77646774 		.ascii	"wdgtStatus\000"
+ 2203      53746174 
+ 2203      757300
+ 2204              	.LASF77:
+ 2205 01db 77646774 		.ascii	"wdgtArray\000"
+ 2205      41727261 
+ 2205      7900
+ 2206              	.LASF79:
+ 2207 01e5 69697248 		.ascii	"iirHistory\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 55
+
+
+ 2207      6973746F 
+ 2207      727900
+ 2208              	.LASF99:
+ 2209 01f0 666C7472 		.ascii	"fltrHistV\000"
+ 2209      48697374 
+ 2209      5600
+ 2210              	.LASF43:
+ 2211 01fa 62736C6E 		.ascii	"bsln\000"
+ 2211      00
+ 2212              	.LASF93:
+ 2213 01ff 70747246 		.ascii	"ptrFlashWdgt\000"
+ 2213      6C617368 
+ 2213      57646774 
+ 2213      00
+ 2214              	.LASF8:
+ 2215 020c 756E7369 		.ascii	"unsigned int\000"
+ 2215      676E6564 
+ 2215      20696E74 
+ 2215      00
+ 2216              	.LASF62:
+ 2217 0219 736E7254 		.ascii	"snrTestWidgetId\000"
+ 2217      65737457 
+ 2217      69646765 
+ 2217      74496400 
+ 2218              	.LASF111:
+ 2219 0229 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 2219      73657273 
+ 2219      5C436872 
+ 2219      6973746F 
+ 2219      70686572 
+ 2220 0258 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 2220      456E7669 
+ 2220      726F6E6D 
+ 2220      656E7453 
+ 2220      656E7369 
+ 2221 0289 7964736E 		.ascii	"ydsn\000"
+ 2221      00
+ 2222              	.LASF18:
+ 2223 028e 4353445F 		.ascii	"CSD_LOW_BSLN_RST_TYPE\000"
+ 2223      4C4F575F 
+ 2223      42534C4E 
+ 2223      5F525354 
+ 2223      5F545950 
+ 2224              	.LASF109:
+ 2225 02a4 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 2225      4320342E 
+ 2225      392E3320 
+ 2225      32303135 
+ 2225      30333033 
+ 2226 02d7 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 2226      20726576 
+ 2226      6973696F 
+ 2226      6E203232 
+ 2226      31323230 
+ 2227 030a 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 2227      30202D66 
+ 2227      66756E63 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 56
+
+
+ 2227      74696F6E 
+ 2227      2D736563 
+ 2228              	.LASF27:
+ 2229 0336 4353445F 		.ascii	"CSD_SENSE_METHOD_CSD_E\000"
+ 2229      53454E53 
+ 2229      455F4D45 
+ 2229      54484F44 
+ 2229      5F435344 
+ 2230              	.LASF35:
+ 2231 034d 6C6F7742 		.ascii	"lowBslnRst\000"
+ 2231      736C6E52 
+ 2231      737400
+ 2232              	.LASF100:
+ 2233 0358 70747253 		.ascii	"ptrSns\000"
+ 2233      6E7300
+ 2234              	.LASF80:
+ 2235 035f 4353445F 		.ascii	"CSD_REGULAR_FLTR_CHANNEL_STRUCT\000"
+ 2235      52454755 
+ 2235      4C41525F 
+ 2235      464C5452 
+ 2235      5F434841 
+ 2236              	.LASF3:
+ 2237 037f 73686F72 		.ascii	"short unsigned int\000"
+ 2237      7420756E 
+ 2237      7369676E 
+ 2237      65642069 
+ 2237      6E7400
+ 2238              	.LASF84:
+ 2239 0392 4353445F 		.ascii	"CSD_PTR_FILTER_VARIANT\000"
+ 2239      5054525F 
+ 2239      46494C54 
+ 2239      45525F56 
+ 2239      41524941 
+ 2240              	.LASF61:
+ 2241 03a9 736E734C 		.ascii	"snsList\000"
+ 2241      69737400 
+ 2242              	.LASF50:
+ 2243 03b1 636F6E66 		.ascii	"configId\000"
+ 2243      69674964 
+ 2243      00
+ 2244              	.LASF58:
+ 2245 03ba 63736430 		.ascii	"csd0Config\000"
+ 2245      436F6E66 
+ 2245      696700
+ 2246              	.LASF68:
+ 2247 03c5 70747232 		.ascii	"ptr2WdgtRam\000"
+ 2247      57646774 
+ 2247      52616D00 
+ 2248              	.LASF51:
+ 2249 03d1 64657669 		.ascii	"deviceId\000"
+ 2249      63654964 
+ 2249      00
+ 2250              	.LASF96:
+ 2251 03da 77696467 		.ascii	"widgetId\000"
+ 2251      65744964 
+ 2251      00
+ 2252              	.LASF37:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 57
+
+
+ 2253 03e3 69646163 		.ascii	"idacMod\000"
+ 2253      4D6F6400 
+ 2254              	.LASF105:
+ 2255 03eb 4353445F 		.ascii	"CSD_Wakeup\000"
+ 2255      57616B65 
+ 2255      757000
+ 2256              	.LASF75:
+ 2257 03f6 6E756D43 		.ascii	"numCols\000"
+ 2257      6F6C7300 
+ 2258              	.LASF16:
+ 2259 03fe 73697A65 		.ascii	"sizetype\000"
+ 2259      74797065 
+ 2259      00
+ 2260              	.LASF89:
+ 2261 0407 4353445F 		.ascii	"CSD_Stop\000"
+ 2261      53746F70 
+ 2261      00
+ 2262              	.LASF72:
+ 2263 0410 73746174 		.ascii	"staticConfig\000"
+ 2263      6963436F 
+ 2263      6E666967 
+ 2263      00
+ 2264              	.LASF32:
+ 2265 041d 6E4E6F69 		.ascii	"nNoiseTh\000"
+ 2265      73655468 
+ 2265      00
+ 2266              	.LASF74:
+ 2267 0426 77646774 		.ascii	"wdgtType\000"
+ 2267      54797065 
+ 2267      00
+ 2268              	.LASF25:
+ 2269 042f 4353445F 		.ascii	"CSD_WD_TYPE_ENUM\000"
+ 2269      57445F54 
+ 2269      5950455F 
+ 2269      454E554D 
+ 2269      00
+ 2270              	.LASF53:
+ 2271 0440 7363616E 		.ascii	"scanCounter\000"
+ 2271      436F756E 
+ 2271      74657200 
+ 2272              	.LASF94:
+ 2273 044c 4353445F 		.ascii	"CSD_ProcessWidget\000"
+ 2273      50726F63 
+ 2273      65737357 
+ 2273      69646765 
+ 2273      7400
+ 2274              	.LASF52:
+ 2275 045e 74756E65 		.ascii	"tunerCmd\000"
+ 2275      72436D64 
+ 2275      00
+ 2276              	.LASF12:
+ 2277 0467 666C6F61 		.ascii	"float\000"
+ 2277      7400
+ 2278              	.LASF66:
+ 2279 046d 4353445F 		.ascii	"CSD_RAM_STRUCT\000"
+ 2279      52414D5F 
+ 2279      53545255 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 58
+
+
+ 2279      435400
+ 2280              	.LASF36:
+ 2281 047c 62736C6E 		.ascii	"bslnCoeff\000"
+ 2281      436F6566 
+ 2281      6600
+ 2282              	.LASF101:
+ 2283 0486 69735072 		.ascii	"isProxWdgt\000"
+ 2283      6F785764 
+ 2283      677400
+ 2284              	.LASF81:
+ 2285 0491 72656775 		.ascii	"regularChannel\000"
+ 2285      6C617243 
+ 2285      68616E6E 
+ 2285      656C00
+ 2286              	.LASF33:
+ 2287 04a0 68797374 		.ascii	"hysteresis\000"
+ 2287      65726573 
+ 2287      697300
+ 2288              	.LASF1:
+ 2289 04ab 756E7369 		.ascii	"unsigned char\000"
+ 2289      676E6564 
+ 2289      20636861 
+ 2289      7200
+ 2290              	.LASF42:
+ 2291 04b9 4353445F 		.ascii	"CSD_RAM_WD_LIST_STRUCT\000"
+ 2291      52414D5F 
+ 2291      57445F4C 
+ 2291      4953545F 
+ 2291      53545255 
+ 2292              	.LASF2:
+ 2293 04d0 73686F72 		.ascii	"short int\000"
+ 2293      7420696E 
+ 2293      7400
+ 2294              	.LASF108:
+ 2295 04da 4353445F 		.ascii	"CSD_dsFlash\000"
+ 2295      6473466C 
+ 2295      61736800 
+ 2296              	.LASF70:
+ 2297 04e6 70747232 		.ascii	"ptr2FltrHistory\000"
+ 2297      466C7472 
+ 2297      48697374 
+ 2297      6F727900 
+ 2298              	.LASF22:
+ 2299 04f6 4353445F 		.ascii	"CSD_WD_MATRIX_BUTTON_E\000"
+ 2299      57445F4D 
+ 2299      41545249 
+ 2299      585F4255 
+ 2299      54544F4E 
+ 2300              	.LASF26:
+ 2301 050d 4353445F 		.ascii	"CSD_UNDEFINED_E\000"
+ 2301      554E4445 
+ 2301      46494E45 
+ 2301      445F4500 
+ 2302              	.LASF76:
+ 2303 051d 4353445F 		.ascii	"CSD_FLASH_WD_STRUCT\000"
+ 2303      464C4153 
+ 2303      485F5744 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 59
+
+
+ 2303      5F535452 
+ 2303      55435400 
+ 2304              	.LASF29:
+ 2305 0531 7265736F 		.ascii	"resolution\000"
+ 2305      6C757469 
+ 2305      6F6E00
+ 2306              	.LASF60:
+ 2307 053c 77646774 		.ascii	"wdgtList\000"
+ 2307      4C697374 
+ 2307      00
+ 2308              	.LASF49:
+ 2309 0545 4353445F 		.ascii	"CSD_RAM_SNS_LIST_STRUCT\000"
+ 2309      52414D5F 
+ 2309      534E535F 
+ 2309      4C495354 
+ 2309      5F535452 
+ 2310              	.LASF102:
+ 2311 055d 4353445F 		.ascii	"CSD_ProcessSensorExt\000"
+ 2311      50726F63 
+ 2311      65737353 
+ 2311      656E736F 
+ 2311      72457874 
+ 2312              	.LASF28:
+ 2313 0572 4353445F 		.ascii	"CSD_SENSE_METHOD_CSX_E\000"
+ 2313      53454E53 
+ 2313      455F4D45 
+ 2313      54484F44 
+ 2313      5F435358 
+ 2314              	.LASF5:
+ 2315 0589 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2315      20756E73 
+ 2315      69676E65 
+ 2315      6420696E 
+ 2315      7400
+ 2316              	.LASF87:
+ 2317 059b 4353445F 		.ascii	"CSD_Start\000"
+ 2317      53746172 
+ 2317      7400
+ 2318              	.LASF14:
+ 2319 05a5 63686172 		.ascii	"char\000"
+ 2319      00
+ 2320              	.LASF97:
+ 2321 05aa 6D6F6465 		.ascii	"mode\000"
+ 2321      00
+ 2322              	.LASF38:
+ 2323 05af 736E7343 		.ascii	"snsClk\000"
+ 2323      6C6B00
+ 2324              	.LASF34:
+ 2325 05b6 6F6E4465 		.ascii	"onDebounce\000"
+ 2325      626F756E 
+ 2325      636500
+ 2326              	.LASF20:
+ 2327 05c1 4353445F 		.ascii	"CSD_WD_LINEAR_SLIDER_E\000"
+ 2327      57445F4C 
+ 2327      494E4541 
+ 2327      525F534C 
+ 2327      49444552 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 60
+
+
+ 2328              	.LASF40:
+ 2329 05d8 4353445F 		.ascii	"CSD_RAM_WD_BUTTON_STRUCT\000"
+ 2329      52414D5F 
+ 2329      57445F42 
+ 2329      5554544F 
+ 2329      4E5F5354 
+ 2330              	.LASF45:
+ 2331 05f1 69646163 		.ascii	"idacComp\000"
+ 2331      436F6D70 
+ 2331      00
+ 2332              	.LASF47:
+ 2333 05fa 6E656742 		.ascii	"negBslnRstCnt\000"
+ 2333      736C6E52 
+ 2333      7374436E 
+ 2333      7400
+ 2334              	.LASF73:
+ 2335 0608 746F7461 		.ascii	"totalNumSns\000"
+ 2335      6C4E756D 
+ 2335      536E7300 
+ 2336              	.LASF71:
+ 2337 0614 70747232 		.ascii	"ptr2DebounceArr\000"
+ 2337      4465626F 
+ 2337      756E6365 
+ 2337      41727200 
+ 2338              	.LASF54:
+ 2339 0624 73746174 		.ascii	"status\000"
+ 2339      757300
+ 2340              	.LASF78:
+ 2341 062b 4353445F 		.ascii	"CSD_FLASH_STRUCT\000"
+ 2341      464C4153 
+ 2341      485F5354 
+ 2341      52554354 
+ 2341      00
+ 2342              	.LASF55:
+ 2343 063c 77646774 		.ascii	"wdgtEnable\000"
+ 2343      456E6162 
+ 2343      6C6500
+ 2344              	.LASF39:
+ 2345 0647 736E7343 		.ascii	"snsClkSource\000"
+ 2345      6C6B536F 
+ 2345      75726365 
+ 2345      00
+ 2346              	.LASF15:
+ 2347 0654 63797374 		.ascii	"cystatus\000"
+ 2347      61747573 
+ 2347      00
+ 2348              	.LASF90:
+ 2349 065d 4353445F 		.ascii	"CSD_Resume\000"
+ 2349      52657375 
+ 2349      6D6500
+ 2350              	.LASF30:
+ 2351 0668 66696E67 		.ascii	"fingerTh\000"
+ 2351      65725468 
+ 2351      00
+ 2352              	.LASF64:
+ 2353 0671 736E7254 		.ascii	"snrTestScanCounter\000"
+ 2353      65737453 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccdqcrh1.s 			page 61
+
+
+ 2353      63616E43 
+ 2353      6F756E74 
+ 2353      657200
+ 2354              	.LASF21:
+ 2355 0684 4353445F 		.ascii	"CSD_WD_RADIAL_SLIDER_E\000"
+ 2355      57445F52 
+ 2355      41444941 
+ 2355      4C5F534C 
+ 2355      49444552 
+ 2356              	.LASF83:
+ 2357 069b 70747252 		.ascii	"ptrRegular\000"
+ 2357      6567756C 
+ 2357      617200
+ 2358              	.LASF85:
+ 2359 06a6 72657375 		.ascii	"result\000"
+ 2359      6C7400
+ 2360              	.LASF31:
+ 2361 06ad 6E6F6973 		.ascii	"noiseTh\000"
+ 2361      65546800 
+ 2362              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

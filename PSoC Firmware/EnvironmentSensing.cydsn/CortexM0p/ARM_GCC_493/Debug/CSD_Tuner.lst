@@ -1,0 +1,2059 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"CSD_Tuner.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.bss
+  18              		.align	2
+  19              	tunerFsm:
+  20 0000 00000000 		.space	4
+  21              		.section	.text.CSD_TuInitialize,"ax",%progbits
+  22              		.align	2
+  23              		.global	CSD_TuInitialize
+  24              		.code	16
+  25              		.thumb_func
+  26              		.type	CSD_TuInitialize, %function
+  27              	CSD_TuInitialize:
+  28              	.LFB1:
+  29              		.file 1 "Generated_Source\\PSoC4\\CSD_Tuner.c"
+   1:Generated_Source\PSoC4/CSD_Tuner.c **** /***************************************************************************//**
+   2:Generated_Source\PSoC4/CSD_Tuner.c **** * \file CSD_Tuner.c
+   3:Generated_Source\PSoC4/CSD_Tuner.c **** * \version 3.0
+   4:Generated_Source\PSoC4/CSD_Tuner.c **** *
+   5:Generated_Source\PSoC4/CSD_Tuner.c **** * \brief
+   6:Generated_Source\PSoC4/CSD_Tuner.c **** * This file provides the source code for the Tuner module API of the Component.
+   7:Generated_Source\PSoC4/CSD_Tuner.c **** *
+   8:Generated_Source\PSoC4/CSD_Tuner.c **** * \see CapSense P4 v3.0 Datasheet
+   9:Generated_Source\PSoC4/CSD_Tuner.c **** * 
+  10:Generated_Source\PSoC4/CSD_Tuner.c **** *//*****************************************************************************
+  11:Generated_Source\PSoC4/CSD_Tuner.c **** * Copyright (2016), Cypress Semiconductor Corporation.
+  12:Generated_Source\PSoC4/CSD_Tuner.c **** ********************************************************************************
+  13:Generated_Source\PSoC4/CSD_Tuner.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  14:Generated_Source\PSoC4/CSD_Tuner.c **** * protected by and subject to worldwide patent protection (United States and
+  15:Generated_Source\PSoC4/CSD_Tuner.c **** * foreign), United States copyright laws and international treaty provisions.
+  16:Generated_Source\PSoC4/CSD_Tuner.c **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  17:Generated_Source\PSoC4/CSD_Tuner.c **** * license to copy, use, modify, create derivative works of, and compile the
+  18:Generated_Source\PSoC4/CSD_Tuner.c **** * Cypress Source Code and derivative works for the sole purpose of creating
+  19:Generated_Source\PSoC4/CSD_Tuner.c **** * custom software in support of licensee product to be used only in conjunction
+  20:Generated_Source\PSoC4/CSD_Tuner.c **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  21:Generated_Source\PSoC4/CSD_Tuner.c **** * Any reproduction, modification, translation, compilation, or representation of
+  22:Generated_Source\PSoC4/CSD_Tuner.c **** * this software except as specified above is prohibited without the express
+  23:Generated_Source\PSoC4/CSD_Tuner.c **** * written permission of Cypress.
+  24:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  25:Generated_Source\PSoC4/CSD_Tuner.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  26:Generated_Source\PSoC4/CSD_Tuner.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  27:Generated_Source\PSoC4/CSD_Tuner.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  28:Generated_Source\PSoC4/CSD_Tuner.c **** * Cypress reserves the right to make changes without further notice to the
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 2
+
+
+  29:Generated_Source\PSoC4/CSD_Tuner.c **** * materials described herein. Cypress does not assume any liability arising out
+  30:Generated_Source\PSoC4/CSD_Tuner.c **** * of the application or use of any product or circuit described herein. Cypress
+  31:Generated_Source\PSoC4/CSD_Tuner.c **** * does not authorize its products for use as critical components in life-support
+  32:Generated_Source\PSoC4/CSD_Tuner.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  33:Generated_Source\PSoC4/CSD_Tuner.c **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  34:Generated_Source\PSoC4/CSD_Tuner.c **** * support systems application implies that the manufacturer assumes all risk of
+  35:Generated_Source\PSoC4/CSD_Tuner.c **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  36:Generated_Source\PSoC4/CSD_Tuner.c **** * limited by and subject to the applicable Cypress software license agreement.
+  37:Generated_Source\PSoC4/CSD_Tuner.c **** *******************************************************************************/
+  38:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  39:Generated_Source\PSoC4/CSD_Tuner.c **** #include "cytypes.h"
+  40:Generated_Source\PSoC4/CSD_Tuner.c **** #include "CyLib.h"
+  41:Generated_Source\PSoC4/CSD_Tuner.c **** #include "CSD_Structure.h"
+  42:Generated_Source\PSoC4/CSD_Tuner.c **** #include "CSD_Tuner.h"
+  43:Generated_Source\PSoC4/CSD_Tuner.c **** #include "CSD_Control.h"
+  44:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  45:Generated_Source\PSoC4/CSD_Tuner.c **** /* Tuner states definition */
+  46:Generated_Source\PSoC4/CSD_Tuner.c **** #define TU_FSM_RUNNING      (0u)
+  47:Generated_Source\PSoC4/CSD_Tuner.c **** #define TU_FSM_SUSPENDED    (1u)
+  48:Generated_Source\PSoC4/CSD_Tuner.c **** #define TU_FSM_SNR_TEST     (2u)
+  49:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  50:Generated_Source\PSoC4/CSD_Tuner.c **** /* Tuner state variable */
+  51:Generated_Source\PSoC4/CSD_Tuner.c **** static uint32 tunerFsm = TU_FSM_RUNNING;
+  52:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  53:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  54:Generated_Source\PSoC4/CSD_Tuner.c **** /*******************************************************************************
+  55:Generated_Source\PSoC4/CSD_Tuner.c **** * Function Name: CSD_TuInitialize
+  56:Generated_Source\PSoC4/CSD_Tuner.c **** ****************************************************************************//**
+  57:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  58:Generated_Source\PSoC4/CSD_Tuner.c **** * \brief
+  59:Generated_Source\PSoC4/CSD_Tuner.c **** *   This function initializes the communication interface with the Tuner GUI.
+  60:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  61:Generated_Source\PSoC4/CSD_Tuner.c **** * \details
+  62:Generated_Source\PSoC4/CSD_Tuner.c **** *   This API sets the tuner state machine to the default state. It is called by
+  63:Generated_Source\PSoC4/CSD_Tuner.c **** *   the CSD_Start() API.
+  64:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  65:Generated_Source\PSoC4/CSD_Tuner.c **** *******************************************************************************/
+  66:Generated_Source\PSoC4/CSD_Tuner.c **** void CSD_TuInitialize(void)
+  67:Generated_Source\PSoC4/CSD_Tuner.c **** {
+  30              		.loc 1 67 0
+  31              		.cfi_startproc
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  68:Generated_Source\PSoC4/CSD_Tuner.c ****     volatile CSD_RAM_STRUCT *ptrDsRam = &CSD_dsRam;
+  40              		.loc 1 68 0
+  41 0006 054B     		ldr	r3, .L2
+  42 0008 7B60     		str	r3, [r7, #4]
+  69:Generated_Source\PSoC4/CSD_Tuner.c ****     
+  70:Generated_Source\PSoC4/CSD_Tuner.c ****     ptrDsRam->tunerCmd = (uint16)CSD_TU_CMD_NONE_E;
+  43              		.loc 1 70 0
+  44 000a 7B68     		ldr	r3, [r7, #4]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 3
+
+
+  45 000c 0022     		mov	r2, #0
+  46 000e 9A80     		strh	r2, [r3, #4]
+  71:Generated_Source\PSoC4/CSD_Tuner.c ****     tunerFsm = TU_FSM_RUNNING;
+  47              		.loc 1 71 0
+  48 0010 034B     		ldr	r3, .L2+4
+  49 0012 0022     		mov	r2, #0
+  50 0014 1A60     		str	r2, [r3]
+  72:Generated_Source\PSoC4/CSD_Tuner.c **** }
+  51              		.loc 1 72 0
+  52 0016 BD46     		mov	sp, r7
+  53 0018 02B0     		add	sp, sp, #8
+  54              		@ sp needed
+  55 001a 80BD     		pop	{r7, pc}
+  56              	.L3:
+  57              		.align	2
+  58              	.L2:
+  59 001c 00000000 		.word	CSD_dsRam
+  60 0020 00000000 		.word	tunerFsm
+  61              		.cfi_endproc
+  62              	.LFE1:
+  63              		.size	CSD_TuInitialize, .-CSD_TuInitialize
+  64              		.section	.text.CSD_RunTuner,"ax",%progbits
+  65              		.align	2
+  66              		.global	CSD_RunTuner
+  67              		.code	16
+  68              		.thumb_func
+  69              		.type	CSD_RunTuner, %function
+  70              	CSD_RunTuner:
+  71              	.LFB2:
+  73:Generated_Source\PSoC4/CSD_Tuner.c **** 
+  74:Generated_Source\PSoC4/CSD_Tuner.c **** /*******************************************************************************
+  75:Generated_Source\PSoC4/CSD_Tuner.c **** * Function Name: CSD_RunTuner
+  76:Generated_Source\PSoC4/CSD_Tuner.c **** ****************************************************************************//**
+  77:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  78:Generated_Source\PSoC4/CSD_Tuner.c **** * \brief
+  79:Generated_Source\PSoC4/CSD_Tuner.c **** *  Establishes synchronized communication with the Tuner application.
+  80:Generated_Source\PSoC4/CSD_Tuner.c **** *
+  81:Generated_Source\PSoC4/CSD_Tuner.c **** * \details
+  82:Generated_Source\PSoC4/CSD_Tuner.c **** *  This function is used to establish synchronized communication between the 
+  83:Generated_Source\PSoC4/CSD_Tuner.c **** *  CSD component and Tuner application (or other host controllers).
+  84:Generated_Source\PSoC4/CSD_Tuner.c **** *  This function should be called periodically in the application program loop 
+  85:Generated_Source\PSoC4/CSD_Tuner.c **** *  to serve the Tuner application (or host controller) requests and commands. 
+  86:Generated_Source\PSoC4/CSD_Tuner.c **** *  In most cases, the best place to call this function is after processing and 
+  87:Generated_Source\PSoC4/CSD_Tuner.c **** *  before next scanning. 
+  88:Generated_Source\PSoC4/CSD_Tuner.c **** *  
+  89:Generated_Source\PSoC4/CSD_Tuner.c **** *  If this function is absent in the application program, then communication is 
+  90:Generated_Source\PSoC4/CSD_Tuner.c **** *  asynchronous and the following disadvantages are applicable:
+  91:Generated_Source\PSoC4/CSD_Tuner.c **** *    - The raw counts displayed in the tuner may be filtered and/or unfiltered 
+  92:Generated_Source\PSoC4/CSD_Tuner.c **** *      firmware and as a result, noise and SNR measurements will not be 
+  93:Generated_Source\PSoC4/CSD_Tuner.c **** *      accurate.
+  94:Generated_Source\PSoC4/CSD_Tuner.c **** *    - The Tuner may read the sensor data such as raw counts from a scan 
+  95:Generated_Source\PSoC4/CSD_Tuner.c **** *      multiple times, as a result, noise and SNR measurement will not be 
+  96:Generated_Source\PSoC4/CSD_Tuner.c **** *      accurate.
+  97:Generated_Source\PSoC4/CSD_Tuner.c **** *    - The Tuner and host controller should not change the component parameters 
+  98:Generated_Source\PSoC4/CSD_Tuner.c **** *      via the tuner interface. Changing the component parameters via the tuner 
+  99:Generated_Source\PSoC4/CSD_Tuner.c **** *      interface in the async mode will result in abnormal behavior from the 
+ 100:Generated_Source\PSoC4/CSD_Tuner.c **** *      component.
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 4
+
+
+ 101:Generated_Source\PSoC4/CSD_Tuner.c **** *  
+ 102:Generated_Source\PSoC4/CSD_Tuner.c **** *  Note that calling this function is not mandatory for the application, but 
+ 103:Generated_Source\PSoC4/CSD_Tuner.c **** *  required only to synchronize the communication with the host controller or 
+ 104:Generated_Source\PSoC4/CSD_Tuner.c **** *  tuner application.
+ 105:Generated_Source\PSoC4/CSD_Tuner.c **** *
+ 106:Generated_Source\PSoC4/CSD_Tuner.c **** * \return
+ 107:Generated_Source\PSoC4/CSD_Tuner.c **** *  In some cases, the application program may need to know if the component was
+ 108:Generated_Source\PSoC4/CSD_Tuner.c **** *  re-initialized. The return indicates if a restart command was executed or not: 
+ 109:Generated_Source\PSoC4/CSD_Tuner.c **** *    - CSD_STATUS_RESTART_DONE based on a received command, the 
+ 110:Generated_Source\PSoC4/CSD_Tuner.c **** *      component was restarted.
+ 111:Generated_Source\PSoC4/CSD_Tuner.c **** *    -  CSD_STATUS_RESTART_NONE, no restart was executed by this 
+ 112:Generated_Source\PSoC4/CSD_Tuner.c **** *      function.
+ 113:Generated_Source\PSoC4/CSD_Tuner.c **** *
+ 114:Generated_Source\PSoC4/CSD_Tuner.c **** *******************************************************************************/
+ 115:Generated_Source\PSoC4/CSD_Tuner.c **** uint32 CSD_RunTuner(void)
+ 116:Generated_Source\PSoC4/CSD_Tuner.c **** {
+  72              		.loc 1 116 0
+  73              		.cfi_startproc
+  74 0000 90B5     		push	{r4, r7, lr}
+  75              		.cfi_def_cfa_offset 12
+  76              		.cfi_offset 4, -12
+  77              		.cfi_offset 7, -8
+  78              		.cfi_offset 14, -4
+  79 0002 89B0     		sub	sp, sp, #36
+  80              		.cfi_def_cfa_offset 48
+  81 0004 00AF     		add	r7, sp, #0
+  82              		.cfi_def_cfa_register 7
+ 117:Generated_Source\PSoC4/CSD_Tuner.c ****     uint8  critSect;
+ 118:Generated_Source\PSoC4/CSD_Tuner.c ****     uint32 widgetId;
+ 119:Generated_Source\PSoC4/CSD_Tuner.c ****     uint32 sensorId;
+ 120:Generated_Source\PSoC4/CSD_Tuner.c ****     uint32 updateFlag = 0Lu;
+  83              		.loc 1 120 0
+  84 0006 0023     		mov	r3, #0
+  85 0008 FB61     		str	r3, [r7, #28]
+ 121:Generated_Source\PSoC4/CSD_Tuner.c ****     CSD_TU_CMD_ENUM command;
+ 122:Generated_Source\PSoC4/CSD_Tuner.c ****     uint32 tunerStatus = CSD_STATUS_RESTART_NONE;
+  86              		.loc 1 122 0
+  87 000a 0023     		mov	r3, #0
+  88 000c BB61     		str	r3, [r7, #24]
+ 123:Generated_Source\PSoC4/CSD_Tuner.c ****     
+ 124:Generated_Source\PSoC4/CSD_Tuner.c ****     volatile CSD_RAM_STRUCT *ptrDsRam;
+ 125:Generated_Source\PSoC4/CSD_Tuner.c ****     volatile CSD_RAM_SNS_STRUCT *ptrSns;
+ 126:Generated_Source\PSoC4/CSD_Tuner.c ****     
+ 127:Generated_Source\PSoC4/CSD_Tuner.c ****     ptrDsRam = &CSD_dsRam;
+  89              		.loc 1 127 0
+  90 000e 564B     		ldr	r3, .L19
+  91 0010 7B61     		str	r3, [r7, #20]
+  92              	.L15:
+ 128:Generated_Source\PSoC4/CSD_Tuner.c ****     
+ 129:Generated_Source\PSoC4/CSD_Tuner.c ****     do 
+ 130:Generated_Source\PSoC4/CSD_Tuner.c ****     {
+ 131:Generated_Source\PSoC4/CSD_Tuner.c ****         command = (CSD_TU_CMD_ENUM)ptrDsRam->tunerCmd;
+  93              		.loc 1 131 0
+  94 0012 7B69     		ldr	r3, [r7, #20]
+  95 0014 9B88     		ldrh	r3, [r3, #4]
+  96 0016 9AB2     		uxth	r2, r3
+  97 0018 1323     		mov	r3, #19
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 5
+
+
+  98 001a FB18     		add	r3, r7, r3
+  99 001c 1A70     		strb	r2, [r3]
+ 132:Generated_Source\PSoC4/CSD_Tuner.c ****         
+ 133:Generated_Source\PSoC4/CSD_Tuner.c ****         /* Check command register */
+ 134:Generated_Source\PSoC4/CSD_Tuner.c ****         switch (command)
+ 100              		.loc 1 134 0
+ 101 001e 1323     		mov	r3, #19
+ 102 0020 FB18     		add	r3, r7, r3
+ 103 0022 1B78     		ldrb	r3, [r3]
+ 104 0024 052B     		cmp	r3, #5
+ 105 0026 23D8     		bhi	.L18
+ 106 0028 9A00     		lsl	r2, r3, #2
+ 107 002a 504B     		ldr	r3, .L19+4
+ 108 002c D318     		add	r3, r2, r3
+ 109 002e 1B68     		ldr	r3, [r3]
+ 110 0030 9F46     		mov	pc, r3
+ 111              		.section	.rodata
+ 112              		.align	2
+ 113              	.L7:
+ 114 0000 70000000 		.word	.L18
+ 115 0004 32000000 		.word	.L6
+ 116 0008 3E000000 		.word	.L8
+ 117 000c 4A000000 		.word	.L9
+ 118 0010 5E000000 		.word	.L10
+ 119 0014 6A000000 		.word	.L11
+ 120              		.section	.text.CSD_RunTuner
+ 121              	.L6:
+ 135:Generated_Source\PSoC4/CSD_Tuner.c ****         {
+ 136:Generated_Source\PSoC4/CSD_Tuner.c ****         case CSD_TU_CMD_SUSPEND_E:
+ 137:Generated_Source\PSoC4/CSD_Tuner.c ****             tunerFsm = TU_FSM_SUSPENDED;
+ 122              		.loc 1 137 0
+ 123 0032 4F4B     		ldr	r3, .L19+8
+ 124 0034 0122     		mov	r2, #1
+ 125 0036 1A60     		str	r2, [r3]
+ 138:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 1Lu;
+ 126              		.loc 1 138 0
+ 127 0038 0123     		mov	r3, #1
+ 128 003a FB61     		str	r3, [r7, #28]
+ 139:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 129              		.loc 1 139 0
+ 130 003c 19E0     		b	.L12
+ 131              	.L8:
+ 140:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 141:Generated_Source\PSoC4/CSD_Tuner.c ****         case CSD_TU_CMD_RESUME_E:    
+ 142:Generated_Source\PSoC4/CSD_Tuner.c ****             tunerFsm = TU_FSM_RUNNING;
+ 132              		.loc 1 142 0
+ 133 003e 4C4B     		ldr	r3, .L19+8
+ 134 0040 0022     		mov	r2, #0
+ 135 0042 1A60     		str	r2, [r3]
+ 143:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 1Lu;
+ 136              		.loc 1 143 0
+ 137 0044 0123     		mov	r3, #1
+ 138 0046 FB61     		str	r3, [r7, #28]
+ 144:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 139              		.loc 1 144 0
+ 140 0048 13E0     		b	.L12
+ 141              	.L9:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 6
+
+
+ 145:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 146:Generated_Source\PSoC4/CSD_Tuner.c ****         case CSD_TU_CMD_RESTART_E:
+ 147:Generated_Source\PSoC4/CSD_Tuner.c ****             (void)CSD_Start();
+ 142              		.loc 1 147 0
+ 143 004a FFF7FEFF 		bl	CSD_Start
+ 148:Generated_Source\PSoC4/CSD_Tuner.c ****             tunerStatus = CSD_STATUS_RESTART_DONE;
+ 144              		.loc 1 148 0
+ 145 004e 0123     		mov	r3, #1
+ 146 0050 BB61     		str	r3, [r7, #24]
+ 149:Generated_Source\PSoC4/CSD_Tuner.c ****             tunerFsm = TU_FSM_RUNNING;
+ 147              		.loc 1 149 0
+ 148 0052 474B     		ldr	r3, .L19+8
+ 149 0054 0022     		mov	r2, #0
+ 150 0056 1A60     		str	r2, [r3]
+ 150:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 1Lu;
+ 151              		.loc 1 150 0
+ 152 0058 0123     		mov	r3, #1
+ 153 005a FB61     		str	r3, [r7, #28]
+ 151:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 154              		.loc 1 151 0
+ 155 005c 09E0     		b	.L12
+ 156              	.L10:
+ 152:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 153:Generated_Source\PSoC4/CSD_Tuner.c ****         case CSD_TU_CMD_RUN_SNR_TEST_E:
+ 154:Generated_Source\PSoC4/CSD_Tuner.c ****             tunerFsm = TU_FSM_SNR_TEST;
+ 157              		.loc 1 154 0
+ 158 005e 444B     		ldr	r3, .L19+8
+ 159 0060 0222     		mov	r2, #2
+ 160 0062 1A60     		str	r2, [r3]
+ 155:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 1Lu;
+ 161              		.loc 1 155 0
+ 162 0064 0123     		mov	r3, #1
+ 163 0066 FB61     		str	r3, [r7, #28]
+ 156:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 164              		.loc 1 156 0
+ 165 0068 03E0     		b	.L12
+ 166              	.L11:
+ 157:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 158:Generated_Source\PSoC4/CSD_Tuner.c ****         case CSD_TU_CMD_PING_E:
+ 159:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 1Lu;
+ 167              		.loc 1 159 0
+ 168 006a 0123     		mov	r3, #1
+ 169 006c FB61     		str	r3, [r7, #28]
+ 160:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 170              		.loc 1 160 0
+ 171 006e 00E0     		b	.L12
+ 172              	.L18:
+ 161:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 162:Generated_Source\PSoC4/CSD_Tuner.c ****         default:
+ 163:Generated_Source\PSoC4/CSD_Tuner.c ****             break;
+ 173              		.loc 1 163 0
+ 174 0070 C046     		mov	r8, r8
+ 175              	.L12:
+ 164:Generated_Source\PSoC4/CSD_Tuner.c ****         }
+ 165:Generated_Source\PSoC4/CSD_Tuner.c ****         
+ 166:Generated_Source\PSoC4/CSD_Tuner.c ****         /* Set Complete flag in command register if needed */
+ 167:Generated_Source\PSoC4/CSD_Tuner.c ****         if (0Lu != updateFlag)
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 7
+
+
+ 176              		.loc 1 167 0
+ 177 0072 FB69     		ldr	r3, [r7, #28]
+ 178 0074 002B     		cmp	r3, #0
+ 179 0076 1ED0     		beq	.L13
+ 168:Generated_Source\PSoC4/CSD_Tuner.c ****         {
+ 169:Generated_Source\PSoC4/CSD_Tuner.c ****             critSect = CyEnterCriticalSection();
+ 180              		.loc 1 169 0
+ 181 0078 1223     		mov	r3, #18
+ 182 007a FC18     		add	r4, r7, r3
+ 183 007c FFF7FEFF 		bl	CyEnterCriticalSection
+ 184 0080 031C     		mov	r3, r0
+ 185 0082 2370     		strb	r3, [r4]
+ 170:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 171:Generated_Source\PSoC4/CSD_Tuner.c ****             /* Check if command wasn't overwritten with new command */
+ 172:Generated_Source\PSoC4/CSD_Tuner.c ****             if (command == (CSD_TU_CMD_ENUM)ptrDsRam->tunerCmd)
+ 186              		.loc 1 172 0
+ 187 0084 7B69     		ldr	r3, [r7, #20]
+ 188 0086 9B88     		ldrh	r3, [r3, #4]
+ 189 0088 9BB2     		uxth	r3, r3
+ 190 008a DBB2     		uxtb	r3, r3
+ 191 008c 1322     		mov	r2, #19
+ 192 008e BA18     		add	r2, r7, r2
+ 193 0090 1278     		ldrb	r2, [r2]
+ 194 0092 9A42     		cmp	r2, r3
+ 195 0094 07D1     		bne	.L14
+ 173:Generated_Source\PSoC4/CSD_Tuner.c ****             {
+ 174:Generated_Source\PSoC4/CSD_Tuner.c ****                 ptrDsRam->tunerCmd |= CSD_TU_CMD_COMPLETE_BIT;
+ 196              		.loc 1 174 0
+ 197 0096 7B69     		ldr	r3, [r7, #20]
+ 198 0098 9B88     		ldrh	r3, [r3, #4]
+ 199 009a 9BB2     		uxth	r3, r3
+ 200 009c 354A     		ldr	r2, .L19+12
+ 201 009e 1343     		orr	r3, r2
+ 202 00a0 9AB2     		uxth	r2, r3
+ 203 00a2 7B69     		ldr	r3, [r7, #20]
+ 204 00a4 9A80     		strh	r2, [r3, #4]
+ 205              	.L14:
+ 175:Generated_Source\PSoC4/CSD_Tuner.c ****             }
+ 176:Generated_Source\PSoC4/CSD_Tuner.c ****             CyExitCriticalSection(critSect);
+ 206              		.loc 1 176 0
+ 207 00a6 1223     		mov	r3, #18
+ 208 00a8 FB18     		add	r3, r7, r3
+ 209 00aa 1B78     		ldrb	r3, [r3]
+ 210 00ac 181C     		mov	r0, r3
+ 211 00ae FFF7FEFF 		bl	CyExitCriticalSection
+ 177:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 178:Generated_Source\PSoC4/CSD_Tuner.c ****             updateFlag = 0Lu;
+ 212              		.loc 1 178 0
+ 213 00b2 0023     		mov	r3, #0
+ 214 00b4 FB61     		str	r3, [r7, #28]
+ 215              	.L13:
+ 179:Generated_Source\PSoC4/CSD_Tuner.c ****         }
+ 180:Generated_Source\PSoC4/CSD_Tuner.c ****     } while (TU_FSM_SUSPENDED == tunerFsm);
+ 216              		.loc 1 180 0
+ 217 00b6 2E4B     		ldr	r3, .L19+8
+ 218 00b8 1B68     		ldr	r3, [r3]
+ 219 00ba 012B     		cmp	r3, #1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 8
+
+
+ 220 00bc A9D0     		beq	.L15
+ 181:Generated_Source\PSoC4/CSD_Tuner.c **** 
+ 182:Generated_Source\PSoC4/CSD_Tuner.c ****     /* Check for SNR Test mode and do appropriate actions */
+ 183:Generated_Source\PSoC4/CSD_Tuner.c ****     if (TU_FSM_SNR_TEST == tunerFsm)
+ 221              		.loc 1 183 0
+ 222 00be 2C4B     		ldr	r3, .L19+8
+ 223 00c0 1B68     		ldr	r3, [r3]
+ 224 00c2 022B     		cmp	r3, #2
+ 225 00c4 4BD1     		bne	.L16
+ 184:Generated_Source\PSoC4/CSD_Tuner.c ****     {
+ 185:Generated_Source\PSoC4/CSD_Tuner.c ****         widgetId = ptrDsRam->snrTestWidgetId;
+ 226              		.loc 1 185 0
+ 227 00c6 7B69     		ldr	r3, [r7, #20]
+ 228 00c8 3C22     		mov	r2, #60
+ 229 00ca 9B5C     		ldrb	r3, [r3, r2]
+ 230 00cc DBB2     		uxtb	r3, r3
+ 231 00ce FB60     		str	r3, [r7, #12]
+ 186:Generated_Source\PSoC4/CSD_Tuner.c ****         sensorId = ptrDsRam->snrTestSensorId;
+ 232              		.loc 1 186 0
+ 233 00d0 7B69     		ldr	r3, [r7, #20]
+ 234 00d2 3D22     		mov	r2, #61
+ 235 00d4 9B5C     		ldrb	r3, [r3, r2]
+ 236 00d6 DBB2     		uxtb	r3, r3
+ 237 00d8 BB60     		str	r3, [r7, #8]
+ 187:Generated_Source\PSoC4/CSD_Tuner.c ****         
+ 188:Generated_Source\PSoC4/CSD_Tuner.c ****         /* Check if widgetId and sensorId are in range, 
+ 189:Generated_Source\PSoC4/CSD_Tuner.c ****          * and data was updated in RAM (scan counter changed) 
+ 190:Generated_Source\PSoC4/CSD_Tuner.c ****          */
+ 191:Generated_Source\PSoC4/CSD_Tuner.c ****         if ((widgetId < CSD_TOTAL_WIDGETS)              && 
+ 238              		.loc 1 191 0
+ 239 00da FB68     		ldr	r3, [r7, #12]
+ 240 00dc 002B     		cmp	r3, #0
+ 241 00de 3ED1     		bne	.L16
+ 192:Generated_Source\PSoC4/CSD_Tuner.c ****             (sensorId < CSD_GET_SENSOR_COUNT(widgetId)) &&
+ 242              		.loc 1 192 0 discriminator 1
+ 243 00e0 2549     		ldr	r1, .L19+16
+ 244 00e2 FA68     		ldr	r2, [r7, #12]
+ 245 00e4 131C     		mov	r3, r2
+ 246 00e6 DB00     		lsl	r3, r3, #3
+ 247 00e8 9B1A     		sub	r3, r3, r2
+ 248 00ea 9B00     		lsl	r3, r3, #2
+ 249 00ec CB18     		add	r3, r1, r3
+ 250 00ee 1033     		add	r3, r3, #16
+ 251 00f0 DB88     		ldrh	r3, [r3, #6]
+ 252 00f2 1A1E     		sub	r2, r3, #0
+ 191:Generated_Source\PSoC4/CSD_Tuner.c ****             (sensorId < CSD_GET_SENSOR_COUNT(widgetId)) &&
+ 253              		.loc 1 191 0 discriminator 1
+ 254 00f4 BB68     		ldr	r3, [r7, #8]
+ 255 00f6 9A42     		cmp	r2, r3
+ 256 00f8 31D9     		bls	.L16
+ 193:Generated_Source\PSoC4/CSD_Tuner.c ****             (ptrDsRam->scanCounter != ptrDsRam->snrTestScanCounter))
+ 257              		.loc 1 193 0
+ 258 00fa 7B69     		ldr	r3, [r7, #20]
+ 259 00fc DB88     		ldrh	r3, [r3, #6]
+ 260 00fe 9AB2     		uxth	r2, r3
+ 261 0100 7B69     		ldr	r3, [r7, #20]
+ 262 0102 DB8F     		ldrh	r3, [r3, #62]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 9
+
+
+ 263 0104 9BB2     		uxth	r3, r3
+ 192:Generated_Source\PSoC4/CSD_Tuner.c ****             (sensorId < CSD_GET_SENSOR_COUNT(widgetId)) &&
+ 264              		.loc 1 192 0
+ 265 0106 9A42     		cmp	r2, r3
+ 266 0108 29D0     		beq	.L16
+ 194:Generated_Source\PSoC4/CSD_Tuner.c ****         {
+ 195:Generated_Source\PSoC4/CSD_Tuner.c ****             /* Get access to the Sensor Object */
+ 196:Generated_Source\PSoC4/CSD_Tuner.c ****             ptrSns = CSD_dsFlash.wdgtArray[widgetId].ptr2SnsRam;
+ 267              		.loc 1 196 0
+ 268 010a 1B49     		ldr	r1, .L19+16
+ 269 010c FA68     		ldr	r2, [r7, #12]
+ 270 010e 131C     		mov	r3, r2
+ 271 0110 DB00     		lsl	r3, r3, #3
+ 272 0112 9B1A     		sub	r3, r3, r2
+ 273 0114 9B00     		lsl	r3, r3, #2
+ 274 0116 CB18     		add	r3, r1, r3
+ 275 0118 0833     		add	r3, r3, #8
+ 276 011a 1B68     		ldr	r3, [r3]
+ 277 011c 7B60     		str	r3, [r7, #4]
+ 197:Generated_Source\PSoC4/CSD_Tuner.c ****             ptrSns += sensorId;
+ 278              		.loc 1 197 0
+ 279 011e BA68     		ldr	r2, [r7, #8]
+ 280 0120 131C     		mov	r3, r2
+ 281 0122 9B00     		lsl	r3, r3, #2
+ 282 0124 9B18     		add	r3, r3, r2
+ 283 0126 5B00     		lsl	r3, r3, #1
+ 284 0128 1A1C     		mov	r2, r3
+ 285 012a 7B68     		ldr	r3, [r7, #4]
+ 286 012c 9B18     		add	r3, r3, r2
+ 287 012e 7B60     		str	r3, [r7, #4]
+ 198:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 199:Generated_Source\PSoC4/CSD_Tuner.c ****             /* Update data in SNR Test Object */
+ 200:Generated_Source\PSoC4/CSD_Tuner.c ****             critSect = CyEnterCriticalSection();
+ 288              		.loc 1 200 0
+ 289 0130 1223     		mov	r3, #18
+ 290 0132 FC18     		add	r4, r7, r3
+ 291 0134 FFF7FEFF 		bl	CyEnterCriticalSection
+ 292 0138 031C     		mov	r3, r0
+ 293 013a 2370     		strb	r3, [r4]
+ 201:Generated_Source\PSoC4/CSD_Tuner.c ****             ptrDsRam->snrTestScanCounter = ptrDsRam->scanCounter;
+ 294              		.loc 1 201 0
+ 295 013c 7B69     		ldr	r3, [r7, #20]
+ 296 013e DB88     		ldrh	r3, [r3, #6]
+ 297 0140 9AB2     		uxth	r2, r3
+ 298 0142 7B69     		ldr	r3, [r7, #20]
+ 299 0144 DA87     		strh	r2, [r3, #62]
+ 202:Generated_Source\PSoC4/CSD_Tuner.c ****             ptrDsRam->snrTestRawCount[0u] = ptrSns->raw[0u];
+ 300              		.loc 1 202 0
+ 301 0146 7B68     		ldr	r3, [r7, #4]
+ 302 0148 1B88     		ldrh	r3, [r3]
+ 303 014a 99B2     		uxth	r1, r3
+ 304 014c 7B69     		ldr	r3, [r7, #20]
+ 305 014e 4022     		mov	r2, #64
+ 306 0150 9952     		strh	r1, [r3, r2]
+ 203:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 204:Generated_Source\PSoC4/CSD_Tuner.c ****             #if (0u != CSD_MULTI_FREQ_SCAN_EN)
+ 205:Generated_Source\PSoC4/CSD_Tuner.c ****                 ptrDsRam->snrTestRawCount[1u] = ptrSns->raw[1u];
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 10
+
+
+ 206:Generated_Source\PSoC4/CSD_Tuner.c ****                 ptrDsRam->snrTestRawCount[2u] = ptrSns->raw[2u];
+ 207:Generated_Source\PSoC4/CSD_Tuner.c ****             #endif
+ 208:Generated_Source\PSoC4/CSD_Tuner.c ****             
+ 209:Generated_Source\PSoC4/CSD_Tuner.c ****             CyExitCriticalSection(critSect);
+ 307              		.loc 1 209 0
+ 308 0152 1223     		mov	r3, #18
+ 309 0154 FB18     		add	r3, r7, r3
+ 310 0156 1B78     		ldrb	r3, [r3]
+ 311 0158 181C     		mov	r0, r3
+ 312 015a FFF7FEFF 		bl	CyExitCriticalSection
+ 313              	.L16:
+ 210:Generated_Source\PSoC4/CSD_Tuner.c ****         } 
+ 211:Generated_Source\PSoC4/CSD_Tuner.c ****     }
+ 212:Generated_Source\PSoC4/CSD_Tuner.c ****     return tunerStatus;
+ 314              		.loc 1 212 0
+ 315 015e BB69     		ldr	r3, [r7, #24]
+ 213:Generated_Source\PSoC4/CSD_Tuner.c **** }
+ 316              		.loc 1 213 0
+ 317 0160 181C     		mov	r0, r3
+ 318 0162 BD46     		mov	sp, r7
+ 319 0164 09B0     		add	sp, sp, #36
+ 320              		@ sp needed
+ 321 0166 90BD     		pop	{r4, r7, pc}
+ 322              	.L20:
+ 323              		.align	2
+ 324              	.L19:
+ 325 0168 00000000 		.word	CSD_dsRam
+ 326 016c 00000000 		.word	.L7
+ 327 0170 00000000 		.word	tunerFsm
+ 328 0174 0080FFFF 		.word	-32768
+ 329 0178 00000000 		.word	CSD_dsFlash
+ 330              		.cfi_endproc
+ 331              	.LFE2:
+ 332              		.size	CSD_RunTuner, .-CSD_RunTuner
+ 333              		.text
+ 334              	.Letext0:
+ 335              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 336              		.file 3 "Generated_Source\\PSoC4\\CSD_Configuration.h"
+ 337              		.file 4 "Generated_Source\\PSoC4\\CSD_Structure.h"
+ 338              		.file 5 "Generated_Source\\PSoC4\\CSD_Tuner.h"
+ 339              		.section	.debug_info,"",%progbits
+ 340              	.Ldebug_info0:
+ 341 0000 33050000 		.4byte	0x533
+ 342 0004 0400     		.2byte	0x4
+ 343 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 344 000a 04       		.byte	0x4
+ 345 000b 01       		.uleb128 0x1
+ 346 000c 1E020000 		.4byte	.LASF86
+ 347 0010 01       		.byte	0x1
+ 348 0011 90000000 		.4byte	.LASF87
+ 349 0015 A3010000 		.4byte	.LASF88
+ 350 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 351 001d 00000000 		.4byte	0
+ 352 0021 00000000 		.4byte	.Ldebug_line0
+ 353 0025 02       		.uleb128 0x2
+ 354 0026 01       		.byte	0x1
+ 355 0027 06       		.byte	0x6
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 11
+
+
+ 356 0028 6A000000 		.4byte	.LASF0
+ 357 002c 02       		.uleb128 0x2
+ 358 002d 01       		.byte	0x1
+ 359 002e 08       		.byte	0x8
+ 360 002f 92030000 		.4byte	.LASF1
+ 361 0033 02       		.uleb128 0x2
+ 362 0034 02       		.byte	0x2
+ 363 0035 05       		.byte	0x5
+ 364 0036 B7030000 		.4byte	.LASF2
+ 365 003a 02       		.uleb128 0x2
+ 366 003b 02       		.byte	0x2
+ 367 003c 07       		.byte	0x7
+ 368 003d C2020000 		.4byte	.LASF3
+ 369 0041 02       		.uleb128 0x2
+ 370 0042 04       		.byte	0x4
+ 371 0043 05       		.byte	0x5
+ 372 0044 BD000000 		.4byte	.LASF4
+ 373 0048 02       		.uleb128 0x2
+ 374 0049 04       		.byte	0x4
+ 375 004a 07       		.byte	0x7
+ 376 004b 43040000 		.4byte	.LASF5
+ 377 004f 02       		.uleb128 0x2
+ 378 0050 08       		.byte	0x8
+ 379 0051 05       		.byte	0x5
+ 380 0052 5C000000 		.4byte	.LASF6
+ 381 0056 02       		.uleb128 0x2
+ 382 0057 08       		.byte	0x8
+ 383 0058 07       		.byte	0x7
+ 384 0059 23000000 		.4byte	.LASF7
+ 385 005d 03       		.uleb128 0x3
+ 386 005e 04       		.byte	0x4
+ 387 005f 05       		.byte	0x5
+ 388 0060 696E7400 		.ascii	"int\000"
+ 389 0064 02       		.uleb128 0x2
+ 390 0065 04       		.byte	0x4
+ 391 0066 07       		.byte	0x7
+ 392 0067 7E010000 		.4byte	.LASF8
+ 393 006b 04       		.uleb128 0x4
+ 394 006c E4000000 		.4byte	.LASF9
+ 395 0070 02       		.byte	0x2
+ 396 0071 9801     		.2byte	0x198
+ 397 0073 2C000000 		.4byte	0x2c
+ 398 0077 04       		.uleb128 0x4
+ 399 0078 00000000 		.4byte	.LASF10
+ 400 007c 02       		.byte	0x2
+ 401 007d 9901     		.2byte	0x199
+ 402 007f 3A000000 		.4byte	0x3a
+ 403 0083 04       		.uleb128 0x4
+ 404 0084 2E010000 		.4byte	.LASF11
+ 405 0088 02       		.byte	0x2
+ 406 0089 9A01     		.2byte	0x19a
+ 407 008b 48000000 		.4byte	0x48
+ 408 008f 02       		.uleb128 0x2
+ 409 0090 04       		.byte	0x4
+ 410 0091 04       		.byte	0x4
+ 411 0092 68030000 		.4byte	.LASF12
+ 412 0096 02       		.uleb128 0x2
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 12
+
+
+ 413 0097 08       		.byte	0x8
+ 414 0098 04       		.byte	0x4
+ 415 0099 FD000000 		.4byte	.LASF13
+ 416 009d 02       		.uleb128 0x2
+ 417 009e 01       		.byte	0x1
+ 418 009f 08       		.byte	0x8
+ 419 00a0 55040000 		.4byte	.LASF14
+ 420 00a4 02       		.uleb128 0x2
+ 421 00a5 04       		.byte	0x4
+ 422 00a6 07       		.byte	0x7
+ 423 00a7 2B030000 		.4byte	.LASF15
+ 424 00ab 05       		.uleb128 0x5
+ 425 00ac 04       		.byte	0x4
+ 426 00ad 06       		.uleb128 0x6
+ 427 00ae 35010000 		.4byte	.LASF16
+ 428 00b2 03       		.byte	0x3
+ 429 00b3 D8       		.byte	0xd8
+ 430 00b4 77000000 		.4byte	0x77
+ 431 00b8 06       		.uleb128 0x6
+ 432 00b9 08020000 		.4byte	.LASF17
+ 433 00bd 03       		.byte	0x3
+ 434 00be DC       		.byte	0xdc
+ 435 00bf 6B000000 		.4byte	0x6b
+ 436 00c3 07       		.uleb128 0x7
+ 437 00c4 6B000000 		.4byte	0x6b
+ 438 00c8 D3000000 		.4byte	0xd3
+ 439 00cc 08       		.uleb128 0x8
+ 440 00cd A4000000 		.4byte	0xa4
+ 441 00d1 00       		.byte	0
+ 442 00d2 00       		.byte	0
+ 443 00d3 09       		.uleb128 0x9
+ 444 00d4 0E       		.byte	0xe
+ 445 00d5 04       		.byte	0x4
+ 446 00d6 BE       		.byte	0xbe
+ 447 00d7 60010000 		.4byte	0x160
+ 448 00db 0A       		.uleb128 0xa
+ 449 00dc 17040000 		.4byte	.LASF18
+ 450 00e0 04       		.byte	0x4
+ 451 00e1 C4       		.byte	0xc4
+ 452 00e2 77000000 		.4byte	0x77
+ 453 00e6 00       		.byte	0
+ 454 00e7 0A       		.uleb128 0xa
+ 455 00e8 2C050000 		.4byte	.LASF19
+ 456 00ec 04       		.byte	0x4
+ 457 00ed C9       		.byte	0xc9
+ 458 00ee AD000000 		.4byte	0xad
+ 459 00f2 02       		.byte	0x2
+ 460 00f3 0A       		.uleb128 0xa
+ 461 00f4 5C050000 		.4byte	.LASF20
+ 462 00f8 04       		.byte	0x4
+ 463 00f9 CE       		.byte	0xce
+ 464 00fa 6B000000 		.4byte	0x6b
+ 465 00fe 04       		.byte	0x4
+ 466 00ff 0A       		.uleb128 0xa
+ 467 0100 41030000 		.4byte	.LASF21
+ 468 0104 04       		.byte	0x4
+ 469 0105 D3       		.byte	0xd3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 13
+
+
+ 470 0106 6B000000 		.4byte	0x6b
+ 471 010a 05       		.byte	0x5
+ 472 010b 0A       		.uleb128 0xa
+ 473 010c 87030000 		.4byte	.LASF22
+ 474 0110 04       		.byte	0x4
+ 475 0111 D8       		.byte	0xd8
+ 476 0112 6B000000 		.4byte	0x6b
+ 477 0116 06       		.byte	0x6
+ 478 0117 0A       		.uleb128 0xa
+ 479 0118 61040000 		.4byte	.LASF23
+ 480 011c 04       		.byte	0x4
+ 481 011d DD       		.byte	0xdd
+ 482 011e 6B000000 		.4byte	0x6b
+ 483 0122 07       		.byte	0x7
+ 484 0123 0A       		.uleb128 0xa
+ 485 0124 B0020000 		.4byte	.LASF24
+ 486 0128 04       		.byte	0x4
+ 487 0129 E3       		.byte	0xe3
+ 488 012a B8000000 		.4byte	0xb8
+ 489 012e 08       		.byte	0x8
+ 490 012f 0A       		.uleb128 0xa
+ 491 0130 7D030000 		.4byte	.LASF25
+ 492 0134 04       		.byte	0x4
+ 493 0135 E8       		.byte	0xe8
+ 494 0136 6B000000 		.4byte	0x6b
+ 495 013a 09       		.byte	0x9
+ 496 013b 0A       		.uleb128 0xa
+ 497 013c 1B030000 		.4byte	.LASF26
+ 498 0140 04       		.byte	0x4
+ 499 0141 EF       		.byte	0xef
+ 500 0142 C3000000 		.4byte	0xc3
+ 501 0146 0A       		.byte	0xa
+ 502 0147 0A       		.uleb128 0xa
+ 503 0148 5A040000 		.4byte	.LASF27
+ 504 014c 04       		.byte	0x4
+ 505 014d F6       		.byte	0xf6
+ 506 014e 6B000000 		.4byte	0x6b
+ 507 0152 0B       		.byte	0xb
+ 508 0153 0A       		.uleb128 0xa
+ 509 0154 09050000 		.4byte	.LASF28
+ 510 0158 04       		.byte	0x4
+ 511 0159 FB       		.byte	0xfb
+ 512 015a 6B000000 		.4byte	0x6b
+ 513 015e 0C       		.byte	0xc
+ 514 015f 00       		.byte	0
+ 515 0160 06       		.uleb128 0x6
+ 516 0161 6C040000 		.4byte	.LASF29
+ 517 0165 04       		.byte	0x4
+ 518 0166 FC       		.byte	0xfc
+ 519 0167 D3000000 		.4byte	0xd3
+ 520 016b 0B       		.uleb128 0xb
+ 521 016c 0E       		.byte	0xe
+ 522 016d 04       		.byte	0x4
+ 523 016e 0201     		.2byte	0x102
+ 524 0170 82010000 		.4byte	0x182
+ 525 0174 0C       		.uleb128 0xc
+ 526 0175 88000000 		.4byte	.LASF30
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 14
+
+
+ 527 0179 04       		.byte	0x4
+ 528 017a 0701     		.2byte	0x107
+ 529 017c 60010000 		.4byte	0x160
+ 530 0180 00       		.byte	0
+ 531 0181 00       		.byte	0
+ 532 0182 04       		.uleb128 0x4
+ 533 0183 A0030000 		.4byte	.LASF31
+ 534 0187 04       		.byte	0x4
+ 535 0188 0801     		.2byte	0x108
+ 536 018a 6B010000 		.4byte	0x16b
+ 537 018e 0B       		.uleb128 0xb
+ 538 018f 0A       		.byte	0xa
+ 539 0190 04       		.byte	0x4
+ 540 0191 0E01     		.2byte	0x10e
+ 541 0193 E6010000 		.4byte	0x1e6
+ 542 0197 0D       		.uleb128 0xd
+ 543 0198 72617700 		.ascii	"raw\000"
+ 544 019c 04       		.byte	0x4
+ 545 019d 1301     		.2byte	0x113
+ 546 019f E6010000 		.4byte	0x1e6
+ 547 01a3 00       		.byte	0
+ 548 01a4 0C       		.uleb128 0xc
+ 549 01a5 79010000 		.4byte	.LASF32
+ 550 01a9 04       		.byte	0x4
+ 551 01aa 1801     		.2byte	0x118
+ 552 01ac E6010000 		.4byte	0x1e6
+ 553 01b0 02       		.byte	0x2
+ 554 01b1 0C       		.uleb128 0xc
+ 555 01b2 51010000 		.4byte	.LASF33
+ 556 01b6 04       		.byte	0x4
+ 557 01b7 1E01     		.2byte	0x11e
+ 558 01b9 C3000000 		.4byte	0xc3
+ 559 01bd 04       		.byte	0x4
+ 560 01be 0C       		.uleb128 0xc
+ 561 01bf 85040000 		.4byte	.LASF34
+ 562 01c3 04       		.byte	0x4
+ 563 01c4 2401     		.2byte	0x124
+ 564 01c6 C3000000 		.4byte	0xc3
+ 565 01ca 05       		.byte	0x5
+ 566 01cb 0C       		.uleb128 0xc
+ 567 01cc 47000000 		.4byte	.LASF35
+ 568 01d0 04       		.byte	0x4
+ 569 01d1 2901     		.2byte	0x129
+ 570 01d3 AD000000 		.4byte	0xad
+ 571 01d7 06       		.byte	0x6
+ 572 01d8 0C       		.uleb128 0xc
+ 573 01d9 8E040000 		.4byte	.LASF36
+ 574 01dd 04       		.byte	0x4
+ 575 01de 2E01     		.2byte	0x12e
+ 576 01e0 F6010000 		.4byte	0x1f6
+ 577 01e4 08       		.byte	0x8
+ 578 01e5 00       		.byte	0
+ 579 01e6 07       		.uleb128 0x7
+ 580 01e7 77000000 		.4byte	0x77
+ 581 01eb F6010000 		.4byte	0x1f6
+ 582 01ef 08       		.uleb128 0x8
+ 583 01f0 A4000000 		.4byte	0xa4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 15
+
+
+ 584 01f4 00       		.byte	0
+ 585 01f5 00       		.byte	0
+ 586 01f6 07       		.uleb128 0x7
+ 587 01f7 B8000000 		.4byte	0xb8
+ 588 01fb 06020000 		.4byte	0x206
+ 589 01ff 08       		.uleb128 0x8
+ 590 0200 A4000000 		.4byte	0xa4
+ 591 0204 00       		.byte	0
+ 592 0205 00       		.byte	0
+ 593 0206 04       		.uleb128 0x4
+ 594 0207 EA000000 		.4byte	.LASF37
+ 595 020b 04       		.byte	0x4
+ 596 020c 2F01     		.2byte	0x12f
+ 597 020e 8E010000 		.4byte	0x18e
+ 598 0212 0B       		.uleb128 0xb
+ 599 0213 14       		.byte	0x14
+ 600 0214 04       		.byte	0x4
+ 601 0215 3501     		.2byte	0x135
+ 602 0217 29020000 		.4byte	0x229
+ 603 021b 0C       		.uleb128 0xc
+ 604 021c 88000000 		.4byte	.LASF30
+ 605 0220 04       		.byte	0x4
+ 606 0221 3A01     		.2byte	0x13a
+ 607 0223 29020000 		.4byte	0x229
+ 608 0227 00       		.byte	0
+ 609 0228 00       		.byte	0
+ 610 0229 07       		.uleb128 0x7
+ 611 022a 06020000 		.4byte	0x206
+ 612 022e 39020000 		.4byte	0x239
+ 613 0232 08       		.uleb128 0x8
+ 614 0233 A4000000 		.4byte	0xa4
+ 615 0237 01       		.byte	0x1
+ 616 0238 00       		.byte	0
+ 617 0239 04       		.uleb128 0x4
+ 618 023a 2B040000 		.4byte	.LASF38
+ 619 023e 04       		.byte	0x4
+ 620 023f 3B01     		.2byte	0x13b
+ 621 0241 12020000 		.4byte	0x212
+ 622 0245 0B       		.uleb128 0xb
+ 623 0246 44       		.byte	0x44
+ 624 0247 04       		.byte	0x4
+ 625 0248 4101     		.2byte	0x141
+ 626 024a 1F030000 		.4byte	0x31f
+ 627 024e 0C       		.uleb128 0xc
+ 628 024f DD020000 		.4byte	.LASF39
+ 629 0253 04       		.byte	0x4
+ 630 0254 4701     		.2byte	0x147
+ 631 0256 77000000 		.4byte	0x77
+ 632 025a 00       		.byte	0
+ 633 025b 0C       		.uleb128 0xc
+ 634 025c FD020000 		.4byte	.LASF40
+ 635 0260 04       		.byte	0x4
+ 636 0261 4C01     		.2byte	0x14c
+ 637 0263 77000000 		.4byte	0x77
+ 638 0267 02       		.byte	0x2
+ 639 0268 0C       		.uleb128 0xc
+ 640 0269 5F030000 		.4byte	.LASF41
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 16
+
+
+ 641 026d 04       		.byte	0x4
+ 642 026e 5201     		.2byte	0x152
+ 643 0270 77000000 		.4byte	0x77
+ 644 0274 04       		.byte	0x4
+ 645 0275 0C       		.uleb128 0xc
+ 646 0276 53030000 		.4byte	.LASF42
+ 647 027a 04       		.byte	0x4
+ 648 027b 5701     		.2byte	0x157
+ 649 027d 77000000 		.4byte	0x77
+ 650 0281 06       		.byte	0x6
+ 651 0282 0C       		.uleb128 0xc
+ 652 0283 C1040000 		.4byte	.LASF43
+ 653 0287 04       		.byte	0x4
+ 654 0288 5C01     		.2byte	0x15c
+ 655 028a 83000000 		.4byte	0x83
+ 656 028e 08       		.byte	0x8
+ 657 028f 0C       		.uleb128 0xc
+ 658 0290 D9040000 		.4byte	.LASF44
+ 659 0294 04       		.byte	0x4
+ 660 0295 6101     		.2byte	0x161
+ 661 0297 1F030000 		.4byte	0x31f
+ 662 029b 0C       		.byte	0xc
+ 663 029c 0C       		.uleb128 0xc
+ 664 029d 64010000 		.4byte	.LASF45
+ 665 02a1 04       		.byte	0x4
+ 666 02a2 6601     		.2byte	0x166
+ 667 02a4 1F030000 		.4byte	0x31f
+ 668 02a8 10       		.byte	0x10
+ 669 02a9 0C       		.uleb128 0xc
+ 670 02aa B3000000 		.4byte	.LASF46
+ 671 02ae 04       		.byte	0x4
+ 672 02af 7401     		.2byte	0x174
+ 673 02b1 C3000000 		.4byte	0xc3
+ 674 02b5 14       		.byte	0x14
+ 675 02b6 0C       		.uleb128 0xc
+ 676 02b7 E6020000 		.4byte	.LASF47
+ 677 02bb 04       		.byte	0x4
+ 678 02bc 7901     		.2byte	0x179
+ 679 02be 77000000 		.4byte	0x77
+ 680 02c2 16       		.byte	0x16
+ 681 02c3 0C       		.uleb128 0xc
+ 682 02c4 C6000000 		.4byte	.LASF48
+ 683 02c8 04       		.byte	0x4
+ 684 02c9 7E01     		.2byte	0x17e
+ 685 02cb 6B000000 		.4byte	0x6b
+ 686 02cf 18       		.byte	0x18
+ 687 02d0 0C       		.uleb128 0xc
+ 688 02d1 22040000 		.4byte	.LASF49
+ 689 02d5 04       		.byte	0x4
+ 690 02d6 8301     		.2byte	0x183
+ 691 02d8 82010000 		.4byte	0x182
+ 692 02dc 1A       		.byte	0x1a
+ 693 02dd 0C       		.uleb128 0xc
+ 694 02de D5020000 		.4byte	.LASF50
+ 695 02e2 04       		.byte	0x4
+ 696 02e3 8801     		.2byte	0x188
+ 697 02e5 39020000 		.4byte	0x239
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 17
+
+
+ 698 02e9 28       		.byte	0x28
+ 699 02ea 0C       		.uleb128 0xc
+ 700 02eb 8B010000 		.4byte	.LASF51
+ 701 02ef 04       		.byte	0x4
+ 702 02f0 8D01     		.2byte	0x18d
+ 703 02f2 6B000000 		.4byte	0x6b
+ 704 02f6 3C       		.byte	0x3c
+ 705 02f7 0C       		.uleb128 0xc
+ 706 02f8 4C000000 		.4byte	.LASF52
+ 707 02fc 04       		.byte	0x4
+ 708 02fd 9201     		.2byte	0x192
+ 709 02ff 6B000000 		.4byte	0x6b
+ 710 0303 3D       		.byte	0x3d
+ 711 0304 0C       		.uleb128 0xc
+ 712 0305 49050000 		.4byte	.LASF53
+ 713 0309 04       		.byte	0x4
+ 714 030a 9701     		.2byte	0x197
+ 715 030c 77000000 		.4byte	0x77
+ 716 0310 3E       		.byte	0x3e
+ 717 0311 0C       		.uleb128 0xc
+ 718 0312 04010000 		.4byte	.LASF54
+ 719 0316 04       		.byte	0x4
+ 720 0317 9C01     		.2byte	0x19c
+ 721 0319 E6010000 		.4byte	0x1e6
+ 722 031d 40       		.byte	0x40
+ 723 031e 00       		.byte	0
+ 724 031f 07       		.uleb128 0x7
+ 725 0320 83000000 		.4byte	0x83
+ 726 0324 2F030000 		.4byte	0x32f
+ 727 0328 08       		.uleb128 0x8
+ 728 0329 A4000000 		.4byte	0xa4
+ 729 032d 00       		.byte	0
+ 730 032e 00       		.byte	0
+ 731 032f 04       		.uleb128 0x4
+ 732 0330 6E030000 		.4byte	.LASF55
+ 733 0334 04       		.byte	0x4
+ 734 0335 9D01     		.2byte	0x19d
+ 735 0337 45020000 		.4byte	0x245
+ 736 033b 0B       		.uleb128 0xb
+ 737 033c 1C       		.byte	0x1c
+ 738 033d 04       		.byte	0x4
+ 739 033e FC01     		.2byte	0x1fc
+ 740 0340 BA030000 		.4byte	0x3ba
+ 741 0344 0C       		.uleb128 0xc
+ 742 0345 3A000000 		.4byte	.LASF56
+ 743 0349 04       		.byte	0x4
+ 744 034a 0502     		.2byte	0x205
+ 745 034c BA030000 		.4byte	0x3ba
+ 746 0350 00       		.byte	0
+ 747 0351 0C       		.uleb128 0xc
+ 748 0352 F1020000 		.4byte	.LASF57
+ 749 0356 04       		.byte	0x4
+ 750 0357 0B02     		.2byte	0x20b
+ 751 0359 AB000000 		.4byte	0xab
+ 752 035d 04       		.byte	0x4
+ 753 035e 0C       		.uleb128 0xc
+ 754 035f D0000000 		.4byte	.LASF58
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 18
+
+
+ 755 0363 04       		.byte	0x4
+ 756 0364 1102     		.2byte	0x211
+ 757 0366 C1030000 		.4byte	0x3c1
+ 758 036a 08       		.byte	0x8
+ 759 036b 0C       		.uleb128 0xc
+ 760 036c CD030000 		.4byte	.LASF59
+ 761 0370 04       		.byte	0x4
+ 762 0371 1602     		.2byte	0x216
+ 763 0373 AB000000 		.4byte	0xab
+ 764 0377 0C       		.byte	0xc
+ 765 0378 0C       		.uleb128 0xc
+ 766 0379 A8040000 		.4byte	.LASF60
+ 767 037d 04       		.byte	0x4
+ 768 037e 1D02     		.2byte	0x21d
+ 769 0380 C7030000 		.4byte	0x3c7
+ 770 0384 10       		.byte	0x10
+ 771 0385 0C       		.uleb128 0xc
+ 772 0386 34030000 		.4byte	.LASF61
+ 773 038a 04       		.byte	0x4
+ 774 038b 2202     		.2byte	0x222
+ 775 038d 77000000 		.4byte	0x77
+ 776 0391 14       		.byte	0x14
+ 777 0392 0C       		.uleb128 0xc
+ 778 0393 9C040000 		.4byte	.LASF62
+ 779 0397 04       		.byte	0x4
+ 780 0398 2902     		.2byte	0x229
+ 781 039a 77000000 		.4byte	0x77
+ 782 039e 16       		.byte	0x16
+ 783 039f 0C       		.uleb128 0xc
+ 784 03a0 4A030000 		.4byte	.LASF63
+ 785 03a4 04       		.byte	0x4
+ 786 03a5 3402     		.2byte	0x234
+ 787 03a7 6B000000 		.4byte	0x6b
+ 788 03ab 18       		.byte	0x18
+ 789 03ac 0C       		.uleb128 0xc
+ 790 03ad 23030000 		.4byte	.LASF64
+ 791 03b1 04       		.byte	0x4
+ 792 03b2 3C02     		.2byte	0x23c
+ 793 03b4 6B000000 		.4byte	0x6b
+ 794 03b8 19       		.byte	0x19
+ 795 03b9 00       		.byte	0
+ 796 03ba 0E       		.uleb128 0xe
+ 797 03bb 04       		.byte	0x4
+ 798 03bc C0030000 		.4byte	0x3c0
+ 799 03c0 0F       		.uleb128 0xf
+ 800 03c1 0E       		.uleb128 0xe
+ 801 03c2 04       		.byte	0x4
+ 802 03c3 06020000 		.4byte	0x206
+ 803 03c7 0E       		.uleb128 0xe
+ 804 03c8 04       		.byte	0x4
+ 805 03c9 6B000000 		.4byte	0x6b
+ 806 03cd 04       		.uleb128 0x4
+ 807 03ce 03040000 		.4byte	.LASF65
+ 808 03d2 04       		.byte	0x4
+ 809 03d3 3D02     		.2byte	0x23d
+ 810 03d5 3B030000 		.4byte	0x33b
+ 811 03d9 0B       		.uleb128 0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 19
+
+
+ 812 03da 1C       		.byte	0x1c
+ 813 03db 04       		.byte	0x4
+ 814 03dc 4302     		.2byte	0x243
+ 815 03de F0030000 		.4byte	0x3f0
+ 816 03e2 0C       		.uleb128 0xc
+ 817 03e3 6F010000 		.4byte	.LASF66
+ 818 03e7 04       		.byte	0x4
+ 819 03e8 4802     		.2byte	0x248
+ 820 03ea F0030000 		.4byte	0x3f0
+ 821 03ee 00       		.byte	0
+ 822 03ef 00       		.byte	0
+ 823 03f0 07       		.uleb128 0x7
+ 824 03f1 CD030000 		.4byte	0x3cd
+ 825 03f5 00040000 		.4byte	0x400
+ 826 03f9 08       		.uleb128 0x8
+ 827 03fa A4000000 		.4byte	0xa4
+ 828 03fe 00       		.byte	0
+ 829 03ff 00       		.byte	0
+ 830 0400 04       		.uleb128 0x4
+ 831 0401 C8040000 		.4byte	.LASF67
+ 832 0405 04       		.byte	0x4
+ 833 0406 4902     		.2byte	0x249
+ 834 0408 D9030000 		.4byte	0x3d9
+ 835 040c 10       		.uleb128 0x10
+ 836 040d 01       		.byte	0x1
+ 837 040e 05       		.byte	0x5
+ 838 040f 2E       		.byte	0x2e
+ 839 0410 39040000 		.4byte	0x439
+ 840 0414 11       		.uleb128 0x11
+ 841 0415 11000000 		.4byte	.LASF68
+ 842 0419 00       		.sleb128 0
+ 843 041a 11       		.uleb128 0x11
+ 844 041b 06030000 		.4byte	.LASF69
+ 845 041f 01       		.sleb128 1
+ 846 0420 11       		.uleb128 0x11
+ 847 0421 35050000 		.4byte	.LASF70
+ 848 0425 02       		.sleb128 2
+ 849 0426 11       		.uleb128 0x11
+ 850 0427 F4040000 		.4byte	.LASF71
+ 851 042b 03       		.sleb128 3
+ 852 042c 11       		.uleb128 0x11
+ 853 042d DD030000 		.4byte	.LASF72
+ 854 0431 04       		.sleb128 4
+ 855 0432 11       		.uleb128 0x11
+ 856 0433 76000000 		.4byte	.LASF73
+ 857 0437 05       		.sleb128 5
+ 858 0438 00       		.byte	0
+ 859 0439 06       		.uleb128 0x6
+ 860 043a E4040000 		.4byte	.LASF74
+ 861 043e 05       		.byte	0x5
+ 862 043f 35       		.byte	0x35
+ 863 0440 0C040000 		.4byte	0x40c
+ 864 0444 12       		.uleb128 0x12
+ 865 0445 1D010000 		.4byte	.LASF89
+ 866 0449 01       		.byte	0x1
+ 867 044a 42       		.byte	0x42
+ 868 044b 00000000 		.4byte	.LFB1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 20
+
+
+ 869 044f 24000000 		.4byte	.LFE1-.LFB1
+ 870 0453 01       		.uleb128 0x1
+ 871 0454 9C       		.byte	0x9c
+ 872 0455 68040000 		.4byte	0x468
+ 873 0459 13       		.uleb128 0x13
+ 874 045a 16050000 		.4byte	.LASF75
+ 875 045e 01       		.byte	0x1
+ 876 045f 44       		.byte	0x44
+ 877 0460 68040000 		.4byte	0x468
+ 878 0464 02       		.uleb128 0x2
+ 879 0465 91       		.byte	0x91
+ 880 0466 74       		.sleb128 -12
+ 881 0467 00       		.byte	0
+ 882 0468 0E       		.uleb128 0xe
+ 883 0469 04       		.byte	0x4
+ 884 046a 6E040000 		.4byte	0x46e
+ 885 046e 14       		.uleb128 0x14
+ 886 046f 2F030000 		.4byte	0x32f
+ 887 0473 15       		.uleb128 0x15
+ 888 0474 1F050000 		.4byte	.LASF90
+ 889 0478 01       		.byte	0x1
+ 890 0479 73       		.byte	0x73
+ 891 047a 83000000 		.4byte	0x83
+ 892 047e 00000000 		.4byte	.LFB2
+ 893 0482 7C010000 		.4byte	.LFE2-.LFB2
+ 894 0486 01       		.uleb128 0x1
+ 895 0487 9C       		.byte	0x9c
+ 896 0488 FD040000 		.4byte	0x4fd
+ 897 048c 13       		.uleb128 0x13
+ 898 048d DB000000 		.4byte	.LASF76
+ 899 0491 01       		.byte	0x1
+ 900 0492 75       		.byte	0x75
+ 901 0493 6B000000 		.4byte	0x6b
+ 902 0497 02       		.uleb128 0x2
+ 903 0498 91       		.byte	0x91
+ 904 0499 62       		.sleb128 -30
+ 905 049a 13       		.uleb128 0x13
+ 906 049b 48010000 		.4byte	.LASF77
+ 907 049f 01       		.byte	0x1
+ 908 04a0 76       		.byte	0x76
+ 909 04a1 83000000 		.4byte	0x83
+ 910 04a5 02       		.uleb128 0x2
+ 911 04a6 91       		.byte	0x91
+ 912 04a7 5C       		.sleb128 -36
+ 913 04a8 13       		.uleb128 0x13
+ 914 04a9 14010000 		.4byte	.LASF78
+ 915 04ad 01       		.byte	0x1
+ 916 04ae 77       		.byte	0x77
+ 917 04af 83000000 		.4byte	0x83
+ 918 04b3 02       		.uleb128 0x2
+ 919 04b4 91       		.byte	0x91
+ 920 04b5 58       		.sleb128 -40
+ 921 04b6 13       		.uleb128 0x13
+ 922 04b7 59010000 		.4byte	.LASF79
+ 923 04bb 01       		.byte	0x1
+ 924 04bc 78       		.byte	0x78
+ 925 04bd 83000000 		.4byte	0x83
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 21
+
+
+ 926 04c1 02       		.uleb128 0x2
+ 927 04c2 91       		.byte	0x91
+ 928 04c3 6C       		.sleb128 -20
+ 929 04c4 13       		.uleb128 0x13
+ 930 04c5 9B010000 		.4byte	.LASF80
+ 931 04c9 01       		.byte	0x1
+ 932 04ca 79       		.byte	0x79
+ 933 04cb 39040000 		.4byte	0x439
+ 934 04cf 02       		.uleb128 0x2
+ 935 04d0 91       		.byte	0x91
+ 936 04d1 63       		.sleb128 -29
+ 937 04d2 13       		.uleb128 0x13
+ 938 04d3 F7030000 		.4byte	.LASF81
+ 939 04d7 01       		.byte	0x1
+ 940 04d8 7A       		.byte	0x7a
+ 941 04d9 83000000 		.4byte	0x83
+ 942 04dd 02       		.uleb128 0x2
+ 943 04de 91       		.byte	0x91
+ 944 04df 68       		.sleb128 -24
+ 945 04e0 13       		.uleb128 0x13
+ 946 04e1 16050000 		.4byte	.LASF75
+ 947 04e5 01       		.byte	0x1
+ 948 04e6 7C       		.byte	0x7c
+ 949 04e7 68040000 		.4byte	0x468
+ 950 04eb 02       		.uleb128 0x2
+ 951 04ec 91       		.byte	0x91
+ 952 04ed 64       		.sleb128 -28
+ 953 04ee 13       		.uleb128 0x13
+ 954 04ef BB020000 		.4byte	.LASF82
+ 955 04f3 01       		.byte	0x1
+ 956 04f4 7D       		.byte	0x7d
+ 957 04f5 FD040000 		.4byte	0x4fd
+ 958 04f9 02       		.uleb128 0x2
+ 959 04fa 91       		.byte	0x91
+ 960 04fb 54       		.sleb128 -44
+ 961 04fc 00       		.byte	0
+ 962 04fd 0E       		.uleb128 0xe
+ 963 04fe 04       		.byte	0x4
+ 964 04ff 03050000 		.4byte	0x503
+ 965 0503 14       		.uleb128 0x14
+ 966 0504 06020000 		.4byte	0x206
+ 967 0508 13       		.uleb128 0x13
+ 968 0509 B8040000 		.4byte	.LASF83
+ 969 050d 01       		.byte	0x1
+ 970 050e 33       		.byte	0x33
+ 971 050f 83000000 		.4byte	0x83
+ 972 0513 05       		.uleb128 0x5
+ 973 0514 03       		.byte	0x3
+ 974 0515 00000000 		.4byte	tunerFsm
+ 975 0519 16       		.uleb128 0x16
+ 976 051a 07000000 		.4byte	.LASF84
+ 977 051e 04       		.byte	0x4
+ 978 051f 8103     		.2byte	0x381
+ 979 0521 2F030000 		.4byte	0x32f
+ 980 0525 16       		.uleb128 0x16
+ 981 0526 C1030000 		.4byte	.LASF85
+ 982 052a 04       		.byte	0x4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 22
+
+
+ 983 052b 8203     		.2byte	0x382
+ 984 052d 31050000 		.4byte	0x531
+ 985 0531 17       		.uleb128 0x17
+ 986 0532 00040000 		.4byte	0x400
+ 987 0536 00       		.byte	0
+ 988              		.section	.debug_abbrev,"",%progbits
+ 989              	.Ldebug_abbrev0:
+ 990 0000 01       		.uleb128 0x1
+ 991 0001 11       		.uleb128 0x11
+ 992 0002 01       		.byte	0x1
+ 993 0003 25       		.uleb128 0x25
+ 994 0004 0E       		.uleb128 0xe
+ 995 0005 13       		.uleb128 0x13
+ 996 0006 0B       		.uleb128 0xb
+ 997 0007 03       		.uleb128 0x3
+ 998 0008 0E       		.uleb128 0xe
+ 999 0009 1B       		.uleb128 0x1b
+ 1000 000a 0E       		.uleb128 0xe
+ 1001 000b 55       		.uleb128 0x55
+ 1002 000c 17       		.uleb128 0x17
+ 1003 000d 11       		.uleb128 0x11
+ 1004 000e 01       		.uleb128 0x1
+ 1005 000f 10       		.uleb128 0x10
+ 1006 0010 17       		.uleb128 0x17
+ 1007 0011 00       		.byte	0
+ 1008 0012 00       		.byte	0
+ 1009 0013 02       		.uleb128 0x2
+ 1010 0014 24       		.uleb128 0x24
+ 1011 0015 00       		.byte	0
+ 1012 0016 0B       		.uleb128 0xb
+ 1013 0017 0B       		.uleb128 0xb
+ 1014 0018 3E       		.uleb128 0x3e
+ 1015 0019 0B       		.uleb128 0xb
+ 1016 001a 03       		.uleb128 0x3
+ 1017 001b 0E       		.uleb128 0xe
+ 1018 001c 00       		.byte	0
+ 1019 001d 00       		.byte	0
+ 1020 001e 03       		.uleb128 0x3
+ 1021 001f 24       		.uleb128 0x24
+ 1022 0020 00       		.byte	0
+ 1023 0021 0B       		.uleb128 0xb
+ 1024 0022 0B       		.uleb128 0xb
+ 1025 0023 3E       		.uleb128 0x3e
+ 1026 0024 0B       		.uleb128 0xb
+ 1027 0025 03       		.uleb128 0x3
+ 1028 0026 08       		.uleb128 0x8
+ 1029 0027 00       		.byte	0
+ 1030 0028 00       		.byte	0
+ 1031 0029 04       		.uleb128 0x4
+ 1032 002a 16       		.uleb128 0x16
+ 1033 002b 00       		.byte	0
+ 1034 002c 03       		.uleb128 0x3
+ 1035 002d 0E       		.uleb128 0xe
+ 1036 002e 3A       		.uleb128 0x3a
+ 1037 002f 0B       		.uleb128 0xb
+ 1038 0030 3B       		.uleb128 0x3b
+ 1039 0031 05       		.uleb128 0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 23
+
+
+ 1040 0032 49       		.uleb128 0x49
+ 1041 0033 13       		.uleb128 0x13
+ 1042 0034 00       		.byte	0
+ 1043 0035 00       		.byte	0
+ 1044 0036 05       		.uleb128 0x5
+ 1045 0037 0F       		.uleb128 0xf
+ 1046 0038 00       		.byte	0
+ 1047 0039 0B       		.uleb128 0xb
+ 1048 003a 0B       		.uleb128 0xb
+ 1049 003b 00       		.byte	0
+ 1050 003c 00       		.byte	0
+ 1051 003d 06       		.uleb128 0x6
+ 1052 003e 16       		.uleb128 0x16
+ 1053 003f 00       		.byte	0
+ 1054 0040 03       		.uleb128 0x3
+ 1055 0041 0E       		.uleb128 0xe
+ 1056 0042 3A       		.uleb128 0x3a
+ 1057 0043 0B       		.uleb128 0xb
+ 1058 0044 3B       		.uleb128 0x3b
+ 1059 0045 0B       		.uleb128 0xb
+ 1060 0046 49       		.uleb128 0x49
+ 1061 0047 13       		.uleb128 0x13
+ 1062 0048 00       		.byte	0
+ 1063 0049 00       		.byte	0
+ 1064 004a 07       		.uleb128 0x7
+ 1065 004b 01       		.uleb128 0x1
+ 1066 004c 01       		.byte	0x1
+ 1067 004d 49       		.uleb128 0x49
+ 1068 004e 13       		.uleb128 0x13
+ 1069 004f 01       		.uleb128 0x1
+ 1070 0050 13       		.uleb128 0x13
+ 1071 0051 00       		.byte	0
+ 1072 0052 00       		.byte	0
+ 1073 0053 08       		.uleb128 0x8
+ 1074 0054 21       		.uleb128 0x21
+ 1075 0055 00       		.byte	0
+ 1076 0056 49       		.uleb128 0x49
+ 1077 0057 13       		.uleb128 0x13
+ 1078 0058 2F       		.uleb128 0x2f
+ 1079 0059 0B       		.uleb128 0xb
+ 1080 005a 00       		.byte	0
+ 1081 005b 00       		.byte	0
+ 1082 005c 09       		.uleb128 0x9
+ 1083 005d 13       		.uleb128 0x13
+ 1084 005e 01       		.byte	0x1
+ 1085 005f 0B       		.uleb128 0xb
+ 1086 0060 0B       		.uleb128 0xb
+ 1087 0061 3A       		.uleb128 0x3a
+ 1088 0062 0B       		.uleb128 0xb
+ 1089 0063 3B       		.uleb128 0x3b
+ 1090 0064 0B       		.uleb128 0xb
+ 1091 0065 01       		.uleb128 0x1
+ 1092 0066 13       		.uleb128 0x13
+ 1093 0067 00       		.byte	0
+ 1094 0068 00       		.byte	0
+ 1095 0069 0A       		.uleb128 0xa
+ 1096 006a 0D       		.uleb128 0xd
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 24
+
+
+ 1097 006b 00       		.byte	0
+ 1098 006c 03       		.uleb128 0x3
+ 1099 006d 0E       		.uleb128 0xe
+ 1100 006e 3A       		.uleb128 0x3a
+ 1101 006f 0B       		.uleb128 0xb
+ 1102 0070 3B       		.uleb128 0x3b
+ 1103 0071 0B       		.uleb128 0xb
+ 1104 0072 49       		.uleb128 0x49
+ 1105 0073 13       		.uleb128 0x13
+ 1106 0074 38       		.uleb128 0x38
+ 1107 0075 0B       		.uleb128 0xb
+ 1108 0076 00       		.byte	0
+ 1109 0077 00       		.byte	0
+ 1110 0078 0B       		.uleb128 0xb
+ 1111 0079 13       		.uleb128 0x13
+ 1112 007a 01       		.byte	0x1
+ 1113 007b 0B       		.uleb128 0xb
+ 1114 007c 0B       		.uleb128 0xb
+ 1115 007d 3A       		.uleb128 0x3a
+ 1116 007e 0B       		.uleb128 0xb
+ 1117 007f 3B       		.uleb128 0x3b
+ 1118 0080 05       		.uleb128 0x5
+ 1119 0081 01       		.uleb128 0x1
+ 1120 0082 13       		.uleb128 0x13
+ 1121 0083 00       		.byte	0
+ 1122 0084 00       		.byte	0
+ 1123 0085 0C       		.uleb128 0xc
+ 1124 0086 0D       		.uleb128 0xd
+ 1125 0087 00       		.byte	0
+ 1126 0088 03       		.uleb128 0x3
+ 1127 0089 0E       		.uleb128 0xe
+ 1128 008a 3A       		.uleb128 0x3a
+ 1129 008b 0B       		.uleb128 0xb
+ 1130 008c 3B       		.uleb128 0x3b
+ 1131 008d 05       		.uleb128 0x5
+ 1132 008e 49       		.uleb128 0x49
+ 1133 008f 13       		.uleb128 0x13
+ 1134 0090 38       		.uleb128 0x38
+ 1135 0091 0B       		.uleb128 0xb
+ 1136 0092 00       		.byte	0
+ 1137 0093 00       		.byte	0
+ 1138 0094 0D       		.uleb128 0xd
+ 1139 0095 0D       		.uleb128 0xd
+ 1140 0096 00       		.byte	0
+ 1141 0097 03       		.uleb128 0x3
+ 1142 0098 08       		.uleb128 0x8
+ 1143 0099 3A       		.uleb128 0x3a
+ 1144 009a 0B       		.uleb128 0xb
+ 1145 009b 3B       		.uleb128 0x3b
+ 1146 009c 05       		.uleb128 0x5
+ 1147 009d 49       		.uleb128 0x49
+ 1148 009e 13       		.uleb128 0x13
+ 1149 009f 38       		.uleb128 0x38
+ 1150 00a0 0B       		.uleb128 0xb
+ 1151 00a1 00       		.byte	0
+ 1152 00a2 00       		.byte	0
+ 1153 00a3 0E       		.uleb128 0xe
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 25
+
+
+ 1154 00a4 0F       		.uleb128 0xf
+ 1155 00a5 00       		.byte	0
+ 1156 00a6 0B       		.uleb128 0xb
+ 1157 00a7 0B       		.uleb128 0xb
+ 1158 00a8 49       		.uleb128 0x49
+ 1159 00a9 13       		.uleb128 0x13
+ 1160 00aa 00       		.byte	0
+ 1161 00ab 00       		.byte	0
+ 1162 00ac 0F       		.uleb128 0xf
+ 1163 00ad 26       		.uleb128 0x26
+ 1164 00ae 00       		.byte	0
+ 1165 00af 00       		.byte	0
+ 1166 00b0 00       		.byte	0
+ 1167 00b1 10       		.uleb128 0x10
+ 1168 00b2 04       		.uleb128 0x4
+ 1169 00b3 01       		.byte	0x1
+ 1170 00b4 0B       		.uleb128 0xb
+ 1171 00b5 0B       		.uleb128 0xb
+ 1172 00b6 3A       		.uleb128 0x3a
+ 1173 00b7 0B       		.uleb128 0xb
+ 1174 00b8 3B       		.uleb128 0x3b
+ 1175 00b9 0B       		.uleb128 0xb
+ 1176 00ba 01       		.uleb128 0x1
+ 1177 00bb 13       		.uleb128 0x13
+ 1178 00bc 00       		.byte	0
+ 1179 00bd 00       		.byte	0
+ 1180 00be 11       		.uleb128 0x11
+ 1181 00bf 28       		.uleb128 0x28
+ 1182 00c0 00       		.byte	0
+ 1183 00c1 03       		.uleb128 0x3
+ 1184 00c2 0E       		.uleb128 0xe
+ 1185 00c3 1C       		.uleb128 0x1c
+ 1186 00c4 0D       		.uleb128 0xd
+ 1187 00c5 00       		.byte	0
+ 1188 00c6 00       		.byte	0
+ 1189 00c7 12       		.uleb128 0x12
+ 1190 00c8 2E       		.uleb128 0x2e
+ 1191 00c9 01       		.byte	0x1
+ 1192 00ca 3F       		.uleb128 0x3f
+ 1193 00cb 19       		.uleb128 0x19
+ 1194 00cc 03       		.uleb128 0x3
+ 1195 00cd 0E       		.uleb128 0xe
+ 1196 00ce 3A       		.uleb128 0x3a
+ 1197 00cf 0B       		.uleb128 0xb
+ 1198 00d0 3B       		.uleb128 0x3b
+ 1199 00d1 0B       		.uleb128 0xb
+ 1200 00d2 27       		.uleb128 0x27
+ 1201 00d3 19       		.uleb128 0x19
+ 1202 00d4 11       		.uleb128 0x11
+ 1203 00d5 01       		.uleb128 0x1
+ 1204 00d6 12       		.uleb128 0x12
+ 1205 00d7 06       		.uleb128 0x6
+ 1206 00d8 40       		.uleb128 0x40
+ 1207 00d9 18       		.uleb128 0x18
+ 1208 00da 9742     		.uleb128 0x2117
+ 1209 00dc 19       		.uleb128 0x19
+ 1210 00dd 01       		.uleb128 0x1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 26
+
+
+ 1211 00de 13       		.uleb128 0x13
+ 1212 00df 00       		.byte	0
+ 1213 00e0 00       		.byte	0
+ 1214 00e1 13       		.uleb128 0x13
+ 1215 00e2 34       		.uleb128 0x34
+ 1216 00e3 00       		.byte	0
+ 1217 00e4 03       		.uleb128 0x3
+ 1218 00e5 0E       		.uleb128 0xe
+ 1219 00e6 3A       		.uleb128 0x3a
+ 1220 00e7 0B       		.uleb128 0xb
+ 1221 00e8 3B       		.uleb128 0x3b
+ 1222 00e9 0B       		.uleb128 0xb
+ 1223 00ea 49       		.uleb128 0x49
+ 1224 00eb 13       		.uleb128 0x13
+ 1225 00ec 02       		.uleb128 0x2
+ 1226 00ed 18       		.uleb128 0x18
+ 1227 00ee 00       		.byte	0
+ 1228 00ef 00       		.byte	0
+ 1229 00f0 14       		.uleb128 0x14
+ 1230 00f1 35       		.uleb128 0x35
+ 1231 00f2 00       		.byte	0
+ 1232 00f3 49       		.uleb128 0x49
+ 1233 00f4 13       		.uleb128 0x13
+ 1234 00f5 00       		.byte	0
+ 1235 00f6 00       		.byte	0
+ 1236 00f7 15       		.uleb128 0x15
+ 1237 00f8 2E       		.uleb128 0x2e
+ 1238 00f9 01       		.byte	0x1
+ 1239 00fa 3F       		.uleb128 0x3f
+ 1240 00fb 19       		.uleb128 0x19
+ 1241 00fc 03       		.uleb128 0x3
+ 1242 00fd 0E       		.uleb128 0xe
+ 1243 00fe 3A       		.uleb128 0x3a
+ 1244 00ff 0B       		.uleb128 0xb
+ 1245 0100 3B       		.uleb128 0x3b
+ 1246 0101 0B       		.uleb128 0xb
+ 1247 0102 27       		.uleb128 0x27
+ 1248 0103 19       		.uleb128 0x19
+ 1249 0104 49       		.uleb128 0x49
+ 1250 0105 13       		.uleb128 0x13
+ 1251 0106 11       		.uleb128 0x11
+ 1252 0107 01       		.uleb128 0x1
+ 1253 0108 12       		.uleb128 0x12
+ 1254 0109 06       		.uleb128 0x6
+ 1255 010a 40       		.uleb128 0x40
+ 1256 010b 18       		.uleb128 0x18
+ 1257 010c 9642     		.uleb128 0x2116
+ 1258 010e 19       		.uleb128 0x19
+ 1259 010f 01       		.uleb128 0x1
+ 1260 0110 13       		.uleb128 0x13
+ 1261 0111 00       		.byte	0
+ 1262 0112 00       		.byte	0
+ 1263 0113 16       		.uleb128 0x16
+ 1264 0114 34       		.uleb128 0x34
+ 1265 0115 00       		.byte	0
+ 1266 0116 03       		.uleb128 0x3
+ 1267 0117 0E       		.uleb128 0xe
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 27
+
+
+ 1268 0118 3A       		.uleb128 0x3a
+ 1269 0119 0B       		.uleb128 0xb
+ 1270 011a 3B       		.uleb128 0x3b
+ 1271 011b 05       		.uleb128 0x5
+ 1272 011c 49       		.uleb128 0x49
+ 1273 011d 13       		.uleb128 0x13
+ 1274 011e 3F       		.uleb128 0x3f
+ 1275 011f 19       		.uleb128 0x19
+ 1276 0120 3C       		.uleb128 0x3c
+ 1277 0121 19       		.uleb128 0x19
+ 1278 0122 00       		.byte	0
+ 1279 0123 00       		.byte	0
+ 1280 0124 17       		.uleb128 0x17
+ 1281 0125 26       		.uleb128 0x26
+ 1282 0126 00       		.byte	0
+ 1283 0127 49       		.uleb128 0x49
+ 1284 0128 13       		.uleb128 0x13
+ 1285 0129 00       		.byte	0
+ 1286 012a 00       		.byte	0
+ 1287 012b 00       		.byte	0
+ 1288              		.section	.debug_aranges,"",%progbits
+ 1289 0000 24000000 		.4byte	0x24
+ 1290 0004 0200     		.2byte	0x2
+ 1291 0006 00000000 		.4byte	.Ldebug_info0
+ 1292 000a 04       		.byte	0x4
+ 1293 000b 00       		.byte	0
+ 1294 000c 0000     		.2byte	0
+ 1295 000e 0000     		.2byte	0
+ 1296 0010 00000000 		.4byte	.LFB1
+ 1297 0014 24000000 		.4byte	.LFE1-.LFB1
+ 1298 0018 00000000 		.4byte	.LFB2
+ 1299 001c 7C010000 		.4byte	.LFE2-.LFB2
+ 1300 0020 00000000 		.4byte	0
+ 1301 0024 00000000 		.4byte	0
+ 1302              		.section	.debug_ranges,"",%progbits
+ 1303              	.Ldebug_ranges0:
+ 1304 0000 00000000 		.4byte	.LFB1
+ 1305 0004 24000000 		.4byte	.LFE1
+ 1306 0008 00000000 		.4byte	.LFB2
+ 1307 000c 7C010000 		.4byte	.LFE2
+ 1308 0010 00000000 		.4byte	0
+ 1309 0014 00000000 		.4byte	0
+ 1310              		.section	.debug_line,"",%progbits
+ 1311              	.Ldebug_line0:
+ 1312 0000 DE000000 		.section	.debug_str,"MS",%progbits,1
+ 1312      02007F00 
+ 1312      00000201 
+ 1312      FB0E0D00 
+ 1312      01010101 
+ 1313              	.LASF10:
+ 1314 0000 75696E74 		.ascii	"uint16\000"
+ 1314      313600
+ 1315              	.LASF84:
+ 1316 0007 4353445F 		.ascii	"CSD_dsRam\000"
+ 1316      64735261 
+ 1316      6D00
+ 1317              	.LASF68:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 28
+
+
+ 1318 0011 4353445F 		.ascii	"CSD_TU_CMD_NONE_E\000"
+ 1318      54555F43 
+ 1318      4D445F4E 
+ 1318      4F4E455F 
+ 1318      4500
+ 1319              	.LASF7:
+ 1320 0023 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1320      206C6F6E 
+ 1320      6720756E 
+ 1320      7369676E 
+ 1320      65642069 
+ 1321              	.LASF56:
+ 1322 003a 70747232 		.ascii	"ptr2SnsFlash\000"
+ 1322      536E7346 
+ 1322      6C617368 
+ 1322      00
+ 1323              	.LASF35:
+ 1324 0047 64696666 		.ascii	"diff\000"
+ 1324      00
+ 1325              	.LASF52:
+ 1326 004c 736E7254 		.ascii	"snrTestSensorId\000"
+ 1326      65737453 
+ 1326      656E736F 
+ 1326      72496400 
+ 1327              	.LASF6:
+ 1328 005c 6C6F6E67 		.ascii	"long long int\000"
+ 1328      206C6F6E 
+ 1328      6720696E 
+ 1328      7400
+ 1329              	.LASF0:
+ 1330 006a 7369676E 		.ascii	"signed char\000"
+ 1330      65642063 
+ 1330      68617200 
+ 1331              	.LASF73:
+ 1332 0076 4353445F 		.ascii	"CSD_TU_CMD_PING_E\000"
+ 1332      54555F43 
+ 1332      4D445F50 
+ 1332      494E475F 
+ 1332      4500
+ 1333              	.LASF30:
+ 1334 0088 62757474 		.ascii	"button0\000"
+ 1334      6F6E3000 
+ 1335              	.LASF87:
+ 1336 0090 47656E65 		.ascii	"Generated_Source\\PSoC4\\CSD_Tuner.c\000"
+ 1336      72617465 
+ 1336      645F536F 
+ 1336      75726365 
+ 1336      5C50536F 
+ 1337              	.LASF46:
+ 1338 00b3 736E7353 		.ascii	"snsStatus\000"
+ 1338      74617475 
+ 1338      7300
+ 1339              	.LASF4:
+ 1340 00bd 6C6F6E67 		.ascii	"long int\000"
+ 1340      20696E74 
+ 1340      00
+ 1341              	.LASF48:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 29
+
+
+ 1342 00c6 6D6F6443 		.ascii	"modCsdClk\000"
+ 1342      7364436C 
+ 1342      6B00
+ 1343              	.LASF58:
+ 1344 00d0 70747232 		.ascii	"ptr2SnsRam\000"
+ 1344      536E7352 
+ 1344      616D00
+ 1345              	.LASF76:
+ 1346 00db 63726974 		.ascii	"critSect\000"
+ 1346      53656374 
+ 1346      00
+ 1347              	.LASF9:
+ 1348 00e4 75696E74 		.ascii	"uint8\000"
+ 1348      3800
+ 1349              	.LASF37:
+ 1350 00ea 4353445F 		.ascii	"CSD_RAM_SNS_STRUCT\000"
+ 1350      52414D5F 
+ 1350      534E535F 
+ 1350      53545255 
+ 1350      435400
+ 1351              	.LASF13:
+ 1352 00fd 646F7562 		.ascii	"double\000"
+ 1352      6C6500
+ 1353              	.LASF54:
+ 1354 0104 736E7254 		.ascii	"snrTestRawCount\000"
+ 1354      65737452 
+ 1354      6177436F 
+ 1354      756E7400 
+ 1355              	.LASF78:
+ 1356 0114 73656E73 		.ascii	"sensorId\000"
+ 1356      6F724964 
+ 1356      00
+ 1357              	.LASF89:
+ 1358 011d 4353445F 		.ascii	"CSD_TuInitialize\000"
+ 1358      5475496E 
+ 1358      69746961 
+ 1358      6C697A65 
+ 1358      00
+ 1359              	.LASF11:
+ 1360 012e 75696E74 		.ascii	"uint32\000"
+ 1360      333200
+ 1361              	.LASF16:
+ 1362 0135 4353445F 		.ascii	"CSD_THRESHOLD_TYPE\000"
+ 1362      54485245 
+ 1362      53484F4C 
+ 1362      445F5459 
+ 1362      504500
+ 1363              	.LASF77:
+ 1364 0148 77696467 		.ascii	"widgetId\000"
+ 1364      65744964 
+ 1364      00
+ 1365              	.LASF33:
+ 1366 0151 62736C6E 		.ascii	"bslnExt\000"
+ 1366      45787400 
+ 1367              	.LASF79:
+ 1368 0159 75706461 		.ascii	"updateFlag\000"
+ 1368      7465466C 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 30
+
+
+ 1368      616700
+ 1369              	.LASF45:
+ 1370 0164 77646774 		.ascii	"wdgtStatus\000"
+ 1370      53746174 
+ 1370      757300
+ 1371              	.LASF66:
+ 1372 016f 77646774 		.ascii	"wdgtArray\000"
+ 1372      41727261 
+ 1372      7900
+ 1373              	.LASF32:
+ 1374 0179 62736C6E 		.ascii	"bsln\000"
+ 1374      00
+ 1375              	.LASF8:
+ 1376 017e 756E7369 		.ascii	"unsigned int\000"
+ 1376      676E6564 
+ 1376      20696E74 
+ 1376      00
+ 1377              	.LASF51:
+ 1378 018b 736E7254 		.ascii	"snrTestWidgetId\000"
+ 1378      65737457 
+ 1378      69646765 
+ 1378      74496400 
+ 1379              	.LASF80:
+ 1380 019b 636F6D6D 		.ascii	"command\000"
+ 1380      616E6400 
+ 1381              	.LASF88:
+ 1382 01a3 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 1382      73657273 
+ 1382      5C436872 
+ 1382      6973746F 
+ 1382      70686572 
+ 1383 01d2 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 1383      456E7669 
+ 1383      726F6E6D 
+ 1383      656E7453 
+ 1383      656E7369 
+ 1384 0203 7964736E 		.ascii	"ydsn\000"
+ 1384      00
+ 1385              	.LASF17:
+ 1386 0208 4353445F 		.ascii	"CSD_LOW_BSLN_RST_TYPE\000"
+ 1386      4C4F575F 
+ 1386      42534C4E 
+ 1386      5F525354 
+ 1386      5F545950 
+ 1387              	.LASF86:
+ 1388 021e 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1388      4320342E 
+ 1388      392E3320 
+ 1388      32303135 
+ 1388      30333033 
+ 1389 0251 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 1389      20726576 
+ 1389      6973696F 
+ 1389      6E203232 
+ 1389      31323230 
+ 1390 0284 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 1390      30202D66 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 31
+
+
+ 1390      66756E63 
+ 1390      74696F6E 
+ 1390      2D736563 
+ 1391              	.LASF24:
+ 1392 02b0 6C6F7742 		.ascii	"lowBslnRst\000"
+ 1392      736C6E52 
+ 1392      737400
+ 1393              	.LASF82:
+ 1394 02bb 70747253 		.ascii	"ptrSns\000"
+ 1394      6E7300
+ 1395              	.LASF3:
+ 1396 02c2 73686F72 		.ascii	"short unsigned int\000"
+ 1396      7420756E 
+ 1396      7369676E 
+ 1396      65642069 
+ 1396      6E7400
+ 1397              	.LASF50:
+ 1398 02d5 736E734C 		.ascii	"snsList\000"
+ 1398      69737400 
+ 1399              	.LASF39:
+ 1400 02dd 636F6E66 		.ascii	"configId\000"
+ 1400      69674964 
+ 1400      00
+ 1401              	.LASF47:
+ 1402 02e6 63736430 		.ascii	"csd0Config\000"
+ 1402      436F6E66 
+ 1402      696700
+ 1403              	.LASF57:
+ 1404 02f1 70747232 		.ascii	"ptr2WdgtRam\000"
+ 1404      57646774 
+ 1404      52616D00 
+ 1405              	.LASF40:
+ 1406 02fd 64657669 		.ascii	"deviceId\000"
+ 1406      63654964 
+ 1406      00
+ 1407              	.LASF69:
+ 1408 0306 4353445F 		.ascii	"CSD_TU_CMD_SUSPEND_E\000"
+ 1408      54555F43 
+ 1408      4D445F53 
+ 1408      55535045 
+ 1408      4E445F45 
+ 1409              	.LASF26:
+ 1410 031b 69646163 		.ascii	"idacMod\000"
+ 1410      4D6F6400 
+ 1411              	.LASF64:
+ 1412 0323 6E756D43 		.ascii	"numCols\000"
+ 1412      6F6C7300 
+ 1413              	.LASF15:
+ 1414 032b 73697A65 		.ascii	"sizetype\000"
+ 1414      74797065 
+ 1414      00
+ 1415              	.LASF61:
+ 1416 0334 73746174 		.ascii	"staticConfig\000"
+ 1416      6963436F 
+ 1416      6E666967 
+ 1416      00
+ 1417              	.LASF21:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 32
+
+
+ 1418 0341 6E4E6F69 		.ascii	"nNoiseTh\000"
+ 1418      73655468 
+ 1418      00
+ 1419              	.LASF63:
+ 1420 034a 77646774 		.ascii	"wdgtType\000"
+ 1420      54797065 
+ 1420      00
+ 1421              	.LASF42:
+ 1422 0353 7363616E 		.ascii	"scanCounter\000"
+ 1422      436F756E 
+ 1422      74657200 
+ 1423              	.LASF41:
+ 1424 035f 74756E65 		.ascii	"tunerCmd\000"
+ 1424      72436D64 
+ 1424      00
+ 1425              	.LASF12:
+ 1426 0368 666C6F61 		.ascii	"float\000"
+ 1426      7400
+ 1427              	.LASF55:
+ 1428 036e 4353445F 		.ascii	"CSD_RAM_STRUCT\000"
+ 1428      52414D5F 
+ 1428      53545255 
+ 1428      435400
+ 1429              	.LASF25:
+ 1430 037d 62736C6E 		.ascii	"bslnCoeff\000"
+ 1430      436F6566 
+ 1430      6600
+ 1431              	.LASF22:
+ 1432 0387 68797374 		.ascii	"hysteresis\000"
+ 1432      65726573 
+ 1432      697300
+ 1433              	.LASF1:
+ 1434 0392 756E7369 		.ascii	"unsigned char\000"
+ 1434      676E6564 
+ 1434      20636861 
+ 1434      7200
+ 1435              	.LASF31:
+ 1436 03a0 4353445F 		.ascii	"CSD_RAM_WD_LIST_STRUCT\000"
+ 1436      52414D5F 
+ 1436      57445F4C 
+ 1436      4953545F 
+ 1436      53545255 
+ 1437              	.LASF2:
+ 1438 03b7 73686F72 		.ascii	"short int\000"
+ 1438      7420696E 
+ 1438      7400
+ 1439              	.LASF85:
+ 1440 03c1 4353445F 		.ascii	"CSD_dsFlash\000"
+ 1440      6473466C 
+ 1440      61736800 
+ 1441              	.LASF59:
+ 1442 03cd 70747232 		.ascii	"ptr2FltrHistory\000"
+ 1442      466C7472 
+ 1442      48697374 
+ 1442      6F727900 
+ 1443              	.LASF72:
+ 1444 03dd 4353445F 		.ascii	"CSD_TU_CMD_RUN_SNR_TEST_E\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 33
+
+
+ 1444      54555F43 
+ 1444      4D445F52 
+ 1444      554E5F53 
+ 1444      4E525F54 
+ 1445              	.LASF81:
+ 1446 03f7 74756E65 		.ascii	"tunerStatus\000"
+ 1446      72537461 
+ 1446      74757300 
+ 1447              	.LASF65:
+ 1448 0403 4353445F 		.ascii	"CSD_FLASH_WD_STRUCT\000"
+ 1448      464C4153 
+ 1448      485F5744 
+ 1448      5F535452 
+ 1448      55435400 
+ 1449              	.LASF18:
+ 1450 0417 7265736F 		.ascii	"resolution\000"
+ 1450      6C757469 
+ 1450      6F6E00
+ 1451              	.LASF49:
+ 1452 0422 77646774 		.ascii	"wdgtList\000"
+ 1452      4C697374 
+ 1452      00
+ 1453              	.LASF38:
+ 1454 042b 4353445F 		.ascii	"CSD_RAM_SNS_LIST_STRUCT\000"
+ 1454      52414D5F 
+ 1454      534E535F 
+ 1454      4C495354 
+ 1454      5F535452 
+ 1455              	.LASF5:
+ 1456 0443 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1456      20756E73 
+ 1456      69676E65 
+ 1456      6420696E 
+ 1456      7400
+ 1457              	.LASF14:
+ 1458 0455 63686172 		.ascii	"char\000"
+ 1458      00
+ 1459              	.LASF27:
+ 1460 045a 736E7343 		.ascii	"snsClk\000"
+ 1460      6C6B00
+ 1461              	.LASF23:
+ 1462 0461 6F6E4465 		.ascii	"onDebounce\000"
+ 1462      626F756E 
+ 1462      636500
+ 1463              	.LASF29:
+ 1464 046c 4353445F 		.ascii	"CSD_RAM_WD_BUTTON_STRUCT\000"
+ 1464      52414D5F 
+ 1464      57445F42 
+ 1464      5554544F 
+ 1464      4E5F5354 
+ 1465              	.LASF34:
+ 1466 0485 69646163 		.ascii	"idacComp\000"
+ 1466      436F6D70 
+ 1466      00
+ 1467              	.LASF36:
+ 1468 048e 6E656742 		.ascii	"negBslnRstCnt\000"
+ 1468      736C6E52 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 34
+
+
+ 1468      7374436E 
+ 1468      7400
+ 1469              	.LASF62:
+ 1470 049c 746F7461 		.ascii	"totalNumSns\000"
+ 1470      6C4E756D 
+ 1470      536E7300 
+ 1471              	.LASF60:
+ 1472 04a8 70747232 		.ascii	"ptr2DebounceArr\000"
+ 1472      4465626F 
+ 1472      756E6365 
+ 1472      41727200 
+ 1473              	.LASF83:
+ 1474 04b8 74756E65 		.ascii	"tunerFsm\000"
+ 1474      7246736D 
+ 1474      00
+ 1475              	.LASF43:
+ 1476 04c1 73746174 		.ascii	"status\000"
+ 1476      757300
+ 1477              	.LASF67:
+ 1478 04c8 4353445F 		.ascii	"CSD_FLASH_STRUCT\000"
+ 1478      464C4153 
+ 1478      485F5354 
+ 1478      52554354 
+ 1478      00
+ 1479              	.LASF44:
+ 1480 04d9 77646774 		.ascii	"wdgtEnable\000"
+ 1480      456E6162 
+ 1480      6C6500
+ 1481              	.LASF74:
+ 1482 04e4 4353445F 		.ascii	"CSD_TU_CMD_ENUM\000"
+ 1482      54555F43 
+ 1482      4D445F45 
+ 1482      4E554D00 
+ 1483              	.LASF71:
+ 1484 04f4 4353445F 		.ascii	"CSD_TU_CMD_RESTART_E\000"
+ 1484      54555F43 
+ 1484      4D445F52 
+ 1484      45535441 
+ 1484      52545F45 
+ 1485              	.LASF28:
+ 1486 0509 736E7343 		.ascii	"snsClkSource\000"
+ 1486      6C6B536F 
+ 1486      75726365 
+ 1486      00
+ 1487              	.LASF75:
+ 1488 0516 70747244 		.ascii	"ptrDsRam\000"
+ 1488      7352616D 
+ 1488      00
+ 1489              	.LASF90:
+ 1490 051f 4353445F 		.ascii	"CSD_RunTuner\000"
+ 1490      52756E54 
+ 1490      756E6572 
+ 1490      00
+ 1491              	.LASF19:
+ 1492 052c 66696E67 		.ascii	"fingerTh\000"
+ 1492      65725468 
+ 1492      00
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccIV307e.s 			page 35
+
+
+ 1493              	.LASF70:
+ 1494 0535 4353445F 		.ascii	"CSD_TU_CMD_RESUME_E\000"
+ 1494      54555F43 
+ 1494      4D445F52 
+ 1494      4553554D 
+ 1494      455F4500 
+ 1495              	.LASF53:
+ 1496 0549 736E7254 		.ascii	"snrTestScanCounter\000"
+ 1496      65737453 
+ 1496      63616E43 
+ 1496      6F756E74 
+ 1496      657200
+ 1497              	.LASF20:
+ 1498 055c 6E6F6973 		.ascii	"noiseTh\000"
+ 1498      65546800 
+ 1499              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

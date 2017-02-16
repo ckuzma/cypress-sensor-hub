@@ -1,0 +1,610 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"ADC_INIT.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	ADC_allConfigs
+  18              		.section	.rodata
+  19              		.align	2
+  20              		.type	ADC_allConfigs, %object
+  21              		.size	ADC_allConfigs, 52
+  22              	ADC_allConfigs:
+  23 0000 00000000 		.word	0
+  24 0004 07000000 		.word	7
+  25 0008 40EE2010 		.word	270593600
+  26 000c D8000490 		.word	-1878785832
+  27 0010 03000300 		.word	196611
+  28 0014 02000200 		.word	131074
+  29 0018 0002000E 		.word	234881536
+  30 001c 00000000 		.word	0
+  31 0020 7F000000 		.word	127
+  32 0024 00000000 		.word	0
+  33 0028 00000000 		.word	0
+  34 002c B0040000 		.word	1200
+  35 0030 01000000 		.word	1
+  36              		.global	ADC_InputsPlacement
+  37              		.align	2
+  38              		.type	ADC_InputsPlacement, %object
+  39              		.size	ADC_InputsPlacement, 28
+  40              	ADC_InputsPlacement:
+  41 0034 07004000 		.word	4194311
+  42 0038 05004000 		.word	4194309
+  43 003c 06004000 		.word	4194310
+  44 0040 61000101 		.word	16842849
+  45 0044 15006101 		.word	23134229
+  46 0048 60004000 		.word	4194400
+  47 004c 62004000 		.word	4194402
+  48              		.text
+  49              	.Letext0:
+  50              		.file 1 "Generated_Source\\PSoC4\\cytypes.h"
+  51              		.file 2 "Generated_Source\\PSoC4\\ADC.h"
+  52              		.file 3 "Generated_Source\\PSoC4\\ADC_INIT.c"
+  53              		.section	.debug_info,"",%progbits
+  54              	.Ldebug_info0:
+  55 0000 90010000 		.4byte	0x190
+  56 0004 0400     		.2byte	0x4
+  57 0006 00000000 		.4byte	.Ldebug_abbrev0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 2
+
+
+  58 000a 04       		.byte	0x4
+  59 000b 01       		.uleb128 0x1
+  60 000c 79010000 		.4byte	.LASF31
+  61 0010 01       		.byte	0x1
+  62 0011 00010000 		.4byte	.LASF32
+  63 0015 67000000 		.4byte	.LASF33
+  64 0019 00000000 		.4byte	.Ldebug_line0
+  65 001d 02       		.uleb128 0x2
+  66 001e 01       		.byte	0x1
+  67 001f 06       		.byte	0x6
+  68 0020 68020000 		.4byte	.LASF0
+  69 0024 02       		.uleb128 0x2
+  70 0025 01       		.byte	0x1
+  71 0026 08       		.byte	0x8
+  72 0027 22010000 		.4byte	.LASF1
+  73 002b 02       		.uleb128 0x2
+  74 002c 02       		.byte	0x2
+  75 002d 05       		.byte	0x5
+  76 002e 37020000 		.4byte	.LASF2
+  77 0032 02       		.uleb128 0x2
+  78 0033 02       		.byte	0x2
+  79 0034 07       		.byte	0x7
+  80 0035 38000000 		.4byte	.LASF3
+  81 0039 02       		.uleb128 0x2
+  82 003a 04       		.byte	0x4
+  83 003b 05       		.byte	0x5
+  84 003c 4D020000 		.4byte	.LASF4
+  85 0040 02       		.uleb128 0x2
+  86 0041 04       		.byte	0x4
+  87 0042 07       		.byte	0x7
+  88 0043 D9000000 		.4byte	.LASF5
+  89 0047 02       		.uleb128 0x2
+  90 0048 08       		.byte	0x8
+  91 0049 05       		.byte	0x5
+  92 004a 24020000 		.4byte	.LASF6
+  93 004e 02       		.uleb128 0x2
+  94 004f 08       		.byte	0x8
+  95 0050 07       		.byte	0x7
+  96 0051 62010000 		.4byte	.LASF7
+  97 0055 03       		.uleb128 0x3
+  98 0056 04       		.byte	0x4
+  99 0057 05       		.byte	0x5
+ 100 0058 696E7400 		.ascii	"int\000"
+ 101 005c 02       		.uleb128 0x2
+ 102 005d 04       		.byte	0x4
+ 103 005e 07       		.byte	0x7
+ 104 005f 49010000 		.4byte	.LASF8
+ 105 0063 04       		.uleb128 0x4
+ 106 0064 37010000 		.4byte	.LASF9
+ 107 0068 01       		.byte	0x1
+ 108 0069 9A01     		.2byte	0x19a
+ 109 006b 40000000 		.4byte	0x40
+ 110 006f 04       		.uleb128 0x4
+ 111 0070 EB000000 		.4byte	.LASF10
+ 112 0074 01       		.byte	0x1
+ 113 0075 9D01     		.2byte	0x19d
+ 114 0077 39000000 		.4byte	0x39
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 3
+
+
+ 115 007b 02       		.uleb128 0x2
+ 116 007c 04       		.byte	0x4
+ 117 007d 04       		.byte	0x4
+ 118 007e 61000000 		.4byte	.LASF11
+ 119 0082 02       		.uleb128 0x2
+ 120 0083 08       		.byte	0x8
+ 121 0084 04       		.byte	0x4
+ 122 0085 30010000 		.4byte	.LASF12
+ 123 0089 02       		.uleb128 0x2
+ 124 008a 01       		.byte	0x1
+ 125 008b 08       		.byte	0x8
+ 126 008c 32020000 		.4byte	.LASF13
+ 127 0090 02       		.uleb128 0x2
+ 128 0091 04       		.byte	0x4
+ 129 0092 07       		.byte	0x7
+ 130 0093 1B020000 		.4byte	.LASF14
+ 131 0097 05       		.uleb128 0x5
+ 132 0098 34       		.byte	0x34
+ 133 0099 02       		.byte	0x2
+ 134 009a 5E       		.byte	0x5e
+ 135 009b 3C010000 		.4byte	0x13c
+ 136 009f 06       		.uleb128 0x6
+ 137 00a0 7B020000 		.4byte	.LASF15
+ 138 00a4 02       		.byte	0x2
+ 139 00a5 60       		.byte	0x60
+ 140 00a6 63000000 		.4byte	0x63
+ 141 00aa 00       		.byte	0
+ 142 00ab 06       		.uleb128 0x6
+ 143 00ac 41020000 		.4byte	.LASF16
+ 144 00b0 02       		.byte	0x2
+ 145 00b1 61       		.byte	0x61
+ 146 00b2 63000000 		.4byte	0x63
+ 147 00b6 04       		.byte	0x4
+ 148 00b7 06       		.uleb128 0x6
+ 149 00b8 16020000 		.4byte	.LASF17
+ 150 00bc 02       		.byte	0x2
+ 151 00bd 62       		.byte	0x62
+ 152 00be 63000000 		.4byte	0x63
+ 153 00c2 08       		.byte	0x8
+ 154 00c3 06       		.uleb128 0x6
+ 155 00c4 3E010000 		.4byte	.LASF18
+ 156 00c8 02       		.byte	0x2
+ 157 00c9 65       		.byte	0x65
+ 158 00ca 63000000 		.4byte	0x63
+ 159 00ce 0C       		.byte	0xc
+ 160 00cf 06       		.uleb128 0x6
+ 161 00d0 1E000000 		.4byte	.LASF19
+ 162 00d4 02       		.byte	0x2
+ 163 00d5 66       		.byte	0x66
+ 164 00d6 63000000 		.4byte	0x63
+ 165 00da 10       		.byte	0x10
+ 166 00db 06       		.uleb128 0x6
+ 167 00dc 2B000000 		.4byte	.LASF20
+ 168 00e0 02       		.byte	0x2
+ 169 00e1 67       		.byte	0x67
+ 170 00e2 63000000 		.4byte	0x63
+ 171 00e6 14       		.byte	0x14
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 4
+
+
+ 172 00e7 06       		.uleb128 0x6
+ 173 00e8 0B020000 		.4byte	.LASF21
+ 174 00ec 02       		.byte	0x2
+ 175 00ed 68       		.byte	0x68
+ 176 00ee 63000000 		.4byte	0x63
+ 177 00f2 18       		.byte	0x18
+ 178 00f3 06       		.uleb128 0x6
+ 179 00f4 00000000 		.4byte	.LASF22
+ 180 00f8 02       		.byte	0x2
+ 181 00f9 69       		.byte	0x69
+ 182 00fa 63000000 		.4byte	0x63
+ 183 00fe 1C       		.byte	0x1c
+ 184 00ff 06       		.uleb128 0x6
+ 185 0100 74020000 		.4byte	.LASF23
+ 186 0104 02       		.byte	0x2
+ 187 0105 6A       		.byte	0x6a
+ 188 0106 63000000 		.4byte	0x63
+ 189 010a 20       		.byte	0x20
+ 190 010b 06       		.uleb128 0x6
+ 191 010c CC000000 		.4byte	.LASF24
+ 192 0110 02       		.byte	0x2
+ 193 0111 6B       		.byte	0x6b
+ 194 0112 63000000 		.4byte	0x63
+ 195 0116 24       		.byte	0x24
+ 196 0117 06       		.uleb128 0x6
+ 197 0118 56000000 		.4byte	.LASF25
+ 198 011c 02       		.byte	0x2
+ 199 011d 6C       		.byte	0x6c
+ 200 011e 63000000 		.4byte	0x63
+ 201 0122 28       		.byte	0x28
+ 202 0123 06       		.uleb128 0x6
+ 203 0124 56010000 		.4byte	.LASF26
+ 204 0128 02       		.byte	0x2
+ 205 0129 6D       		.byte	0x6d
+ 206 012a 6F000000 		.4byte	0x6f
+ 207 012e 2C       		.byte	0x2c
+ 208 012f 06       		.uleb128 0x6
+ 209 0130 4B000000 		.4byte	.LASF27
+ 210 0134 02       		.byte	0x2
+ 211 0135 6F       		.byte	0x6f
+ 212 0136 63000000 		.4byte	0x63
+ 213 013a 30       		.byte	0x30
+ 214 013b 00       		.byte	0
+ 215 013c 07       		.uleb128 0x7
+ 216 013d 56020000 		.4byte	.LASF28
+ 217 0141 02       		.byte	0x2
+ 218 0142 8B       		.byte	0x8b
+ 219 0143 97000000 		.4byte	0x97
+ 220 0147 08       		.uleb128 0x8
+ 221 0148 3C010000 		.4byte	0x13c
+ 222 014c 57010000 		.4byte	0x157
+ 223 0150 09       		.uleb128 0x9
+ 224 0151 90000000 		.4byte	0x90
+ 225 0155 00       		.byte	0
+ 226 0156 00       		.byte	0
+ 227 0157 0A       		.uleb128 0xa
+ 228 0158 F1000000 		.4byte	.LASF29
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 5
+
+
+ 229 015c 03       		.byte	0x3
+ 230 015d 2A       		.byte	0x2a
+ 231 015e 68010000 		.4byte	0x168
+ 232 0162 05       		.uleb128 0x5
+ 233 0163 03       		.byte	0x3
+ 234 0164 00000000 		.4byte	ADC_allConfigs
+ 235 0168 0B       		.uleb128 0xb
+ 236 0169 47010000 		.4byte	0x147
+ 237 016d 08       		.uleb128 0x8
+ 238 016e 63000000 		.4byte	0x63
+ 239 0172 7D010000 		.4byte	0x17d
+ 240 0176 09       		.uleb128 0x9
+ 241 0177 90000000 		.4byte	0x90
+ 242 017b 06       		.byte	0x6
+ 243 017c 00       		.byte	0
+ 244 017d 0A       		.uleb128 0xa
+ 245 017e 0A000000 		.4byte	.LASF30
+ 246 0182 03       		.byte	0x3
+ 247 0183 C9       		.byte	0xc9
+ 248 0184 8E010000 		.4byte	0x18e
+ 249 0188 05       		.uleb128 0x5
+ 250 0189 03       		.byte	0x3
+ 251 018a 00000000 		.4byte	ADC_InputsPlacement
+ 252 018e 0B       		.uleb128 0xb
+ 253 018f 6D010000 		.4byte	0x16d
+ 254 0193 00       		.byte	0
+ 255              		.section	.debug_abbrev,"",%progbits
+ 256              	.Ldebug_abbrev0:
+ 257 0000 01       		.uleb128 0x1
+ 258 0001 11       		.uleb128 0x11
+ 259 0002 01       		.byte	0x1
+ 260 0003 25       		.uleb128 0x25
+ 261 0004 0E       		.uleb128 0xe
+ 262 0005 13       		.uleb128 0x13
+ 263 0006 0B       		.uleb128 0xb
+ 264 0007 03       		.uleb128 0x3
+ 265 0008 0E       		.uleb128 0xe
+ 266 0009 1B       		.uleb128 0x1b
+ 267 000a 0E       		.uleb128 0xe
+ 268 000b 10       		.uleb128 0x10
+ 269 000c 17       		.uleb128 0x17
+ 270 000d 00       		.byte	0
+ 271 000e 00       		.byte	0
+ 272 000f 02       		.uleb128 0x2
+ 273 0010 24       		.uleb128 0x24
+ 274 0011 00       		.byte	0
+ 275 0012 0B       		.uleb128 0xb
+ 276 0013 0B       		.uleb128 0xb
+ 277 0014 3E       		.uleb128 0x3e
+ 278 0015 0B       		.uleb128 0xb
+ 279 0016 03       		.uleb128 0x3
+ 280 0017 0E       		.uleb128 0xe
+ 281 0018 00       		.byte	0
+ 282 0019 00       		.byte	0
+ 283 001a 03       		.uleb128 0x3
+ 284 001b 24       		.uleb128 0x24
+ 285 001c 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 6
+
+
+ 286 001d 0B       		.uleb128 0xb
+ 287 001e 0B       		.uleb128 0xb
+ 288 001f 3E       		.uleb128 0x3e
+ 289 0020 0B       		.uleb128 0xb
+ 290 0021 03       		.uleb128 0x3
+ 291 0022 08       		.uleb128 0x8
+ 292 0023 00       		.byte	0
+ 293 0024 00       		.byte	0
+ 294 0025 04       		.uleb128 0x4
+ 295 0026 16       		.uleb128 0x16
+ 296 0027 00       		.byte	0
+ 297 0028 03       		.uleb128 0x3
+ 298 0029 0E       		.uleb128 0xe
+ 299 002a 3A       		.uleb128 0x3a
+ 300 002b 0B       		.uleb128 0xb
+ 301 002c 3B       		.uleb128 0x3b
+ 302 002d 05       		.uleb128 0x5
+ 303 002e 49       		.uleb128 0x49
+ 304 002f 13       		.uleb128 0x13
+ 305 0030 00       		.byte	0
+ 306 0031 00       		.byte	0
+ 307 0032 05       		.uleb128 0x5
+ 308 0033 13       		.uleb128 0x13
+ 309 0034 01       		.byte	0x1
+ 310 0035 0B       		.uleb128 0xb
+ 311 0036 0B       		.uleb128 0xb
+ 312 0037 3A       		.uleb128 0x3a
+ 313 0038 0B       		.uleb128 0xb
+ 314 0039 3B       		.uleb128 0x3b
+ 315 003a 0B       		.uleb128 0xb
+ 316 003b 01       		.uleb128 0x1
+ 317 003c 13       		.uleb128 0x13
+ 318 003d 00       		.byte	0
+ 319 003e 00       		.byte	0
+ 320 003f 06       		.uleb128 0x6
+ 321 0040 0D       		.uleb128 0xd
+ 322 0041 00       		.byte	0
+ 323 0042 03       		.uleb128 0x3
+ 324 0043 0E       		.uleb128 0xe
+ 325 0044 3A       		.uleb128 0x3a
+ 326 0045 0B       		.uleb128 0xb
+ 327 0046 3B       		.uleb128 0x3b
+ 328 0047 0B       		.uleb128 0xb
+ 329 0048 49       		.uleb128 0x49
+ 330 0049 13       		.uleb128 0x13
+ 331 004a 38       		.uleb128 0x38
+ 332 004b 0B       		.uleb128 0xb
+ 333 004c 00       		.byte	0
+ 334 004d 00       		.byte	0
+ 335 004e 07       		.uleb128 0x7
+ 336 004f 16       		.uleb128 0x16
+ 337 0050 00       		.byte	0
+ 338 0051 03       		.uleb128 0x3
+ 339 0052 0E       		.uleb128 0xe
+ 340 0053 3A       		.uleb128 0x3a
+ 341 0054 0B       		.uleb128 0xb
+ 342 0055 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 7
+
+
+ 343 0056 0B       		.uleb128 0xb
+ 344 0057 49       		.uleb128 0x49
+ 345 0058 13       		.uleb128 0x13
+ 346 0059 00       		.byte	0
+ 347 005a 00       		.byte	0
+ 348 005b 08       		.uleb128 0x8
+ 349 005c 01       		.uleb128 0x1
+ 350 005d 01       		.byte	0x1
+ 351 005e 49       		.uleb128 0x49
+ 352 005f 13       		.uleb128 0x13
+ 353 0060 01       		.uleb128 0x1
+ 354 0061 13       		.uleb128 0x13
+ 355 0062 00       		.byte	0
+ 356 0063 00       		.byte	0
+ 357 0064 09       		.uleb128 0x9
+ 358 0065 21       		.uleb128 0x21
+ 359 0066 00       		.byte	0
+ 360 0067 49       		.uleb128 0x49
+ 361 0068 13       		.uleb128 0x13
+ 362 0069 2F       		.uleb128 0x2f
+ 363 006a 0B       		.uleb128 0xb
+ 364 006b 00       		.byte	0
+ 365 006c 00       		.byte	0
+ 366 006d 0A       		.uleb128 0xa
+ 367 006e 34       		.uleb128 0x34
+ 368 006f 00       		.byte	0
+ 369 0070 03       		.uleb128 0x3
+ 370 0071 0E       		.uleb128 0xe
+ 371 0072 3A       		.uleb128 0x3a
+ 372 0073 0B       		.uleb128 0xb
+ 373 0074 3B       		.uleb128 0x3b
+ 374 0075 0B       		.uleb128 0xb
+ 375 0076 49       		.uleb128 0x49
+ 376 0077 13       		.uleb128 0x13
+ 377 0078 3F       		.uleb128 0x3f
+ 378 0079 19       		.uleb128 0x19
+ 379 007a 02       		.uleb128 0x2
+ 380 007b 18       		.uleb128 0x18
+ 381 007c 00       		.byte	0
+ 382 007d 00       		.byte	0
+ 383 007e 0B       		.uleb128 0xb
+ 384 007f 26       		.uleb128 0x26
+ 385 0080 00       		.byte	0
+ 386 0081 49       		.uleb128 0x49
+ 387 0082 13       		.uleb128 0x13
+ 388 0083 00       		.byte	0
+ 389 0084 00       		.byte	0
+ 390 0085 00       		.byte	0
+ 391              		.section	.debug_aranges,"",%progbits
+ 392 0000 14000000 		.4byte	0x14
+ 393 0004 0200     		.2byte	0x2
+ 394 0006 00000000 		.4byte	.Ldebug_info0
+ 395 000a 04       		.byte	0x4
+ 396 000b 00       		.byte	0
+ 397 000c 0000     		.2byte	0
+ 398 000e 0000     		.2byte	0
+ 399 0010 00000000 		.4byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 8
+
+
+ 400 0014 00000000 		.4byte	0
+ 401              		.section	.debug_line,"",%progbits
+ 402              	.Ldebug_line0:
+ 403 0000 54000000 		.section	.debug_str,"MS",%progbits,1
+ 403      02004E00 
+ 403      00000201 
+ 403      FB0E0D00 
+ 403      01010101 
+ 404              	.LASF22:
+ 405 0000 72616E67 		.ascii	"rangeCond\000"
+ 405      65436F6E 
+ 405      6400
+ 406              	.LASF30:
+ 407 000a 4144435F 		.ascii	"ADC_InputsPlacement\000"
+ 407      496E7075 
+ 407      7473506C 
+ 407      6163656D 
+ 407      656E7400 
+ 408              	.LASF19:
+ 409 001e 73616D70 		.ascii	"sampleTime01\000"
+ 409      6C655469 
+ 409      6D653031 
+ 409      00
+ 410              	.LASF20:
+ 411 002b 73616D70 		.ascii	"sampleTime23\000"
+ 411      6C655469 
+ 411      6D653233 
+ 411      00
+ 412              	.LASF3:
+ 413 0038 73686F72 		.ascii	"short unsigned int\000"
+ 413      7420756E 
+ 413      7369676E 
+ 413      65642069 
+ 413      6E7400
+ 414              	.LASF27:
+ 415 004b 6D697363 		.ascii	"miscConfig\000"
+ 415      436F6E66 
+ 415      696700
+ 416              	.LASF25:
+ 417 0056 73617449 		.ascii	"satIntMask\000"
+ 417      6E744D61 
+ 417      736B00
+ 418              	.LASF11:
+ 419 0061 666C6F61 		.ascii	"float\000"
+ 419      7400
+ 420              	.LASF33:
+ 421 0067 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 421      73657273 
+ 421      5C436872 
+ 421      6973746F 
+ 421      70686572 
+ 422 0096 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 422      456E7669 
+ 422      726F6E6D 
+ 422      656E7453 
+ 422      656E7369 
+ 423 00c7 7964736E 		.ascii	"ydsn\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 9
+
+
+ 423      00
+ 424              	.LASF24:
+ 425 00cc 72616E67 		.ascii	"rangeIntMask\000"
+ 425      65496E74 
+ 425      4D61736B 
+ 425      00
+ 426              	.LASF5:
+ 427 00d9 6C6F6E67 		.ascii	"long unsigned int\000"
+ 427      20756E73 
+ 427      69676E65 
+ 427      6420696E 
+ 427      7400
+ 428              	.LASF10:
+ 429 00eb 696E7433 		.ascii	"int32\000"
+ 429      3200
+ 430              	.LASF29:
+ 431 00f1 4144435F 		.ascii	"ADC_allConfigs\000"
+ 431      616C6C43 
+ 431      6F6E6669 
+ 431      677300
+ 432              	.LASF32:
+ 433 0100 47656E65 		.ascii	"Generated_Source\\PSoC4\\ADC_INIT.c\000"
+ 433      72617465 
+ 433      645F536F 
+ 433      75726365 
+ 433      5C50536F 
+ 434              	.LASF1:
+ 435 0122 756E7369 		.ascii	"unsigned char\000"
+ 435      676E6564 
+ 435      20636861 
+ 435      7200
+ 436              	.LASF12:
+ 437 0130 646F7562 		.ascii	"double\000"
+ 437      6C6500
+ 438              	.LASF9:
+ 439 0137 75696E74 		.ascii	"uint32\000"
+ 439      333200
+ 440              	.LASF18:
+ 441 013e 73616D70 		.ascii	"sampleCtrl\000"
+ 441      6C654374 
+ 441      726C00
+ 442              	.LASF8:
+ 443 0149 756E7369 		.ascii	"unsigned int\000"
+ 443      676E6564 
+ 443      20696E74 
+ 443      00
+ 444              	.LASF26:
+ 445 0156 76726566 		.ascii	"vrefMvValue\000"
+ 445      4D765661 
+ 445      6C756500 
+ 446              	.LASF7:
+ 447 0162 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 447      206C6F6E 
+ 447      6720756E 
+ 447      7369676E 
+ 447      65642069 
+ 448              	.LASF31:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 10
+
+
+ 449 0179 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 449      4320342E 
+ 449      392E3320 
+ 449      32303135 
+ 449      30333033 
+ 450 01ac 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 450      20726576 
+ 450      6973696F 
+ 450      6E203232 
+ 450      31323230 
+ 451 01df 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 451      30202D66 
+ 451      66756E63 
+ 451      74696F6E 
+ 451      2D736563 
+ 452              	.LASF21:
+ 453 020b 72616E67 		.ascii	"rangeThres\000"
+ 453      65546872 
+ 453      657300
+ 454              	.LASF17:
+ 455 0216 6374726C 		.ascii	"ctrl\000"
+ 455      00
+ 456              	.LASF14:
+ 457 021b 73697A65 		.ascii	"sizetype\000"
+ 457      74797065 
+ 457      00
+ 458              	.LASF6:
+ 459 0224 6C6F6E67 		.ascii	"long long int\000"
+ 459      206C6F6E 
+ 459      6720696E 
+ 459      7400
+ 460              	.LASF13:
+ 461 0232 63686172 		.ascii	"char\000"
+ 461      00
+ 462              	.LASF2:
+ 463 0237 73686F72 		.ascii	"short int\000"
+ 463      7420696E 
+ 463      7400
+ 464              	.LASF16:
+ 465 0241 6E756D43 		.ascii	"numChannels\000"
+ 465      68616E6E 
+ 465      656C7300 
+ 466              	.LASF4:
+ 467 024d 6C6F6E67 		.ascii	"long int\000"
+ 467      20696E74 
+ 467      00
+ 468              	.LASF28:
+ 469 0256 4144435F 		.ascii	"ADC_CONFIG_STRUCT\000"
+ 469      434F4E46 
+ 469      49475F53 
+ 469      54525543 
+ 469      5400
+ 470              	.LASF0:
+ 471 0268 7369676E 		.ascii	"signed char\000"
+ 471      65642063 
+ 471      68617200 
+ 472              	.LASF23:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\cc4GknJc.s 			page 11
+
+
+ 473 0274 6368616E 		.ascii	"chanEn\000"
+ 473      456E00
+ 474              	.LASF15:
+ 475 027b 6368616E 		.ascii	"channelBase\000"
+ 475      6E656C42 
+ 475      61736500 
+ 476              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

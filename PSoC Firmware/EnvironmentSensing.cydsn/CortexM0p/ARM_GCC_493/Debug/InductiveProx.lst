@@ -1,0 +1,1288 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"InductiveProx.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	IPSBaselineSamples
+  18              		.bss
+  19              		.align	1
+  20              		.type	IPSBaselineSamples, %object
+  21              		.size	IPSBaselineSamples, 2
+  22              	IPSBaselineSamples:
+  23 0000 0000     		.space	2
+  24              		.section	.text.IPSTask,"ax",%progbits
+  25              		.align	2
+  26              		.global	IPSTask
+  27              		.code	16
+  28              		.thumb_func
+  29              		.type	IPSTask, %function
+  30              	IPSTask:
+  31              	.LFB35:
+  32              		.file 1 "InductiveProx.c"
+   1:InductiveProx.c **** /*******************************************************************************
+   2:InductiveProx.c **** * File Name: InductiveProx.c
+   3:InductiveProx.c **** *
+   4:InductiveProx.c **** * Description:
+   5:InductiveProx.c **** * This is the source file for Inductive Proximity Sensing.
+   6:InductiveProx.c **** *
+   7:InductiveProx.c **** ********************************************************************************
+   8:InductiveProx.c **** * Copyright (2016) , Cypress Semiconductor Corporation.
+   9:InductiveProx.c **** ********************************************************************************
+  10:InductiveProx.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  11:InductiveProx.c **** * protected by and subject to worldwide patent protection (United States and
+  12:InductiveProx.c **** * foreign), United States copyright laws and international treaty provisions.
+  13:InductiveProx.c **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  14:InductiveProx.c **** * license to copy, use, modify, create derivative works of, and compile the
+  15:InductiveProx.c **** * Cypress Source Code and derivative works for the sole purpose of creating
+  16:InductiveProx.c **** * custom software in support of licensee product to be used only in conjunction
+  17:InductiveProx.c **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  18:InductiveProx.c **** * Any reproduction, modification, translation, compilation, or representation of
+  19:InductiveProx.c **** * this software except as specified above is prohibited without the express
+  20:InductiveProx.c **** * written permission of Cypress.
+  21:InductiveProx.c **** *
+  22:InductiveProx.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  23:InductiveProx.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  24:InductiveProx.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  25:InductiveProx.c **** * Cypress reserves the right to make changes without further notice to the
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 2
+
+
+  26:InductiveProx.c **** * materials described herein. Cypress does not assume any liability arising out
+  27:InductiveProx.c **** * of the application or use of any product or circuit described herein. Cypress
+  28:InductiveProx.c **** * does not authorize its products for use as critical components in life-support
+  29:InductiveProx.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  30:InductiveProx.c **** * significant injury to the user. The inclusion of Cypress' product in a life
+  31:InductiveProx.c **** * support systems application implies that the manufacturer assumes all risk of
+  32:InductiveProx.c **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  33:InductiveProx.c **** * limited by and subject to the applicable Cypress software license agreement.
+  34:InductiveProx.c **** *******************************************************************************/
+  35:InductiveProx.c **** 
+  36:InductiveProx.c **** #include <project.h>
+  37:InductiveProx.c **** #include <InductiveProx.h>
+  38:InductiveProx.c **** #include <main.h>
+  39:InductiveProx.c **** #include <filters.h>
+  40:InductiveProx.c **** 
+  41:InductiveProx.c **** uint16 IPSBaselineSamples = 0;      /* Number of baseline samples acquired */
+  42:InductiveProx.c **** 
+  43:InductiveProx.c **** /*******************************************************************************
+  44:InductiveProx.c **** * Function Name: void IPSTask(void)
+  45:InductiveProx.c **** ********************************************************************************
+  46:InductiveProx.c **** *
+  47:InductiveProx.c **** * Summary:
+  48:InductiveProx.c **** * This function reads the inductive proximity sensor data, decides the presence of metal and 
+  49:InductiveProx.c **** * updates the I2C variables.  It may also indicate the presence of metal using the red LED.
+  50:InductiveProx.c **** *
+  51:InductiveProx.c **** * Parameters:
+  52:InductiveProx.c **** *  None
+  53:InductiveProx.c **** *
+  54:InductiveProx.c **** * Return:
+  55:InductiveProx.c **** *  None.
+  56:InductiveProx.c **** *
+  57:InductiveProx.c **** * Side Effects:
+  58:InductiveProx.c **** *   None
+  59:InductiveProx.c **** *******************************************************************************/
+  60:InductiveProx.c **** void IPSTask(void)
+  61:InductiveProx.c **** {
+  33              		.loc 1 61 0
+  34              		.cfi_startproc
+  35 0000 80B5     		push	{r7, lr}
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 7, -8
+  38              		.cfi_offset 14, -4
+  39 0002 00AF     		add	r7, sp, #0
+  40              		.cfi_def_cfa_register 7
+  62:InductiveProx.c ****     /* Get the ADC Count */
+  63:InductiveProx.c **** 	ProcessValues.IPSRawCounts = LowPassFilter(ADC_GetResult16(ADC_CHANNEL_IPS), LPF_CHANNEL_IPS);
+  41              		.loc 1 63 0
+  42 0004 0620     		mov	r0, #6
+  43 0006 FFF7FEFF 		bl	ADC_GetResult16
+  44 000a 031C     		mov	r3, r0
+  45 000c 181C     		mov	r0, r3
+  46 000e 0321     		mov	r1, #3
+  47 0010 FFF7FEFF 		bl	LowPassFilter
+  48 0014 031C     		mov	r3, r0
+  49 0016 9AB2     		uxth	r2, r3
+  50 0018 084B     		ldr	r3, .L4
+  51 001a DA82     		strh	r2, [r3, #22]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 3
+
+
+  64:InductiveProx.c **** 	
+  65:InductiveProx.c ****     /* Update baseline */
+  66:InductiveProx.c ****     IPS_UpdateBaseline();
+  52              		.loc 1 66 0
+  53 001c FFF7FEFF 		bl	IPS_UpdateBaseline
+  67:InductiveProx.c ****     
+  68:InductiveProx.c ****     /* Check if sensor data is below threshold */
+  69:InductiveProx.c ****     if(ProcessValues.IPSDifferenceCounts > IPS_THRESHOLD)
+  54              		.loc 1 69 0
+  55 0020 064B     		ldr	r3, .L4
+  56 0022 1B8B     		ldrh	r3, [r3, #24]
+  57 0024 1BB2     		sxth	r3, r3
+  58 0026 322B     		cmp	r3, #50
+  59 0028 03DD     		ble	.L2
+  70:InductiveProx.c ****     {
+  71:InductiveProx.c ****         /* Enable Trigger variable */
+  72:InductiveProx.c ****         ProcessValues.IPSTrigger = TRIGGERED;
+  60              		.loc 1 72 0
+  61 002a 044B     		ldr	r3, .L4
+  62 002c 0122     		mov	r2, #1
+  63 002e 9A83     		strh	r2, [r3, #28]
+  64 0030 02E0     		b	.L1
+  65              	.L2:
+  73:InductiveProx.c ****         
+  74:InductiveProx.c ****         #ifdef IPS_LED_ENABLED 
+  75:InductiveProx.c ****             LED_Red_Write(LED_ON); 
+  76:InductiveProx.c ****         #endif
+  77:InductiveProx.c ****     }    
+  78:InductiveProx.c ****     else
+  79:InductiveProx.c ****     {
+  80:InductiveProx.c ****         ProcessValues.IPSTrigger = NOT_TRIGGERED; 
+  66              		.loc 1 80 0
+  67 0032 024B     		ldr	r3, .L4
+  68 0034 0022     		mov	r2, #0
+  69 0036 9A83     		strh	r2, [r3, #28]
+  70              	.L1:
+  81:InductiveProx.c ****         
+  82:InductiveProx.c ****         #ifdef IPS_LED_ENABLED 
+  83:InductiveProx.c ****             LED_Red_Write(LED_OFF); 
+  84:InductiveProx.c ****         #endif
+  85:InductiveProx.c ****     }
+  86:InductiveProx.c **** }
+  71              		.loc 1 86 0
+  72 0038 BD46     		mov	sp, r7
+  73              		@ sp needed
+  74 003a 80BD     		pop	{r7, pc}
+  75              	.L5:
+  76              		.align	2
+  77              	.L4:
+  78 003c 00000000 		.word	ProcessValues
+  79              		.cfi_endproc
+  80              	.LFE35:
+  81              		.size	IPSTask, .-IPSTask
+  82              		.section	.text.IPS_UpdateBaseline,"ax",%progbits
+  83              		.align	2
+  84              		.global	IPS_UpdateBaseline
+  85              		.code	16
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 4
+
+
+  86              		.thumb_func
+  87              		.type	IPS_UpdateBaseline, %function
+  88              	IPS_UpdateBaseline:
+  89              	.LFB36:
+  87:InductiveProx.c **** 
+  88:InductiveProx.c **** /*******************************************************************************
+  89:InductiveProx.c **** * Function Name: void IPS_UpdateBaseline(void)
+  90:InductiveProx.c **** ********************************************************************************
+  91:InductiveProx.c **** *
+  92:InductiveProx.c **** * Summary:
+  93:InductiveProx.c **** * This function initializes a 'baseline' value of IPS signal during program startup
+  94:InductiveProx.c **** * which is used during normal operation as a reference for comparison of the signal.
+  95:InductiveProx.c **** * The difference count is also calculated only when signal from metal is detected.
+  96:InductiveProx.c **** *
+  97:InductiveProx.c **** * Parameters:
+  98:InductiveProx.c **** *  None
+  99:InductiveProx.c **** *
+ 100:InductiveProx.c **** * Return:
+ 101:InductiveProx.c **** *  None.
+ 102:InductiveProx.c **** *
+ 103:InductiveProx.c **** * Side Effects:
+ 104:InductiveProx.c **** *   None
+ 105:InductiveProx.c **** *******************************************************************************/
+ 106:InductiveProx.c **** void IPS_UpdateBaseline(void)
+ 107:InductiveProx.c **** {   
+  90              		.loc 1 107 0
+  91              		.cfi_startproc
+  92 0000 80B5     		push	{r7, lr}
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0002 82B0     		sub	sp, sp, #8
+  97              		.cfi_def_cfa_offset 16
+  98 0004 00AF     		add	r7, sp, #0
+  99              		.cfi_def_cfa_register 7
+ 108:InductiveProx.c ****     /* Initialize baseline with the first sample of IPSrawcount */
+ 109:InductiveProx.c ****     if (IPSBaselineSamples == 0)
+ 100              		.loc 1 109 0
+ 101 0006 214B     		ldr	r3, .L11
+ 102 0008 1B88     		ldrh	r3, [r3]
+ 103 000a 002B     		cmp	r3, #0
+ 104 000c 0AD1     		bne	.L7
+ 110:InductiveProx.c ****     {
+ 111:InductiveProx.c ****         ProcessValues.IPSBaselineCounts = ProcessValues.IPSRawCounts;
+ 105              		.loc 1 111 0
+ 106 000e 204B     		ldr	r3, .L11+4
+ 107 0010 DA8A     		ldrh	r2, [r3, #22]
+ 108 0012 1F4B     		ldr	r3, .L11+4
+ 109 0014 5A83     		strh	r2, [r3, #26]
+ 112:InductiveProx.c ****         IPSBaselineSamples++;
+ 110              		.loc 1 112 0
+ 111 0016 1D4B     		ldr	r3, .L11
+ 112 0018 1B88     		ldrh	r3, [r3]
+ 113 001a 0133     		add	r3, r3, #1
+ 114 001c 9AB2     		uxth	r2, r3
+ 115 001e 1B4B     		ldr	r3, .L11
+ 116 0020 1A80     		strh	r2, [r3]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 5
+
+
+ 117 0022 30E0     		b	.L6
+ 118              	.L7:
+ 113:InductiveProx.c ****     }
+ 114:InductiveProx.c ****     /* Update baseline only during startup/ initial # of samples */
+ 115:InductiveProx.c ****     else if (IPSBaselineSamples < IPS_BASELINE_SAMPLES)
+ 119              		.loc 1 115 0
+ 120 0024 194B     		ldr	r3, .L11
+ 121 0026 1B88     		ldrh	r3, [r3]
+ 122 0028 1A4A     		ldr	r2, .L11+8
+ 123 002a 9342     		cmp	r3, r2
+ 124 002c 18D8     		bhi	.L9
+ 116:InductiveProx.c ****     {
+ 117:InductiveProx.c ****         ProcessValues.IPSBaselineCounts += ProcessValues.IPSRawCounts;
+ 125              		.loc 1 117 0
+ 126 002e 184B     		ldr	r3, .L11+4
+ 127 0030 5B8B     		ldrh	r3, [r3, #26]
+ 128 0032 9AB2     		uxth	r2, r3
+ 129 0034 164B     		ldr	r3, .L11+4
+ 130 0036 DB8A     		ldrh	r3, [r3, #22]
+ 131 0038 9BB2     		uxth	r3, r3
+ 132 003a D318     		add	r3, r2, r3
+ 133 003c 9BB2     		uxth	r3, r3
+ 134 003e 9AB2     		uxth	r2, r3
+ 135 0040 134B     		ldr	r3, .L11+4
+ 136 0042 5A83     		strh	r2, [r3, #26]
+ 118:InductiveProx.c ****         ProcessValues.IPSBaselineCounts = ProcessValues.IPSBaselineCounts >> 1;
+ 137              		.loc 1 118 0
+ 138 0044 124B     		ldr	r3, .L11+4
+ 139 0046 5B8B     		ldrh	r3, [r3, #26]
+ 140 0048 1BB2     		sxth	r3, r3
+ 141 004a 5B10     		asr	r3, r3, #1
+ 142 004c 9AB2     		uxth	r2, r3
+ 143 004e 104B     		ldr	r3, .L11+4
+ 144 0050 5A83     		strh	r2, [r3, #26]
+ 119:InductiveProx.c ****         IPSBaselineSamples++;
+ 145              		.loc 1 119 0
+ 146 0052 0E4B     		ldr	r3, .L11
+ 147 0054 1B88     		ldrh	r3, [r3]
+ 148 0056 0133     		add	r3, r3, #1
+ 149 0058 9AB2     		uxth	r2, r3
+ 150 005a 0C4B     		ldr	r3, .L11
+ 151 005c 1A80     		strh	r2, [r3]
+ 152 005e 12E0     		b	.L6
+ 153              	.L9:
+ 154              	.LBB2:
+ 120:InductiveProx.c ****     }
+ 121:InductiveProx.c ****     /* Calculate difference counts during normal sensing */
+ 122:InductiveProx.c ****     else
+ 123:InductiveProx.c ****     {
+ 124:InductiveProx.c ****         /* For metal detection, rawcounts should drop below baseline, i.e. diffCounts must be posit
+ 125:InductiveProx.c ****         int16 diffCounts = ProcessValues.IPSBaselineCounts - ProcessValues.IPSRawCounts;
+ 155              		.loc 1 125 0
+ 156 0060 0B4B     		ldr	r3, .L11+4
+ 157 0062 5B8B     		ldrh	r3, [r3, #26]
+ 158 0064 9AB2     		uxth	r2, r3
+ 159 0066 0A4B     		ldr	r3, .L11+4
+ 160 0068 DB8A     		ldrh	r3, [r3, #22]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 6
+
+
+ 161 006a 9BB2     		uxth	r3, r3
+ 162 006c D31A     		sub	r3, r2, r3
+ 163 006e 9AB2     		uxth	r2, r3
+ 164 0070 BB1D     		add	r3, r7, #6
+ 165 0072 1A80     		strh	r2, [r3]
+ 126:InductiveProx.c ****         
+ 127:InductiveProx.c ****         /* Update difference count variable with signal from metal only */
+ 128:InductiveProx.c ****         ProcessValues.IPSDifferenceCounts = diffCounts > 0 ? diffCounts : 0;
+ 166              		.loc 1 128 0
+ 167 0074 BB1D     		add	r3, r7, #6
+ 168 0076 1B88     		ldrh	r3, [r3]
+ 169 0078 1AB2     		sxth	r2, r3
+ 170 007a 002A     		cmp	r2, #0
+ 171 007c 00DA     		bge	.L10
+ 172 007e 0023     		mov	r3, #0
+ 173              	.L10:
+ 174 0080 9AB2     		uxth	r2, r3
+ 175 0082 034B     		ldr	r3, .L11+4
+ 176 0084 1A83     		strh	r2, [r3, #24]
+ 177              	.L6:
+ 178              	.LBE2:
+ 129:InductiveProx.c ****     }
+ 130:InductiveProx.c ****     
+ 131:InductiveProx.c **** }
+ 179              		.loc 1 131 0
+ 180 0086 BD46     		mov	sp, r7
+ 181 0088 02B0     		add	sp, sp, #8
+ 182              		@ sp needed
+ 183 008a 80BD     		pop	{r7, pc}
+ 184              	.L12:
+ 185              		.align	2
+ 186              	.L11:
+ 187 008c 00000000 		.word	IPSBaselineSamples
+ 188 0090 00000000 		.word	ProcessValues
+ 189 0094 E7030000 		.word	999
+ 190              		.cfi_endproc
+ 191              	.LFE36:
+ 192              		.size	IPS_UpdateBaseline, .-IPS_UpdateBaseline
+ 193              		.section	.text.IPS_Start,"ax",%progbits
+ 194              		.align	2
+ 195              		.global	IPS_Start
+ 196              		.code	16
+ 197              		.thumb_func
+ 198              		.type	IPS_Start, %function
+ 199              	IPS_Start:
+ 200              	.LFB37:
+ 132:InductiveProx.c **** 
+ 133:InductiveProx.c **** void IPS_Start(void)
+ 134:InductiveProx.c **** {
+ 201              		.loc 1 134 0
+ 202              		.cfi_startproc
+ 203 0000 80B5     		push	{r7, lr}
+ 204              		.cfi_def_cfa_offset 8
+ 205              		.cfi_offset 7, -8
+ 206              		.cfi_offset 14, -4
+ 207 0002 00AF     		add	r7, sp, #0
+ 208              		.cfi_def_cfa_register 7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 7
+
+
+ 135:InductiveProx.c **** 	 /* Start Excitation PWM */
+ 136:InductiveProx.c ****     ExcitationPWM_Start();	
+ 209              		.loc 1 136 0
+ 210 0004 FFF7FEFF 		bl	ExcitationPWM_Start
+ 137:InductiveProx.c **** 
+ 138:InductiveProx.c ****     /* Start Down Mixer Component */
+ 139:InductiveProx.c ****     DownMixer_Start();
+ 211              		.loc 1 139 0
+ 212 0008 FFF7FEFF 		bl	DownMixer_Start
+ 140:InductiveProx.c ****     
+ 141:InductiveProx.c ****     /* Start Rectifier Component */
+ 142:InductiveProx.c ****     Rectifier_Start();
+ 213              		.loc 1 142 0
+ 214 000c FFF7FEFF 		bl	Rectifier_Start
+ 143:InductiveProx.c **** 
+ 144:InductiveProx.c ****     /* Initialize IPS related process values to zero */
+ 145:InductiveProx.c ****     ProcessValues.IPSRawCounts = 0;
+ 215              		.loc 1 145 0
+ 216 0010 064B     		ldr	r3, .L14
+ 217 0012 0022     		mov	r2, #0
+ 218 0014 DA82     		strh	r2, [r3, #22]
+ 146:InductiveProx.c ****     ProcessValues.IPSBaselineCounts = 0;
+ 219              		.loc 1 146 0
+ 220 0016 054B     		ldr	r3, .L14
+ 221 0018 0022     		mov	r2, #0
+ 222 001a 5A83     		strh	r2, [r3, #26]
+ 147:InductiveProx.c ****     ProcessValues.IPSDifferenceCounts = 0;
+ 223              		.loc 1 147 0
+ 224 001c 034B     		ldr	r3, .L14
+ 225 001e 0022     		mov	r2, #0
+ 226 0020 1A83     		strh	r2, [r3, #24]
+ 148:InductiveProx.c ****     ProcessValues.IPSTrigger = 0;
+ 227              		.loc 1 148 0
+ 228 0022 024B     		ldr	r3, .L14
+ 229 0024 0022     		mov	r2, #0
+ 230 0026 9A83     		strh	r2, [r3, #28]
+ 149:InductiveProx.c ****     
+ 150:InductiveProx.c ****     #ifdef IPS_LED_ENABLED 
+ 151:InductiveProx.c ****         LED_Red_Write(LED_ON); 
+ 152:InductiveProx.c ****     #endif
+ 153:InductiveProx.c ****     
+ 154:InductiveProx.c **** }
+ 231              		.loc 1 154 0
+ 232 0028 BD46     		mov	sp, r7
+ 233              		@ sp needed
+ 234 002a 80BD     		pop	{r7, pc}
+ 235              	.L15:
+ 236              		.align	2
+ 237              	.L14:
+ 238 002c 00000000 		.word	ProcessValues
+ 239              		.cfi_endproc
+ 240              	.LFE37:
+ 241              		.size	IPS_Start, .-IPS_Start
+ 242              		.section	.text.IPS_Stop,"ax",%progbits
+ 243              		.align	2
+ 244              		.global	IPS_Stop
+ 245              		.code	16
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 8
+
+
+ 246              		.thumb_func
+ 247              		.type	IPS_Stop, %function
+ 248              	IPS_Stop:
+ 249              	.LFB38:
+ 155:InductiveProx.c **** 
+ 156:InductiveProx.c **** void IPS_Stop(void)
+ 157:InductiveProx.c **** {
+ 250              		.loc 1 157 0
+ 251              		.cfi_startproc
+ 252 0000 80B5     		push	{r7, lr}
+ 253              		.cfi_def_cfa_offset 8
+ 254              		.cfi_offset 7, -8
+ 255              		.cfi_offset 14, -4
+ 256 0002 00AF     		add	r7, sp, #0
+ 257              		.cfi_def_cfa_register 7
+ 158:InductiveProx.c ****  	/* Stop Excitation PWM */
+ 159:InductiveProx.c ****     ExcitationPWM_Stop();
+ 258              		.loc 1 159 0
+ 259 0004 FFF7FEFF 		bl	ExcitationPWM_Stop
+ 160:InductiveProx.c ****    
+ 161:InductiveProx.c ****     /* Initialize IPS related process values to zero */
+ 162:InductiveProx.c ****     ProcessValues.IPSRawCounts = 0;
+ 260              		.loc 1 162 0
+ 261 0008 064B     		ldr	r3, .L17
+ 262 000a 0022     		mov	r2, #0
+ 263 000c DA82     		strh	r2, [r3, #22]
+ 163:InductiveProx.c ****     ProcessValues.IPSBaselineCounts = 0;
+ 264              		.loc 1 163 0
+ 265 000e 054B     		ldr	r3, .L17
+ 266 0010 0022     		mov	r2, #0
+ 267 0012 5A83     		strh	r2, [r3, #26]
+ 164:InductiveProx.c ****     ProcessValues.IPSDifferenceCounts = 0;
+ 268              		.loc 1 164 0
+ 269 0014 034B     		ldr	r3, .L17
+ 270 0016 0022     		mov	r2, #0
+ 271 0018 1A83     		strh	r2, [r3, #24]
+ 165:InductiveProx.c ****     ProcessValues.IPSTrigger = 0;
+ 272              		.loc 1 165 0
+ 273 001a 024B     		ldr	r3, .L17
+ 274 001c 0022     		mov	r2, #0
+ 275 001e 9A83     		strh	r2, [r3, #28]
+ 166:InductiveProx.c ****     
+ 167:InductiveProx.c ****     #ifdef IPS_LED_ENABLED 
+ 168:InductiveProx.c ****         LED_Red_Write(LED_OFF); 
+ 169:InductiveProx.c ****     #endif
+ 170:InductiveProx.c **** }
+ 276              		.loc 1 170 0
+ 277 0020 BD46     		mov	sp, r7
+ 278              		@ sp needed
+ 279 0022 80BD     		pop	{r7, pc}
+ 280              	.L18:
+ 281              		.align	2
+ 282              	.L17:
+ 283 0024 00000000 		.word	ProcessValues
+ 284              		.cfi_endproc
+ 285              	.LFE38:
+ 286              		.size	IPS_Stop, .-IPS_Stop
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 9
+
+
+ 287              		.text
+ 288              	.Letext0:
+ 289              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 290              		.file 3 "./main.h"
+ 291              		.section	.debug_info,"",%progbits
+ 292              	.Ldebug_info0:
+ 293 0000 39020000 		.4byte	0x239
+ 294 0004 0400     		.2byte	0x4
+ 295 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 296 000a 04       		.byte	0x4
+ 297 000b 01       		.uleb128 0x1
+ 298 000c 96010000 		.4byte	.LASF41
+ 299 0010 01       		.byte	0x1
+ 300 0011 44010000 		.4byte	.LASF42
+ 301 0015 88000000 		.4byte	.LASF43
+ 302 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 303 001d 00000000 		.4byte	0
+ 304 0021 00000000 		.4byte	.Ldebug_line0
+ 305 0025 02       		.uleb128 0x2
+ 306 0026 01       		.byte	0x1
+ 307 0027 06       		.byte	0x6
+ 308 0028 E0020000 		.4byte	.LASF0
+ 309 002c 02       		.uleb128 0x2
+ 310 002d 01       		.byte	0x1
+ 311 002e 08       		.byte	0x8
+ 312 002f 24010000 		.4byte	.LASF1
+ 313 0033 02       		.uleb128 0x2
+ 314 0034 02       		.byte	0x2
+ 315 0035 05       		.byte	0x5
+ 316 0036 A0020000 		.4byte	.LASF2
+ 317 003a 02       		.uleb128 0x2
+ 318 003b 02       		.byte	0x2
+ 319 003c 07       		.byte	0x7
+ 320 003d 3F000000 		.4byte	.LASF3
+ 321 0041 02       		.uleb128 0x2
+ 322 0042 04       		.byte	0x4
+ 323 0043 05       		.byte	0x5
+ 324 0044 CD020000 		.4byte	.LASF4
+ 325 0048 02       		.uleb128 0x2
+ 326 0049 04       		.byte	0x4
+ 327 004a 07       		.byte	0x7
+ 328 004b F3000000 		.4byte	.LASF5
+ 329 004f 02       		.uleb128 0x2
+ 330 0050 08       		.byte	0x8
+ 331 0051 05       		.byte	0x5
+ 332 0052 5F020000 		.4byte	.LASF6
+ 333 0056 02       		.uleb128 0x2
+ 334 0057 08       		.byte	0x8
+ 335 0058 07       		.byte	0x7
+ 336 0059 EC020000 		.4byte	.LASF7
+ 337 005d 03       		.uleb128 0x3
+ 338 005e 04       		.byte	0x4
+ 339 005f 05       		.byte	0x5
+ 340 0060 696E7400 		.ascii	"int\000"
+ 341 0064 02       		.uleb128 0x2
+ 342 0065 04       		.byte	0x4
+ 343 0066 07       		.byte	0x7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 10
+
+
+ 344 0067 84010000 		.4byte	.LASF8
+ 345 006b 04       		.uleb128 0x4
+ 346 006c 10010000 		.4byte	.LASF9
+ 347 0070 02       		.byte	0x2
+ 348 0071 9801     		.2byte	0x198
+ 349 0073 2C000000 		.4byte	0x2c
+ 350 0077 04       		.uleb128 0x4
+ 351 0078 54010000 		.4byte	.LASF10
+ 352 007c 02       		.byte	0x2
+ 353 007d 9901     		.2byte	0x199
+ 354 007f 3A000000 		.4byte	0x3a
+ 355 0083 04       		.uleb128 0x4
+ 356 0084 6B010000 		.4byte	.LASF11
+ 357 0088 02       		.byte	0x2
+ 358 0089 9A01     		.2byte	0x19a
+ 359 008b 48000000 		.4byte	0x48
+ 360 008f 04       		.uleb128 0x4
+ 361 0090 ED000000 		.4byte	.LASF12
+ 362 0094 02       		.byte	0x2
+ 363 0095 9C01     		.2byte	0x19c
+ 364 0097 33000000 		.4byte	0x33
+ 365 009b 04       		.uleb128 0x4
+ 366 009c 50020000 		.4byte	.LASF13
+ 367 00a0 02       		.byte	0x2
+ 368 00a1 9D01     		.2byte	0x19d
+ 369 00a3 41000000 		.4byte	0x41
+ 370 00a7 02       		.uleb128 0x2
+ 371 00a8 04       		.byte	0x4
+ 372 00a9 04       		.byte	0x4
+ 373 00aa 82000000 		.4byte	.LASF14
+ 374 00ae 02       		.uleb128 0x2
+ 375 00af 08       		.byte	0x8
+ 376 00b0 04       		.byte	0x4
+ 377 00b1 3D010000 		.4byte	.LASF15
+ 378 00b5 02       		.uleb128 0x2
+ 379 00b6 01       		.byte	0x1
+ 380 00b7 08       		.byte	0x8
+ 381 00b8 91010000 		.4byte	.LASF16
+ 382 00bc 02       		.uleb128 0x2
+ 383 00bd 04       		.byte	0x4
+ 384 00be 07       		.byte	0x7
+ 385 00bf 56020000 		.4byte	.LASF17
+ 386 00c3 05       		.uleb128 0x5
+ 387 00c4 6D020000 		.4byte	.LASF35
+ 388 00c8 26       		.byte	0x26
+ 389 00c9 03       		.byte	0x3
+ 390 00ca 5C       		.byte	0x5c
+ 391 00cb B4010000 		.4byte	0x1b4
+ 392 00cf 06       		.uleb128 0x6
+ 393 00d0 28020000 		.4byte	.LASF18
+ 394 00d4 03       		.byte	0x3
+ 395 00d5 5E       		.byte	0x5e
+ 396 00d6 77000000 		.4byte	0x77
+ 397 00da 00       		.byte	0
+ 398 00db 07       		.uleb128 0x7
+ 399 00dc 56746800 		.ascii	"Vth\000"
+ 400 00e0 03       		.byte	0x3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 11
+
+
+ 401 00e1 5F       		.byte	0x5f
+ 402 00e2 77000000 		.4byte	0x77
+ 403 00e6 02       		.byte	0x2
+ 404 00e7 07       		.uleb128 0x7
+ 405 00e8 52746800 		.ascii	"Rth\000"
+ 406 00ec 03       		.byte	0x3
+ 407 00ed 60       		.byte	0x60
+ 408 00ee 77000000 		.4byte	0x77
+ 409 00f2 04       		.byte	0x4
+ 410 00f3 06       		.uleb128 0x6
+ 411 00f4 1E000000 		.4byte	.LASF19
+ 412 00f8 03       		.byte	0x3
+ 413 00f9 61       		.byte	0x61
+ 414 00fa 8F000000 		.4byte	0x8f
+ 415 00fe 06       		.byte	0x6
+ 416 00ff 06       		.uleb128 0x6
+ 417 0100 60000000 		.4byte	.LASF20
+ 418 0104 03       		.byte	0x3
+ 419 0105 62       		.byte	0x62
+ 420 0106 77000000 		.4byte	0x77
+ 421 010a 08       		.byte	0x8
+ 422 010b 06       		.uleb128 0x6
+ 423 010c BE020000 		.4byte	.LASF21
+ 424 0110 03       		.byte	0x3
+ 425 0111 63       		.byte	0x63
+ 426 0112 77000000 		.4byte	0x77
+ 427 0116 0A       		.byte	0xa
+ 428 0117 06       		.uleb128 0x6
+ 429 0118 7B000000 		.4byte	.LASF22
+ 430 011c 03       		.byte	0x3
+ 431 011d 64       		.byte	0x64
+ 432 011e 8F000000 		.4byte	0x8f
+ 433 0122 0C       		.byte	0xc
+ 434 0123 06       		.uleb128 0x6
+ 435 0124 5B010000 		.4byte	.LASF23
+ 436 0128 03       		.byte	0x3
+ 437 0129 65       		.byte	0x65
+ 438 012a 8F000000 		.4byte	0x8f
+ 439 012e 0E       		.byte	0xe
+ 440 012f 06       		.uleb128 0x6
+ 441 0130 52000000 		.4byte	.LASF24
+ 442 0134 03       		.byte	0x3
+ 443 0135 66       		.byte	0x66
+ 444 0136 8F000000 		.4byte	0x8f
+ 445 013a 10       		.byte	0x10
+ 446 013b 06       		.uleb128 0x6
+ 447 013c 2A000000 		.4byte	.LASF25
+ 448 0140 03       		.byte	0x3
+ 449 0141 67       		.byte	0x67
+ 450 0142 8F000000 		.4byte	0x8f
+ 451 0146 12       		.byte	0x12
+ 452 0147 06       		.uleb128 0x6
+ 453 0148 00000000 		.4byte	.LASF26
+ 454 014c 03       		.byte	0x3
+ 455 014d 68       		.byte	0x68
+ 456 014e 8F000000 		.4byte	0x8f
+ 457 0152 14       		.byte	0x14
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 12
+
+
+ 458 0153 06       		.uleb128 0x6
+ 459 0154 30020000 		.4byte	.LASF27
+ 460 0158 03       		.byte	0x3
+ 461 0159 69       		.byte	0x69
+ 462 015a 8F000000 		.4byte	0x8f
+ 463 015e 16       		.byte	0x16
+ 464 015f 06       		.uleb128 0x6
+ 465 0160 AA020000 		.4byte	.LASF28
+ 466 0164 03       		.byte	0x3
+ 467 0165 6A       		.byte	0x6a
+ 468 0166 8F000000 		.4byte	0x8f
+ 469 016a 18       		.byte	0x18
+ 470 016b 06       		.uleb128 0x6
+ 471 016c 7C020000 		.4byte	.LASF29
+ 472 0170 03       		.byte	0x3
+ 473 0171 6B       		.byte	0x6b
+ 474 0172 8F000000 		.4byte	0x8f
+ 475 0176 1A       		.byte	0x1a
+ 476 0177 06       		.uleb128 0x6
+ 477 0178 32010000 		.4byte	.LASF30
+ 478 017c 03       		.byte	0x3
+ 479 017d 6C       		.byte	0x6c
+ 480 017e 77000000 		.4byte	0x77
+ 481 0182 1C       		.byte	0x1c
+ 482 0183 06       		.uleb128 0x6
+ 483 0184 6B000000 		.4byte	.LASF31
+ 484 0188 03       		.byte	0x3
+ 485 0189 6D       		.byte	0x6d
+ 486 018a 77000000 		.4byte	0x77
+ 487 018e 1E       		.byte	0x1e
+ 488 018f 06       		.uleb128 0x6
+ 489 0190 8E020000 		.4byte	.LASF32
+ 490 0194 03       		.byte	0x3
+ 491 0195 6E       		.byte	0x6e
+ 492 0196 77000000 		.4byte	0x77
+ 493 019a 20       		.byte	0x20
+ 494 019b 06       		.uleb128 0x6
+ 495 019c 72010000 		.4byte	.LASF33
+ 496 01a0 03       		.byte	0x3
+ 497 01a1 6F       		.byte	0x6f
+ 498 01a2 77000000 		.4byte	0x77
+ 499 01a6 22       		.byte	0x22
+ 500 01a7 06       		.uleb128 0x6
+ 501 01a8 03030000 		.4byte	.LASF34
+ 502 01ac 03       		.byte	0x3
+ 503 01ad 70       		.byte	0x70
+ 504 01ae 77000000 		.4byte	0x77
+ 505 01b2 24       		.byte	0x24
+ 506 01b3 00       		.byte	0
+ 507 01b4 08       		.uleb128 0x8
+ 508 01b5 6D020000 		.4byte	.LASF35
+ 509 01b9 03       		.byte	0x3
+ 510 01ba 71       		.byte	0x71
+ 511 01bb C3000000 		.4byte	0xc3
+ 512 01bf 09       		.uleb128 0x9
+ 513 01c0 37000000 		.4byte	.LASF36
+ 514 01c4 01       		.byte	0x1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 13
+
+
+ 515 01c5 3C       		.byte	0x3c
+ 516 01c6 00000000 		.4byte	.LFB35
+ 517 01ca 40000000 		.4byte	.LFE35-.LFB35
+ 518 01ce 01       		.uleb128 0x1
+ 519 01cf 9C       		.byte	0x9c
+ 520 01d0 0A       		.uleb128 0xa
+ 521 01d1 3D020000 		.4byte	.LASF44
+ 522 01d5 01       		.byte	0x1
+ 523 01d6 6A       		.byte	0x6a
+ 524 01d7 00000000 		.4byte	.LFB36
+ 525 01db 98000000 		.4byte	.LFE36-.LFB36
+ 526 01df 01       		.uleb128 0x1
+ 527 01e0 9C       		.byte	0x9c
+ 528 01e1 FE010000 		.4byte	0x1fe
+ 529 01e5 0B       		.uleb128 0xb
+ 530 01e6 60000000 		.4byte	.LBB2
+ 531 01ea 26000000 		.4byte	.LBE2-.LBB2
+ 532 01ee 0C       		.uleb128 0xc
+ 533 01ef 05010000 		.4byte	.LASF45
+ 534 01f3 01       		.byte	0x1
+ 535 01f4 7D       		.byte	0x7d
+ 536 01f5 8F000000 		.4byte	0x8f
+ 537 01f9 02       		.uleb128 0x2
+ 538 01fa 91       		.byte	0x91
+ 539 01fb 76       		.sleb128 -10
+ 540 01fc 00       		.byte	0
+ 541 01fd 00       		.byte	0
+ 542 01fe 09       		.uleb128 0x9
+ 543 01ff D6020000 		.4byte	.LASF37
+ 544 0203 01       		.byte	0x1
+ 545 0204 85       		.byte	0x85
+ 546 0205 00000000 		.4byte	.LFB37
+ 547 0209 30000000 		.4byte	.LFE37-.LFB37
+ 548 020d 01       		.uleb128 0x1
+ 549 020e 9C       		.byte	0x9c
+ 550 020f 09       		.uleb128 0x9
+ 551 0210 62010000 		.4byte	.LASF38
+ 552 0214 01       		.byte	0x1
+ 553 0215 9C       		.byte	0x9c
+ 554 0216 00000000 		.4byte	.LFB38
+ 555 021a 28000000 		.4byte	.LFE38-.LFB38
+ 556 021e 01       		.uleb128 0x1
+ 557 021f 9C       		.byte	0x9c
+ 558 0220 0D       		.uleb128 0xd
+ 559 0221 16010000 		.4byte	.LASF39
+ 560 0225 03       		.byte	0x3
+ 561 0226 78       		.byte	0x78
+ 562 0227 B4010000 		.4byte	0x1b4
+ 563 022b 0E       		.uleb128 0xe
+ 564 022c 0B000000 		.4byte	.LASF40
+ 565 0230 01       		.byte	0x1
+ 566 0231 29       		.byte	0x29
+ 567 0232 77000000 		.4byte	0x77
+ 568 0236 05       		.uleb128 0x5
+ 569 0237 03       		.byte	0x3
+ 570 0238 00000000 		.4byte	IPSBaselineSamples
+ 571 023c 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 14
+
+
+ 572              		.section	.debug_abbrev,"",%progbits
+ 573              	.Ldebug_abbrev0:
+ 574 0000 01       		.uleb128 0x1
+ 575 0001 11       		.uleb128 0x11
+ 576 0002 01       		.byte	0x1
+ 577 0003 25       		.uleb128 0x25
+ 578 0004 0E       		.uleb128 0xe
+ 579 0005 13       		.uleb128 0x13
+ 580 0006 0B       		.uleb128 0xb
+ 581 0007 03       		.uleb128 0x3
+ 582 0008 0E       		.uleb128 0xe
+ 583 0009 1B       		.uleb128 0x1b
+ 584 000a 0E       		.uleb128 0xe
+ 585 000b 55       		.uleb128 0x55
+ 586 000c 17       		.uleb128 0x17
+ 587 000d 11       		.uleb128 0x11
+ 588 000e 01       		.uleb128 0x1
+ 589 000f 10       		.uleb128 0x10
+ 590 0010 17       		.uleb128 0x17
+ 591 0011 00       		.byte	0
+ 592 0012 00       		.byte	0
+ 593 0013 02       		.uleb128 0x2
+ 594 0014 24       		.uleb128 0x24
+ 595 0015 00       		.byte	0
+ 596 0016 0B       		.uleb128 0xb
+ 597 0017 0B       		.uleb128 0xb
+ 598 0018 3E       		.uleb128 0x3e
+ 599 0019 0B       		.uleb128 0xb
+ 600 001a 03       		.uleb128 0x3
+ 601 001b 0E       		.uleb128 0xe
+ 602 001c 00       		.byte	0
+ 603 001d 00       		.byte	0
+ 604 001e 03       		.uleb128 0x3
+ 605 001f 24       		.uleb128 0x24
+ 606 0020 00       		.byte	0
+ 607 0021 0B       		.uleb128 0xb
+ 608 0022 0B       		.uleb128 0xb
+ 609 0023 3E       		.uleb128 0x3e
+ 610 0024 0B       		.uleb128 0xb
+ 611 0025 03       		.uleb128 0x3
+ 612 0026 08       		.uleb128 0x8
+ 613 0027 00       		.byte	0
+ 614 0028 00       		.byte	0
+ 615 0029 04       		.uleb128 0x4
+ 616 002a 16       		.uleb128 0x16
+ 617 002b 00       		.byte	0
+ 618 002c 03       		.uleb128 0x3
+ 619 002d 0E       		.uleb128 0xe
+ 620 002e 3A       		.uleb128 0x3a
+ 621 002f 0B       		.uleb128 0xb
+ 622 0030 3B       		.uleb128 0x3b
+ 623 0031 05       		.uleb128 0x5
+ 624 0032 49       		.uleb128 0x49
+ 625 0033 13       		.uleb128 0x13
+ 626 0034 00       		.byte	0
+ 627 0035 00       		.byte	0
+ 628 0036 05       		.uleb128 0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 15
+
+
+ 629 0037 13       		.uleb128 0x13
+ 630 0038 01       		.byte	0x1
+ 631 0039 03       		.uleb128 0x3
+ 632 003a 0E       		.uleb128 0xe
+ 633 003b 0B       		.uleb128 0xb
+ 634 003c 0B       		.uleb128 0xb
+ 635 003d 3A       		.uleb128 0x3a
+ 636 003e 0B       		.uleb128 0xb
+ 637 003f 3B       		.uleb128 0x3b
+ 638 0040 0B       		.uleb128 0xb
+ 639 0041 01       		.uleb128 0x1
+ 640 0042 13       		.uleb128 0x13
+ 641 0043 00       		.byte	0
+ 642 0044 00       		.byte	0
+ 643 0045 06       		.uleb128 0x6
+ 644 0046 0D       		.uleb128 0xd
+ 645 0047 00       		.byte	0
+ 646 0048 03       		.uleb128 0x3
+ 647 0049 0E       		.uleb128 0xe
+ 648 004a 3A       		.uleb128 0x3a
+ 649 004b 0B       		.uleb128 0xb
+ 650 004c 3B       		.uleb128 0x3b
+ 651 004d 0B       		.uleb128 0xb
+ 652 004e 49       		.uleb128 0x49
+ 653 004f 13       		.uleb128 0x13
+ 654 0050 38       		.uleb128 0x38
+ 655 0051 0B       		.uleb128 0xb
+ 656 0052 00       		.byte	0
+ 657 0053 00       		.byte	0
+ 658 0054 07       		.uleb128 0x7
+ 659 0055 0D       		.uleb128 0xd
+ 660 0056 00       		.byte	0
+ 661 0057 03       		.uleb128 0x3
+ 662 0058 08       		.uleb128 0x8
+ 663 0059 3A       		.uleb128 0x3a
+ 664 005a 0B       		.uleb128 0xb
+ 665 005b 3B       		.uleb128 0x3b
+ 666 005c 0B       		.uleb128 0xb
+ 667 005d 49       		.uleb128 0x49
+ 668 005e 13       		.uleb128 0x13
+ 669 005f 38       		.uleb128 0x38
+ 670 0060 0B       		.uleb128 0xb
+ 671 0061 00       		.byte	0
+ 672 0062 00       		.byte	0
+ 673 0063 08       		.uleb128 0x8
+ 674 0064 16       		.uleb128 0x16
+ 675 0065 00       		.byte	0
+ 676 0066 03       		.uleb128 0x3
+ 677 0067 0E       		.uleb128 0xe
+ 678 0068 3A       		.uleb128 0x3a
+ 679 0069 0B       		.uleb128 0xb
+ 680 006a 3B       		.uleb128 0x3b
+ 681 006b 0B       		.uleb128 0xb
+ 682 006c 49       		.uleb128 0x49
+ 683 006d 13       		.uleb128 0x13
+ 684 006e 00       		.byte	0
+ 685 006f 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 16
+
+
+ 686 0070 09       		.uleb128 0x9
+ 687 0071 2E       		.uleb128 0x2e
+ 688 0072 00       		.byte	0
+ 689 0073 3F       		.uleb128 0x3f
+ 690 0074 19       		.uleb128 0x19
+ 691 0075 03       		.uleb128 0x3
+ 692 0076 0E       		.uleb128 0xe
+ 693 0077 3A       		.uleb128 0x3a
+ 694 0078 0B       		.uleb128 0xb
+ 695 0079 3B       		.uleb128 0x3b
+ 696 007a 0B       		.uleb128 0xb
+ 697 007b 27       		.uleb128 0x27
+ 698 007c 19       		.uleb128 0x19
+ 699 007d 11       		.uleb128 0x11
+ 700 007e 01       		.uleb128 0x1
+ 701 007f 12       		.uleb128 0x12
+ 702 0080 06       		.uleb128 0x6
+ 703 0081 40       		.uleb128 0x40
+ 704 0082 18       		.uleb128 0x18
+ 705 0083 9642     		.uleb128 0x2116
+ 706 0085 19       		.uleb128 0x19
+ 707 0086 00       		.byte	0
+ 708 0087 00       		.byte	0
+ 709 0088 0A       		.uleb128 0xa
+ 710 0089 2E       		.uleb128 0x2e
+ 711 008a 01       		.byte	0x1
+ 712 008b 3F       		.uleb128 0x3f
+ 713 008c 19       		.uleb128 0x19
+ 714 008d 03       		.uleb128 0x3
+ 715 008e 0E       		.uleb128 0xe
+ 716 008f 3A       		.uleb128 0x3a
+ 717 0090 0B       		.uleb128 0xb
+ 718 0091 3B       		.uleb128 0x3b
+ 719 0092 0B       		.uleb128 0xb
+ 720 0093 27       		.uleb128 0x27
+ 721 0094 19       		.uleb128 0x19
+ 722 0095 11       		.uleb128 0x11
+ 723 0096 01       		.uleb128 0x1
+ 724 0097 12       		.uleb128 0x12
+ 725 0098 06       		.uleb128 0x6
+ 726 0099 40       		.uleb128 0x40
+ 727 009a 18       		.uleb128 0x18
+ 728 009b 9742     		.uleb128 0x2117
+ 729 009d 19       		.uleb128 0x19
+ 730 009e 01       		.uleb128 0x1
+ 731 009f 13       		.uleb128 0x13
+ 732 00a0 00       		.byte	0
+ 733 00a1 00       		.byte	0
+ 734 00a2 0B       		.uleb128 0xb
+ 735 00a3 0B       		.uleb128 0xb
+ 736 00a4 01       		.byte	0x1
+ 737 00a5 11       		.uleb128 0x11
+ 738 00a6 01       		.uleb128 0x1
+ 739 00a7 12       		.uleb128 0x12
+ 740 00a8 06       		.uleb128 0x6
+ 741 00a9 00       		.byte	0
+ 742 00aa 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 17
+
+
+ 743 00ab 0C       		.uleb128 0xc
+ 744 00ac 34       		.uleb128 0x34
+ 745 00ad 00       		.byte	0
+ 746 00ae 03       		.uleb128 0x3
+ 747 00af 0E       		.uleb128 0xe
+ 748 00b0 3A       		.uleb128 0x3a
+ 749 00b1 0B       		.uleb128 0xb
+ 750 00b2 3B       		.uleb128 0x3b
+ 751 00b3 0B       		.uleb128 0xb
+ 752 00b4 49       		.uleb128 0x49
+ 753 00b5 13       		.uleb128 0x13
+ 754 00b6 02       		.uleb128 0x2
+ 755 00b7 18       		.uleb128 0x18
+ 756 00b8 00       		.byte	0
+ 757 00b9 00       		.byte	0
+ 758 00ba 0D       		.uleb128 0xd
+ 759 00bb 34       		.uleb128 0x34
+ 760 00bc 00       		.byte	0
+ 761 00bd 03       		.uleb128 0x3
+ 762 00be 0E       		.uleb128 0xe
+ 763 00bf 3A       		.uleb128 0x3a
+ 764 00c0 0B       		.uleb128 0xb
+ 765 00c1 3B       		.uleb128 0x3b
+ 766 00c2 0B       		.uleb128 0xb
+ 767 00c3 49       		.uleb128 0x49
+ 768 00c4 13       		.uleb128 0x13
+ 769 00c5 3F       		.uleb128 0x3f
+ 770 00c6 19       		.uleb128 0x19
+ 771 00c7 3C       		.uleb128 0x3c
+ 772 00c8 19       		.uleb128 0x19
+ 773 00c9 00       		.byte	0
+ 774 00ca 00       		.byte	0
+ 775 00cb 0E       		.uleb128 0xe
+ 776 00cc 34       		.uleb128 0x34
+ 777 00cd 00       		.byte	0
+ 778 00ce 03       		.uleb128 0x3
+ 779 00cf 0E       		.uleb128 0xe
+ 780 00d0 3A       		.uleb128 0x3a
+ 781 00d1 0B       		.uleb128 0xb
+ 782 00d2 3B       		.uleb128 0x3b
+ 783 00d3 0B       		.uleb128 0xb
+ 784 00d4 49       		.uleb128 0x49
+ 785 00d5 13       		.uleb128 0x13
+ 786 00d6 3F       		.uleb128 0x3f
+ 787 00d7 19       		.uleb128 0x19
+ 788 00d8 02       		.uleb128 0x2
+ 789 00d9 18       		.uleb128 0x18
+ 790 00da 00       		.byte	0
+ 791 00db 00       		.byte	0
+ 792 00dc 00       		.byte	0
+ 793              		.section	.debug_aranges,"",%progbits
+ 794 0000 34000000 		.4byte	0x34
+ 795 0004 0200     		.2byte	0x2
+ 796 0006 00000000 		.4byte	.Ldebug_info0
+ 797 000a 04       		.byte	0x4
+ 798 000b 00       		.byte	0
+ 799 000c 0000     		.2byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 18
+
+
+ 800 000e 0000     		.2byte	0
+ 801 0010 00000000 		.4byte	.LFB35
+ 802 0014 40000000 		.4byte	.LFE35-.LFB35
+ 803 0018 00000000 		.4byte	.LFB36
+ 804 001c 98000000 		.4byte	.LFE36-.LFB36
+ 805 0020 00000000 		.4byte	.LFB37
+ 806 0024 30000000 		.4byte	.LFE37-.LFB37
+ 807 0028 00000000 		.4byte	.LFB38
+ 808 002c 28000000 		.4byte	.LFE38-.LFB38
+ 809 0030 00000000 		.4byte	0
+ 810 0034 00000000 		.4byte	0
+ 811              		.section	.debug_ranges,"",%progbits
+ 812              	.Ldebug_ranges0:
+ 813 0000 00000000 		.4byte	.LFB35
+ 814 0004 40000000 		.4byte	.LFE35
+ 815 0008 00000000 		.4byte	.LFB36
+ 816 000c 98000000 		.4byte	.LFE36
+ 817 0010 00000000 		.4byte	.LFB37
+ 818 0014 30000000 		.4byte	.LFE37
+ 819 0018 00000000 		.4byte	.LFB38
+ 820 001c 28000000 		.4byte	.LFE38
+ 821 0020 00000000 		.4byte	0
+ 822 0024 00000000 		.4byte	0
+ 823              		.section	.debug_line,"",%progbits
+ 824              	.Ldebug_line0:
+ 825 0000 B9000000 		.section	.debug_str,"MS",%progbits,1
+ 825      02005600 
+ 825      00000201 
+ 825      FB0E0D00 
+ 825      01010101 
+ 826              	.LASF26:
+ 827 0000 50495254 		.ascii	"PIRTrigger\000"
+ 827      72696767 
+ 827      657200
+ 828              	.LASF40:
+ 829 000b 49505342 		.ascii	"IPSBaselineSamples\000"
+ 829      6173656C 
+ 829      696E6553 
+ 829      616D706C 
+ 829      657300
+ 830              	.LASF19:
+ 831 001e 54656D70 		.ascii	"Temperature\000"
+ 831      65726174 
+ 831      75726500 
+ 832              	.LASF25:
+ 833 002a 50495257 		.ascii	"PIRWindowLow\000"
+ 833      696E646F 
+ 833      774C6F77 
+ 833      00
+ 834              	.LASF36:
+ 835 0037 49505354 		.ascii	"IPSTask\000"
+ 835      61736B00 
+ 836              	.LASF3:
+ 837 003f 73686F72 		.ascii	"short unsigned int\000"
+ 837      7420756E 
+ 837      7369676E 
+ 837      65642069 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 19
+
+
+ 837      6E7400
+ 838              	.LASF24:
+ 839 0052 50495257 		.ascii	"PIRWindowHigh\000"
+ 839      696E646F 
+ 839      77486967 
+ 839      6800
+ 840              	.LASF20:
+ 841 0060 414C5343 		.ascii	"ALSCurrent\000"
+ 841      75727265 
+ 841      6E7400
+ 842              	.LASF31:
+ 843 006b 52617743 		.ascii	"RawCountsRefCap\000"
+ 843      6F756E74 
+ 843      73526566 
+ 843      43617000 
+ 844              	.LASF22:
+ 845 007b 50495252 		.ascii	"PIRRaw\000"
+ 845      617700
+ 846              	.LASF14:
+ 847 0082 666C6F61 		.ascii	"float\000"
+ 847      7400
+ 848              	.LASF43:
+ 849 0088 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 849      73657273 
+ 849      5C436872 
+ 849      6973746F 
+ 849      70686572 
+ 850 00b7 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 850      456E7669 
+ 850      726F6E6D 
+ 850      656E7453 
+ 850      656E7369 
+ 851 00e8 7964736E 		.ascii	"ydsn\000"
+ 851      00
+ 852              	.LASF12:
+ 853 00ed 696E7431 		.ascii	"int16\000"
+ 853      3600
+ 854              	.LASF5:
+ 855 00f3 6C6F6E67 		.ascii	"long unsigned int\000"
+ 855      20756E73 
+ 855      69676E65 
+ 855      6420696E 
+ 855      7400
+ 856              	.LASF45:
+ 857 0105 64696666 		.ascii	"diffCounts\000"
+ 857      436F756E 
+ 857      747300
+ 858              	.LASF9:
+ 859 0110 75696E74 		.ascii	"uint8\000"
+ 859      3800
+ 860              	.LASF39:
+ 861 0116 50726F63 		.ascii	"ProcessValues\000"
+ 861      65737356 
+ 861      616C7565 
+ 861      7300
+ 862              	.LASF1:
+ 863 0124 756E7369 		.ascii	"unsigned char\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 20
+
+
+ 863      676E6564 
+ 863      20636861 
+ 863      7200
+ 864              	.LASF30:
+ 865 0132 49505354 		.ascii	"IPSTrigger\000"
+ 865      72696767 
+ 865      657200
+ 866              	.LASF15:
+ 867 013d 646F7562 		.ascii	"double\000"
+ 867      6C6500
+ 868              	.LASF42:
+ 869 0144 496E6475 		.ascii	"InductiveProx.c\000"
+ 869      63746976 
+ 869      6550726F 
+ 869      782E6300 
+ 870              	.LASF10:
+ 871 0154 75696E74 		.ascii	"uint16\000"
+ 871      313600
+ 872              	.LASF23:
+ 873 015b 50495248 		.ascii	"PIRHpf\000"
+ 873      706600
+ 874              	.LASF38:
+ 875 0162 4950535F 		.ascii	"IPS_Stop\000"
+ 875      53746F70 
+ 875      00
+ 876              	.LASF11:
+ 877 016b 75696E74 		.ascii	"uint32\000"
+ 877      333200
+ 878              	.LASF33:
+ 879 0172 53656E73 		.ascii	"SensorCapacitance\000"
+ 879      6F724361 
+ 879      70616369 
+ 879      74616E63 
+ 879      6500
+ 880              	.LASF8:
+ 881 0184 756E7369 		.ascii	"unsigned int\000"
+ 881      676E6564 
+ 881      20696E74 
+ 881      00
+ 882              	.LASF16:
+ 883 0191 63686172 		.ascii	"char\000"
+ 883      00
+ 884              	.LASF41:
+ 885 0196 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 885      4320342E 
+ 885      392E3320 
+ 885      32303135 
+ 885      30333033 
+ 886 01c9 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 886      20726576 
+ 886      6973696F 
+ 886      6E203232 
+ 886      31323230 
+ 887 01fc 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 887      30202D66 
+ 887      66756E63 
+ 887      74696F6E 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 21
+
+
+ 887      2D736563 
+ 888              	.LASF18:
+ 889 0228 56657273 		.ascii	"Version\000"
+ 889      696F6E00 
+ 890              	.LASF27:
+ 891 0230 49505352 		.ascii	"IPSRawCounts\000"
+ 891      6177436F 
+ 891      756E7473 
+ 891      00
+ 892              	.LASF44:
+ 893 023d 4950535F 		.ascii	"IPS_UpdateBaseline\000"
+ 893      55706461 
+ 893      74654261 
+ 893      73656C69 
+ 893      6E6500
+ 894              	.LASF13:
+ 895 0250 696E7433 		.ascii	"int32\000"
+ 895      3200
+ 896              	.LASF17:
+ 897 0256 73697A65 		.ascii	"sizetype\000"
+ 897      74797065 
+ 897      00
+ 898              	.LASF6:
+ 899 025f 6C6F6E67 		.ascii	"long long int\000"
+ 899      206C6F6E 
+ 899      6720696E 
+ 899      7400
+ 900              	.LASF35:
+ 901 026d 50524F43 		.ascii	"PROCESS_VALUES\000"
+ 901      4553535F 
+ 901      56414C55 
+ 901      455300
+ 902              	.LASF29:
+ 903 027c 49505342 		.ascii	"IPSBaselineCounts\000"
+ 903      6173656C 
+ 903      696E6543 
+ 903      6F756E74 
+ 903      7300
+ 904              	.LASF32:
+ 905 028e 52617743 		.ascii	"RawCountsHumidity\000"
+ 905      6F756E74 
+ 905      7348756D 
+ 905      69646974 
+ 905      7900
+ 906              	.LASF2:
+ 907 02a0 73686F72 		.ascii	"short int\000"
+ 907      7420696E 
+ 907      7400
+ 908              	.LASF28:
+ 909 02aa 49505344 		.ascii	"IPSDifferenceCounts\000"
+ 909      69666665 
+ 909      72656E63 
+ 909      65436F75 
+ 909      6E747300 
+ 910              	.LASF21:
+ 911 02be 4C696768 		.ascii	"LightIntensity\000"
+ 911      74496E74 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccMURj4l.s 			page 22
+
+
+ 911      656E7369 
+ 911      747900
+ 912              	.LASF4:
+ 913 02cd 6C6F6E67 		.ascii	"long int\000"
+ 913      20696E74 
+ 913      00
+ 914              	.LASF37:
+ 915 02d6 4950535F 		.ascii	"IPS_Start\000"
+ 915      53746172 
+ 915      7400
+ 916              	.LASF0:
+ 917 02e0 7369676E 		.ascii	"signed char\000"
+ 917      65642063 
+ 917      68617200 
+ 918              	.LASF7:
+ 919 02ec 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 919      206C6F6E 
+ 919      6720756E 
+ 919      7369676E 
+ 919      65642069 
+ 920              	.LASF34:
+ 921 0303 48756D69 		.ascii	"Humidity\000"
+ 921      64697479 
+ 921      00
+ 922              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

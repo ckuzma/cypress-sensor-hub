@@ -1,0 +1,2072 @@
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 1
+
+
+   1              		.cpu cortex-m0plus
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Humidity.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.HumidityTask,"ax",%progbits
+  18              		.align	2
+  19              		.global	HumidityTask
+  20              		.code	16
+  21              		.thumb_func
+  22              		.type	HumidityTask, %function
+  23              	HumidityTask:
+  24              	.LFB35:
+  25              		.file 1 "Humidity.c"
+   1:Humidity.c    **** /*******************************************************************************
+   2:Humidity.c    **** * File Name: Humidity.c
+   3:Humidity.c    **** *
+   4:Humidity.c    **** * Version: 1.0
+   5:Humidity.c    **** *
+   6:Humidity.c    **** * Description:
+   7:Humidity.c    **** * This is the source file for Humidity measurement.
+   8:Humidity.c    **** *
+   9:Humidity.c    **** ********************************************************************************
+  10:Humidity.c    **** * Copyright (2016) , Cypress Semiconductor Corporation.
+  11:Humidity.c    **** ********************************************************************************
+  12:Humidity.c    **** * This software is owned by Cypress Semiconductor Corporation (Cypress) and is
+  13:Humidity.c    **** * protected by and subject to worldwide patent protection (United States and
+  14:Humidity.c    **** * foreign), United States copyright laws and international treaty provisions.
+  15:Humidity.c    **** * Cypress hereby grants to licensee a personal, non-exclusive, non-transferable
+  16:Humidity.c    **** * license to copy, use, modify, create derivative works of, and compile the
+  17:Humidity.c    **** * Cypress Source Code and derivative works for the sole purpose of creating
+  18:Humidity.c    **** * custom software in support of licensee product to be used only in conjunction
+  19:Humidity.c    **** * with a Cypress integrated circuit as specified in the applicable agreement.
+  20:Humidity.c    **** * Any reproduction, modification, translation, compilation, or representation of
+  21:Humidity.c    **** * this software except as specified above is prohibited without the express
+  22:Humidity.c    **** * written permission of Cypress.
+  23:Humidity.c    **** *
+  24:Humidity.c    **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  25:Humidity.c    **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  26:Humidity.c    **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  27:Humidity.c    **** * Cypress reserves the right to make changes without further notice to the
+  28:Humidity.c    **** * materials described herein. Cypress does not assume any liability arising out
+  29:Humidity.c    **** * of the application or use of any product or circuit described herein. Cypress
+  30:Humidity.c    **** * does not authorize its products for use as critical components in life-support
+  31:Humidity.c    **** * systems where a malfunction or failure may reasonably be expected to result in
+  32:Humidity.c    **** * significant injury to the user. The inclusion of Cypress' product in a life
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 2
+
+
+  33:Humidity.c    **** * support systems application implies that the manufacturer assumes all risk of
+  34:Humidity.c    **** * such use and in doing so indemnifies Cypress against all charges. Use may be
+  35:Humidity.c    **** * limited by and subject to the applicable Cypress software license agreement.
+  36:Humidity.c    **** *******************************************************************************/
+  37:Humidity.c    **** #include <project.h>
+  38:Humidity.c    **** #include "main.h"
+  39:Humidity.c    **** #include "humidity.h"
+  40:Humidity.c    **** #include "filters.h"
+  41:Humidity.c    **** 
+  42:Humidity.c    **** 
+  43:Humidity.c    **** /*******************************************************************************
+  44:Humidity.c    **** * Function Name: void HumidityTask(void)
+  45:Humidity.c    **** ********************************************************************************
+  46:Humidity.c    **** *
+  47:Humidity.c    **** * Summary:
+  48:Humidity.c    **** *  This function performs humidity measurement.
+  49:Humidity.c    **** *  The function checks if CSD scan is complete, reads the raw counts, converts the
+  50:Humidity.c    **** *  raw counts to capacitance, and capacitance to humidity.
+  51:Humidity.c    **** *
+  52:Humidity.c    **** * Parameters:
+  53:Humidity.c    **** *  None
+  54:Humidity.c    **** *
+  55:Humidity.c    **** * Return:
+  56:Humidity.c    **** *  None.
+  57:Humidity.c    **** *
+  58:Humidity.c    **** * Side Effects:
+  59:Humidity.c    **** *   None
+  60:Humidity.c    **** *******************************************************************************/
+  61:Humidity.c    **** void HumidityTask(void)
+  62:Humidity.c    **** {
+  26              		.loc 1 62 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              		.cfi_def_cfa_offset 8
+  30              		.cfi_offset 7, -8
+  31              		.cfi_offset 14, -4
+  32 0002 82B0     		sub	sp, sp, #8
+  33              		.cfi_def_cfa_offset 16
+  34 0004 00AF     		add	r7, sp, #0
+  35              		.cfi_def_cfa_register 7
+  63:Humidity.c    **** 	
+  64:Humidity.c    ****     uint32 sensorraw;
+  65:Humidity.c    ****     uint32 refraw;
+  66:Humidity.c    **** 
+  67:Humidity.c    **** 
+  68:Humidity.c    **** 	/* Check if CSD scan is complete */
+  69:Humidity.c    **** 	if(!(CSD_IsBusy()))
+  36              		.loc 1 69 0
+  37 0006 FFF7FEFF 		bl	CSD_IsBusy
+  38 000a 031E     		sub	r3, r0, #0
+  39 000c 24D1     		bne	.L1
+  70:Humidity.c    **** 	{
+  71:Humidity.c    **** 		/* Read reference capacitor raw counts */
+  72:Humidity.c    ****         refraw = CSD_BUTTON0_SNS1_RAW0_VALUE;
+  40              		.loc 1 72 0
+  41 000e 144B     		ldr	r3, .L3
+  42 0010 5B8E     		ldrh	r3, [r3, #50]
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 3
+
+
+  43 0012 7B60     		str	r3, [r7, #4]
+  73:Humidity.c    ****         sensorraw = CSD_BUTTON0_SNS0_RAW0_VALUE;
+  44              		.loc 1 73 0
+  45 0014 124B     		ldr	r3, .L3
+  46 0016 1B8D     		ldrh	r3, [r3, #40]
+  47 0018 3B60     		str	r3, [r7]
+  74:Humidity.c    ****         
+  75:Humidity.c    **** //        CSD_GetParam(CSD_BUTTON0_SNS1_RAW0_PARAM_ID,&refraw);
+  76:Humidity.c    **** //        CSD_GetParam(CSD_BUTTON0_SNS0_RAW0_PARAM_ID,&sensorraw);
+  77:Humidity.c    ****             
+  78:Humidity.c    ****         /* Pass the raw counts through low pass filter */
+  79:Humidity.c    **** 		ProcessValues.RawCountsRefCap = refraw; //LowPassFilter(refraw, LPF_CHANNEL_REFCAP);
+  48              		.loc 1 79 0
+  49 001a 7B68     		ldr	r3, [r7, #4]
+  50 001c 9AB2     		uxth	r2, r3
+  51 001e 114B     		ldr	r3, .L3+4
+  52 0020 DA83     		strh	r2, [r3, #30]
+  80:Humidity.c    ****         ProcessValues.RawCountsHumidity = sensorraw; //LowPassFilter(sensorraw, LPF_CHANNEL_HUMIDIT
+  53              		.loc 1 80 0
+  54 0022 3B68     		ldr	r3, [r7]
+  55 0024 9AB2     		uxth	r2, r3
+  56 0026 0F4B     		ldr	r3, .L3+4
+  57 0028 1A84     		strh	r2, [r3, #32]
+  81:Humidity.c    **** 
+  82:Humidity.c    ****         /* Convert raw counts to capacitance */
+  83:Humidity.c    **** 		ProcessValues.SensorCapacitance = CalculateCapacitance(ProcessValues.RawCountsHumidity, ProcessVa
+  58              		.loc 1 83 0
+  59 002a 0E4B     		ldr	r3, .L3+4
+  60 002c 1A8C     		ldrh	r2, [r3, #32]
+  61 002e 0D4B     		ldr	r3, .L3+4
+  62 0030 DB8B     		ldrh	r3, [r3, #30]
+  63 0032 101C     		mov	r0, r2
+  64 0034 191C     		mov	r1, r3
+  65 0036 FFF7FEFF 		bl	CalculateCapacitance
+  66 003a 031C     		mov	r3, r0
+  67 003c 1A1C     		mov	r2, r3
+  68 003e 094B     		ldr	r3, .L3+4
+  69 0040 5A84     		strh	r2, [r3, #34]
+  84:Humidity.c    **** 		
+  85:Humidity.c    **** 		/* Calculate humidity */
+  86:Humidity.c    **** 		ProcessValues.Humidity = CalculateHumidity(ProcessValues.SensorCapacitance);
+  70              		.loc 1 86 0
+  71 0042 084B     		ldr	r3, .L3+4
+  72 0044 5B8C     		ldrh	r3, [r3, #34]
+  73 0046 181C     		mov	r0, r3
+  74 0048 FFF7FEFF 		bl	CalculateHumidity
+  75 004c 031C     		mov	r3, r0
+  76 004e 1A1C     		mov	r2, r3
+  77 0050 044B     		ldr	r3, .L3+4
+  78 0052 9A84     		strh	r2, [r3, #36]
+  87:Humidity.c    **** 
+  88:Humidity.c    ****         CSD_ScanAllWidgets();
+  79              		.loc 1 88 0
+  80 0054 FFF7FEFF 		bl	CSD_ScanAllWidgets
+  81              	.L1:
+  89:Humidity.c    **** 	}	
+  90:Humidity.c    **** }
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 4
+
+
+  82              		.loc 1 90 0
+  83 0058 BD46     		mov	sp, r7
+  84 005a 02B0     		add	sp, sp, #8
+  85              		@ sp needed
+  86 005c 80BD     		pop	{r7, pc}
+  87              	.L4:
+  88 005e C046     		.align	2
+  89              	.L3:
+  90 0060 00000000 		.word	CSD_dsRam
+  91 0064 00000000 		.word	ProcessValues
+  92              		.cfi_endproc
+  93              	.LFE35:
+  94              		.size	HumidityTask, .-HumidityTask
+  95              		.global	__aeabi_i2f
+  96              		.global	__aeabi_fmul
+  97              		.global	__aeabi_fdiv
+  98              		.global	__aeabi_f2uiz
+  99              		.section	.text.CalculateCapacitance,"ax",%progbits
+ 100              		.align	2
+ 101              		.global	CalculateCapacitance
+ 102              		.code	16
+ 103              		.thumb_func
+ 104              		.type	CalculateCapacitance, %function
+ 105              	CalculateCapacitance:
+ 106              	.LFB36:
+  91:Humidity.c    **** 
+  92:Humidity.c    **** /*******************************************************************************
+  93:Humidity.c    **** * Function Name: uint16 CalculateCapacitance(uint16 RawCounts, uint16 RefsensorCounts)
+  94:Humidity.c    **** ********************************************************************************
+  95:Humidity.c    **** *
+  96:Humidity.c    **** * Summary:
+  97:Humidity.c    **** *  This function calculates capacitance from raw count.
+  98:Humidity.c    **** *
+  99:Humidity.c    **** * Parameters:
+ 100:Humidity.c    **** *  uint16 RawCounts - Raw count corresponding to Humidity sensor
+ 101:Humidity.c    **** *  uint16 RefsensorCounts - Raw count corresponding to Reference capacitor
+ 102:Humidity.c    **** *
+ 103:Humidity.c    **** * Return:
+ 104:Humidity.c    **** *  Capacitance of the Humidity sensor
+ 105:Humidity.c    **** *
+ 106:Humidity.c    **** * Side Effects:
+ 107:Humidity.c    **** *   None
+ 108:Humidity.c    **** *******************************************************************************/
+ 109:Humidity.c    **** uint16 CalculateCapacitance(uint16 rawCounts, uint16 refsensorCounts)
+ 110:Humidity.c    **** {
+ 107              		.loc 1 110 0
+ 108              		.cfi_startproc
+ 109 0000 90B5     		push	{r4, r7, lr}
+ 110              		.cfi_def_cfa_offset 12
+ 111              		.cfi_offset 4, -12
+ 112              		.cfi_offset 7, -8
+ 113              		.cfi_offset 14, -4
+ 114 0002 83B0     		sub	sp, sp, #12
+ 115              		.cfi_def_cfa_offset 24
+ 116 0004 00AF     		add	r7, sp, #0
+ 117              		.cfi_def_cfa_register 7
+ 118 0006 021C     		mov	r2, r0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 5
+
+
+ 119 0008 BB1D     		add	r3, r7, #6
+ 120 000a 1A80     		strh	r2, [r3]
+ 121 000c 3B1D     		add	r3, r7, #4
+ 122 000e 0A1C     		add	r2, r1, #0
+ 123 0010 1A80     		strh	r2, [r3]
+ 111:Humidity.c    ****     return (uint16)((float)(rawCounts - OFFSETCOUNT) * (CREF - COFFSET) / (float)(refsensorCounts -
+ 124              		.loc 1 111 0
+ 125 0012 BB1D     		add	r3, r7, #6
+ 126 0014 1B88     		ldrh	r3, [r3]
+ 127 0016 124A     		ldr	r2, .L7
+ 128 0018 9446     		mov	ip, r2
+ 129 001a 6344     		add	r3, r3, ip
+ 130 001c 181C     		mov	r0, r3
+ 131 001e FFF7FEFF 		bl	__aeabi_i2f
+ 132 0022 031C     		add	r3, r0, #0
+ 133 0024 181C     		add	r0, r3, #0
+ 134 0026 0F49     		ldr	r1, .L7+4
+ 135 0028 FFF7FEFF 		bl	__aeabi_fmul
+ 136 002c 031C     		add	r3, r0, #0
+ 137 002e 1C1C     		add	r4, r3, #0
+ 138 0030 3B1D     		add	r3, r7, #4
+ 139 0032 1B88     		ldrh	r3, [r3]
+ 140 0034 0A4A     		ldr	r2, .L7
+ 141 0036 9446     		mov	ip, r2
+ 142 0038 6344     		add	r3, r3, ip
+ 143 003a 181C     		mov	r0, r3
+ 144 003c FFF7FEFF 		bl	__aeabi_i2f
+ 145 0040 031C     		add	r3, r0, #0
+ 146 0042 201C     		add	r0, r4, #0
+ 147 0044 191C     		add	r1, r3, #0
+ 148 0046 FFF7FEFF 		bl	__aeabi_fdiv
+ 149 004a 031C     		add	r3, r0, #0
+ 150 004c 181C     		add	r0, r3, #0
+ 151 004e FFF7FEFF 		bl	__aeabi_f2uiz
+ 152 0052 031C     		mov	r3, r0
+ 153 0054 9BB2     		uxth	r3, r3
+ 112:Humidity.c    **** }
+ 154              		.loc 1 112 0
+ 155 0056 181C     		mov	r0, r3
+ 156 0058 BD46     		mov	sp, r7
+ 157 005a 03B0     		add	sp, sp, #12
+ 158              		@ sp needed
+ 159 005c 90BD     		pop	{r4, r7, pc}
+ 160              	.L8:
+ 161 005e C046     		.align	2
+ 162              	.L7:
+ 163 0060 00FAFFFF 		.word	-1536
+ 164 0064 0080DE44 		.word	1155432448
+ 165              		.cfi_endproc
+ 166              	.LFE36:
+ 167              		.size	CalculateCapacitance, .-CalculateCapacitance
+ 168              		.global	__aeabi_idiv
+ 169              		.section	.text.CalculateHumidity,"ax",%progbits
+ 170              		.align	2
+ 171              		.global	CalculateHumidity
+ 172              		.code	16
+ 173              		.thumb_func
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 6
+
+
+ 174              		.type	CalculateHumidity, %function
+ 175              	CalculateHumidity:
+ 176              	.LFB37:
+ 113:Humidity.c    **** 
+ 114:Humidity.c    **** /*******************************************************************************
+ 115:Humidity.c    **** * Function Name: uint16 CalculateHumidity(uint16 Capacitance)
+ 116:Humidity.c    **** ********************************************************************************
+ 117:Humidity.c    **** *
+ 118:Humidity.c    **** * Summary:
+ 119:Humidity.c    **** *  This function calculates humidity from capacitance
+ 120:Humidity.c    **** 
+ 121:Humidity.c    **** * Parameters:
+ 122:Humidity.c    **** *  uint16 Capacitance - Capacitance of the humidity sensor
+ 123:Humidity.c    **** *
+ 124:Humidity.c    **** * Return:
+ 125:Humidity.c    **** *  Calculated Humidity value
+ 126:Humidity.c    **** *
+ 127:Humidity.c    **** * Side Effects:
+ 128:Humidity.c    **** *   None
+ 129:Humidity.c    **** *******************************************************************************/
+ 130:Humidity.c    **** uint16 CalculateHumidity(uint16 capacitance)
+ 131:Humidity.c    **** {
+ 177              		.loc 1 131 0
+ 178              		.cfi_startproc
+ 179 0000 80B5     		push	{r7, lr}
+ 180              		.cfi_def_cfa_offset 8
+ 181              		.cfi_offset 7, -8
+ 182              		.cfi_offset 14, -4
+ 183 0002 84B0     		sub	sp, sp, #16
+ 184              		.cfi_def_cfa_offset 24
+ 185 0004 00AF     		add	r7, sp, #0
+ 186              		.cfi_def_cfa_register 7
+ 187 0006 021C     		mov	r2, r0
+ 188 0008 BB1D     		add	r3, r7, #6
+ 189 000a 1A80     		strh	r2, [r3]
+ 132:Humidity.c    ****     int16 humidity;
+ 133:Humidity.c    ****     int16 delta;
+ 134:Humidity.c    ****     
+ 135:Humidity.c    ****     /* Find capacitance difference from nominal capacitance at 55% RH */
+ 136:Humidity.c    ****     delta = capacitance - CAPACITANCE_AT_55_RH;
+ 190              		.loc 1 136 0
+ 191 000c BB1D     		add	r3, r7, #6
+ 192 000e 1B88     		ldrh	r3, [r3]
+ 193 0010 1B4A     		ldr	r2, .L14
+ 194 0012 9446     		mov	ip, r2
+ 195 0014 6344     		add	r3, r3, ip
+ 196 0016 9AB2     		uxth	r2, r3
+ 197 0018 0E23     		mov	r3, #14
+ 198 001a FB18     		add	r3, r7, r3
+ 199 001c 1A80     		strh	r2, [r3]
+ 137:Humidity.c    ****     
+ 138:Humidity.c    ****     /* Calculate humidity from capacitance difference and sensor sensitivity */
+ 139:Humidity.c    ****     humidity = ((delta * SENSITIVITY_DENOMINATOR) / SENSITIVITY_NUMERATOR) + NOMINAL_HUMIDITY;
+ 200              		.loc 1 139 0
+ 201 001e 0E23     		mov	r3, #14
+ 202 0020 FB18     		add	r3, r7, r3
+ 203 0022 0022     		mov	r2, #0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 7
+
+
+ 204 0024 9B5E     		ldrsh	r3, [r3, r2]
+ 205 0026 6422     		mov	r2, #100
+ 206 0028 5343     		mul	r3, r2
+ 207 002a 181C     		mov	r0, r3
+ 208 002c 1F21     		mov	r1, #31
+ 209 002e FFF7FEFF 		bl	__aeabi_idiv
+ 210 0032 031C     		mov	r3, r0
+ 211 0034 9BB2     		uxth	r3, r3
+ 212 0036 134A     		ldr	r2, .L14+4
+ 213 0038 9446     		mov	ip, r2
+ 214 003a 6344     		add	r3, r3, ip
+ 215 003c 9AB2     		uxth	r2, r3
+ 216 003e 0C23     		mov	r3, #12
+ 217 0040 FB18     		add	r3, r7, r3
+ 218 0042 1A80     		strh	r2, [r3]
+ 140:Humidity.c    ****     
+ 141:Humidity.c    ****     /* If humidity is less than zero, limit it to 0; If humidity is greater than 1000 (100%), limit
+ 142:Humidity.c    ****     humidity = (humidity < HUMIDITY_0_PERCENT) ? HUMIDITY_0_PERCENT : (humidity > HUMIDITY_100_PERC
+ 219              		.loc 1 142 0
+ 220 0044 0C23     		mov	r3, #12
+ 221 0046 FB18     		add	r3, r7, r3
+ 222 0048 0022     		mov	r2, #0
+ 223 004a 9B5E     		ldrsh	r3, [r3, r2]
+ 224 004c 002B     		cmp	r3, #0
+ 225 004e 0BDB     		blt	.L10
+ 226              		.loc 1 142 0 is_stmt 0 discriminator 1
+ 227 0050 0C23     		mov	r3, #12
+ 228 0052 FB18     		add	r3, r7, r3
+ 229 0054 1B88     		ldrh	r3, [r3]
+ 230 0056 19B2     		sxth	r1, r3
+ 231 0058 FA22     		mov	r2, #250
+ 232 005a 9200     		lsl	r2, r2, #2
+ 233 005c 9142     		cmp	r1, r2
+ 234 005e 01DD     		ble	.L11
+ 235 0060 FA23     		mov	r3, #250
+ 236 0062 9B00     		lsl	r3, r3, #2
+ 237              	.L11:
+ 238 0064 9AB2     		uxth	r2, r3
+ 239 0066 00E0     		b	.L12
+ 240              	.L10:
+ 241              		.loc 1 142 0 discriminator 2
+ 242 0068 0022     		mov	r2, #0
+ 243              	.L12:
+ 244              		.loc 1 142 0 discriminator 4
+ 245 006a 0C23     		mov	r3, #12
+ 246 006c FB18     		add	r3, r7, r3
+ 247 006e 1A80     		strh	r2, [r3]
+ 143:Humidity.c    **** 
+ 144:Humidity.c    ****     /* Return Humidity value */
+ 145:Humidity.c    ****     return humidity;
+ 248              		.loc 1 145 0 is_stmt 1 discriminator 4
+ 249 0070 0C23     		mov	r3, #12
+ 250 0072 FB18     		add	r3, r7, r3
+ 251 0074 1B88     		ldrh	r3, [r3]
+ 146:Humidity.c    **** }
+ 252              		.loc 1 146 0 discriminator 4
+ 253 0076 181C     		mov	r0, r3
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 8
+
+
+ 254 0078 BD46     		mov	sp, r7
+ 255 007a 04B0     		add	sp, sp, #16
+ 256              		@ sp needed
+ 257 007c 80BD     		pop	{r7, pc}
+ 258              	.L15:
+ 259 007e C046     		.align	2
+ 260              	.L14:
+ 261 0080 F8F8FFFF 		.word	-1800
+ 262 0084 26020000 		.word	550
+ 263              		.cfi_endproc
+ 264              	.LFE37:
+ 265              		.size	CalculateHumidity, .-CalculateHumidity
+ 266              		.section	.text.Humidity_Start,"ax",%progbits
+ 267              		.align	2
+ 268              		.global	Humidity_Start
+ 269              		.code	16
+ 270              		.thumb_func
+ 271              		.type	Humidity_Start, %function
+ 272              	Humidity_Start:
+ 273              	.LFB38:
+ 147:Humidity.c    **** 
+ 148:Humidity.c    **** 
+ 149:Humidity.c    **** void Humidity_Start(void)
+ 150:Humidity.c    **** {
+ 274              		.loc 1 150 0
+ 275              		.cfi_startproc
+ 276 0000 80B5     		push	{r7, lr}
+ 277              		.cfi_def_cfa_offset 8
+ 278              		.cfi_offset 7, -8
+ 279              		.cfi_offset 14, -4
+ 280 0002 00AF     		add	r7, sp, #0
+ 281              		.cfi_def_cfa_register 7
+ 151:Humidity.c    **** 	/* Start CSD block and start scan */
+ 152:Humidity.c    **** 	CSD_Start();
+ 282              		.loc 1 152 0
+ 283 0004 FFF7FEFF 		bl	CSD_Start
+ 153:Humidity.c    ****     CSD_ScanAllWidgets();
+ 284              		.loc 1 153 0
+ 285 0008 FFF7FEFF 		bl	CSD_ScanAllWidgets
+ 154:Humidity.c    **** 
+ 155:Humidity.c    ****     /* Initialize humidity values to zero */
+ 156:Humidity.c    ****     ProcessValues.Humidity = 0;
+ 286              		.loc 1 156 0
+ 287 000c 064B     		ldr	r3, .L17
+ 288 000e 0022     		mov	r2, #0
+ 289 0010 9A84     		strh	r2, [r3, #36]
+ 157:Humidity.c    ****     ProcessValues.RawCountsHumidity = 0;
+ 290              		.loc 1 157 0
+ 291 0012 054B     		ldr	r3, .L17
+ 292 0014 0022     		mov	r2, #0
+ 293 0016 1A84     		strh	r2, [r3, #32]
+ 158:Humidity.c    ****     ProcessValues.RawCountsRefCap = 0;
+ 294              		.loc 1 158 0
+ 295 0018 034B     		ldr	r3, .L17
+ 296 001a 0022     		mov	r2, #0
+ 297 001c DA83     		strh	r2, [r3, #30]
+ 159:Humidity.c    ****     ProcessValues.SensorCapacitance = 0;
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 9
+
+
+ 298              		.loc 1 159 0
+ 299 001e 024B     		ldr	r3, .L17
+ 300 0020 0022     		mov	r2, #0
+ 301 0022 5A84     		strh	r2, [r3, #34]
+ 160:Humidity.c    **** }
+ 302              		.loc 1 160 0
+ 303 0024 BD46     		mov	sp, r7
+ 304              		@ sp needed
+ 305 0026 80BD     		pop	{r7, pc}
+ 306              	.L18:
+ 307              		.align	2
+ 308              	.L17:
+ 309 0028 00000000 		.word	ProcessValues
+ 310              		.cfi_endproc
+ 311              	.LFE38:
+ 312              		.size	Humidity_Start, .-Humidity_Start
+ 313              		.section	.text.Humidity_Stop,"ax",%progbits
+ 314              		.align	2
+ 315              		.global	Humidity_Stop
+ 316              		.code	16
+ 317              		.thumb_func
+ 318              		.type	Humidity_Stop, %function
+ 319              	Humidity_Stop:
+ 320              	.LFB39:
+ 161:Humidity.c    **** 
+ 162:Humidity.c    **** void Humidity_Stop(void)
+ 163:Humidity.c    **** {
+ 321              		.loc 1 163 0
+ 322              		.cfi_startproc
+ 323 0000 80B5     		push	{r7, lr}
+ 324              		.cfi_def_cfa_offset 8
+ 325              		.cfi_offset 7, -8
+ 326              		.cfi_offset 14, -4
+ 327 0002 00AF     		add	r7, sp, #0
+ 328              		.cfi_def_cfa_register 7
+ 164:Humidity.c    **** 	/* Stop the CSD block */
+ 165:Humidity.c    **** 	CSD_Stop();
+ 329              		.loc 1 165 0
+ 330 0004 FFF7FEFF 		bl	CSD_Stop
+ 166:Humidity.c    **** 
+ 167:Humidity.c    ****     /* Initialize humidity values to zero */
+ 168:Humidity.c    ****     ProcessValues.Humidity = 0;
+ 331              		.loc 1 168 0
+ 332 0008 064B     		ldr	r3, .L20
+ 333 000a 0022     		mov	r2, #0
+ 334 000c 9A84     		strh	r2, [r3, #36]
+ 169:Humidity.c    ****     ProcessValues.RawCountsHumidity = 0;
+ 335              		.loc 1 169 0
+ 336 000e 054B     		ldr	r3, .L20
+ 337 0010 0022     		mov	r2, #0
+ 338 0012 1A84     		strh	r2, [r3, #32]
+ 170:Humidity.c    ****     ProcessValues.RawCountsRefCap = 0;
+ 339              		.loc 1 170 0
+ 340 0014 034B     		ldr	r3, .L20
+ 341 0016 0022     		mov	r2, #0
+ 342 0018 DA83     		strh	r2, [r3, #30]
+ 171:Humidity.c    ****     ProcessValues.SensorCapacitance = 0;
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 10
+
+
+ 343              		.loc 1 171 0
+ 344 001a 024B     		ldr	r3, .L20
+ 345 001c 0022     		mov	r2, #0
+ 346 001e 5A84     		strh	r2, [r3, #34]
+ 172:Humidity.c    ****     
+ 173:Humidity.c    **** }
+ 347              		.loc 1 173 0
+ 348 0020 BD46     		mov	sp, r7
+ 349              		@ sp needed
+ 350 0022 80BD     		pop	{r7, pc}
+ 351              	.L21:
+ 352              		.align	2
+ 353              	.L20:
+ 354 0024 00000000 		.word	ProcessValues
+ 355              		.cfi_endproc
+ 356              	.LFE39:
+ 357              		.size	Humidity_Stop, .-Humidity_Stop
+ 358              		.text
+ 359              	.Letext0:
+ 360              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 361              		.file 3 "Generated_Source\\PSoC4/CSD_Configuration.h"
+ 362              		.file 4 "Generated_Source\\PSoC4/CSD_Structure.h"
+ 363              		.file 5 "main.h"
+ 364              		.section	.debug_info,"",%progbits
+ 365              	.Ldebug_info0:
+ 366 0000 23050000 		.4byte	0x523
+ 367 0004 0400     		.2byte	0x4
+ 368 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 369 000a 04       		.byte	0x4
+ 370 000b 01       		.uleb128 0x1
+ 371 000c 30010000 		.4byte	.LASF88
+ 372 0010 01       		.byte	0x1
+ 373 0011 67030000 		.4byte	.LASF89
+ 374 0015 9A030000 		.4byte	.LASF90
+ 375 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 376 001d 00000000 		.4byte	0
+ 377 0021 00000000 		.4byte	.Ldebug_line0
+ 378 0025 02       		.uleb128 0x2
+ 379 0026 01       		.byte	0x1
+ 380 0027 06       		.byte	0x6
+ 381 0028 90020000 		.4byte	.LASF0
+ 382 002c 02       		.uleb128 0x2
+ 383 002d 01       		.byte	0x1
+ 384 002e 08       		.byte	0x8
+ 385 002f 51020000 		.4byte	.LASF1
+ 386 0033 02       		.uleb128 0x2
+ 387 0034 02       		.byte	0x2
+ 388 0035 05       		.byte	0x5
+ 389 0036 60000000 		.4byte	.LASF2
+ 390 003a 02       		.uleb128 0x2
+ 391 003b 02       		.byte	0x2
+ 392 003c 07       		.byte	0x7
+ 393 003d 04030000 		.4byte	.LASF3
+ 394 0041 02       		.uleb128 0x2
+ 395 0042 04       		.byte	0x4
+ 396 0043 05       		.byte	0x5
+ 397 0044 FB010000 		.4byte	.LASF4
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 11
+
+
+ 398 0048 02       		.uleb128 0x2
+ 399 0049 04       		.byte	0x4
+ 400 004a 07       		.byte	0x7
+ 401 004b 2F040000 		.4byte	.LASF5
+ 402 004f 02       		.uleb128 0x2
+ 403 0050 08       		.byte	0x8
+ 404 0051 05       		.byte	0x5
+ 405 0052 C2010000 		.4byte	.LASF6
+ 406 0056 02       		.uleb128 0x2
+ 407 0057 08       		.byte	0x8
+ 408 0058 07       		.byte	0x7
+ 409 0059 9C020000 		.4byte	.LASF7
+ 410 005d 03       		.uleb128 0x3
+ 411 005e 04       		.byte	0x4
+ 412 005f 05       		.byte	0x5
+ 413 0060 696E7400 		.ascii	"int\000"
+ 414 0064 02       		.uleb128 0x2
+ 415 0065 04       		.byte	0x4
+ 416 0066 07       		.byte	0x7
+ 417 0067 C8020000 		.4byte	.LASF8
+ 418 006b 04       		.uleb128 0x4
+ 419 006c FD000000 		.4byte	.LASF9
+ 420 0070 02       		.byte	0x2
+ 421 0071 9801     		.2byte	0x198
+ 422 0073 2C000000 		.4byte	0x2c
+ 423 0077 04       		.uleb128 0x4
+ 424 0078 E3000000 		.4byte	.LASF10
+ 425 007c 02       		.byte	0x2
+ 426 007d 9901     		.2byte	0x199
+ 427 007f 3A000000 		.4byte	0x3a
+ 428 0083 04       		.uleb128 0x4
+ 429 0084 28040000 		.4byte	.LASF11
+ 430 0088 02       		.byte	0x2
+ 431 0089 9A01     		.2byte	0x19a
+ 432 008b 48000000 		.4byte	0x48
+ 433 008f 04       		.uleb128 0x4
+ 434 0090 F7000000 		.4byte	.LASF12
+ 435 0094 02       		.byte	0x2
+ 436 0095 9C01     		.2byte	0x19c
+ 437 0097 33000000 		.4byte	0x33
+ 438 009b 02       		.uleb128 0x2
+ 439 009c 04       		.byte	0x4
+ 440 009d 04       		.byte	0x4
+ 441 009e 2A010000 		.4byte	.LASF13
+ 442 00a2 02       		.uleb128 0x2
+ 443 00a3 08       		.byte	0x8
+ 444 00a4 04       		.byte	0x4
+ 445 00a5 60040000 		.4byte	.LASF14
+ 446 00a9 02       		.uleb128 0x2
+ 447 00aa 01       		.byte	0x1
+ 448 00ab 08       		.byte	0x8
+ 449 00ac 29030000 		.4byte	.LASF15
+ 450 00b0 02       		.uleb128 0x2
+ 451 00b1 04       		.byte	0x4
+ 452 00b2 07       		.byte	0x7
+ 453 00b3 75000000 		.4byte	.LASF16
+ 454 00b7 05       		.uleb128 0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 12
+
+
+ 455 00b8 D0010000 		.4byte	.LASF17
+ 456 00bc 03       		.byte	0x3
+ 457 00bd D8       		.byte	0xd8
+ 458 00be 77000000 		.4byte	0x77
+ 459 00c2 05       		.uleb128 0x5
+ 460 00c3 7A020000 		.4byte	.LASF18
+ 461 00c7 03       		.byte	0x3
+ 462 00c8 DC       		.byte	0xdc
+ 463 00c9 6B000000 		.4byte	0x6b
+ 464 00cd 06       		.uleb128 0x6
+ 465 00ce 6B000000 		.4byte	0x6b
+ 466 00d2 DD000000 		.4byte	0xdd
+ 467 00d6 07       		.uleb128 0x7
+ 468 00d7 B0000000 		.4byte	0xb0
+ 469 00db 00       		.byte	0
+ 470 00dc 00       		.byte	0
+ 471 00dd 08       		.uleb128 0x8
+ 472 00de 0E       		.byte	0xe
+ 473 00df 04       		.byte	0x4
+ 474 00e0 BE       		.byte	0xbe
+ 475 00e1 6A010000 		.4byte	0x16a
+ 476 00e5 09       		.uleb128 0x9
+ 477 00e6 72030000 		.4byte	.LASF19
+ 478 00ea 04       		.byte	0x4
+ 479 00eb C4       		.byte	0xc4
+ 480 00ec 77000000 		.4byte	0x77
+ 481 00f0 00       		.byte	0
+ 482 00f1 09       		.uleb128 0x9
+ 483 00f2 04020000 		.4byte	.LASF20
+ 484 00f6 04       		.byte	0x4
+ 485 00f7 C9       		.byte	0xc9
+ 486 00f8 B7000000 		.4byte	0xb7
+ 487 00fc 02       		.byte	0x2
+ 488 00fd 09       		.uleb128 0x9
+ 489 00fe D2000000 		.4byte	.LASF21
+ 490 0102 04       		.byte	0x4
+ 491 0103 CE       		.byte	0xce
+ 492 0104 6B000000 		.4byte	0x6b
+ 493 0108 04       		.byte	0x4
+ 494 0109 09       		.uleb128 0x9
+ 495 010a 1F040000 		.4byte	.LASF22
+ 496 010e 04       		.byte	0x4
+ 497 010f D3       		.byte	0xd3
+ 498 0110 6B000000 		.4byte	0x6b
+ 499 0114 05       		.byte	0x5
+ 500 0115 09       		.uleb128 0x9
+ 501 0116 22020000 		.4byte	.LASF23
+ 502 011a 04       		.byte	0x4
+ 503 011b D8       		.byte	0xd8
+ 504 011c 6B000000 		.4byte	0x6b
+ 505 0120 06       		.byte	0x6
+ 506 0121 09       		.uleb128 0x9
+ 507 0122 6A000000 		.4byte	.LASF24
+ 508 0126 04       		.byte	0x4
+ 509 0127 DD       		.byte	0xdd
+ 510 0128 6B000000 		.4byte	0x6b
+ 511 012c 07       		.byte	0x7
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 13
+
+
+ 512 012d 09       		.uleb128 0x9
+ 513 012e 41000000 		.4byte	.LASF25
+ 514 0132 04       		.byte	0x4
+ 515 0133 E3       		.byte	0xe3
+ 516 0134 C2000000 		.4byte	0xc2
+ 517 0138 08       		.byte	0x8
+ 518 0139 09       		.uleb128 0x9
+ 519 013a FF030000 		.4byte	.LASF26
+ 520 013e 04       		.byte	0x4
+ 521 013f E8       		.byte	0xe8
+ 522 0140 6B000000 		.4byte	0x6b
+ 523 0144 09       		.byte	0x9
+ 524 0145 09       		.uleb128 0x9
+ 525 0146 58000000 		.4byte	.LASF27
+ 526 014a 04       		.byte	0x4
+ 527 014b EF       		.byte	0xef
+ 528 014c CD000000 		.4byte	0xcd
+ 529 0150 0A       		.byte	0xa
+ 530 0151 09       		.uleb128 0x9
+ 531 0152 0D020000 		.4byte	.LASF28
+ 532 0156 04       		.byte	0x4
+ 533 0157 F6       		.byte	0xf6
+ 534 0158 6B000000 		.4byte	0x6b
+ 535 015c 0B       		.byte	0xb
+ 536 015d 09       		.uleb128 0x9
+ 537 015e A1000000 		.4byte	.LASF29
+ 538 0162 04       		.byte	0x4
+ 539 0163 FB       		.byte	0xfb
+ 540 0164 6B000000 		.4byte	0x6b
+ 541 0168 0C       		.byte	0xc
+ 542 0169 00       		.byte	0
+ 543 016a 05       		.uleb128 0x5
+ 544 016b B3040000 		.4byte	.LASF30
+ 545 016f 04       		.byte	0x4
+ 546 0170 FC       		.byte	0xfc
+ 547 0171 DD000000 		.4byte	0xdd
+ 548 0175 0A       		.uleb128 0xa
+ 549 0176 0E       		.byte	0xe
+ 550 0177 04       		.byte	0x4
+ 551 0178 0201     		.2byte	0x102
+ 552 017a 8C010000 		.4byte	0x18c
+ 553 017e 0B       		.uleb128 0xb
+ 554 017f 99040000 		.4byte	.LASF31
+ 555 0183 04       		.byte	0x4
+ 556 0184 0701     		.2byte	0x107
+ 557 0186 6A010000 		.4byte	0x16a
+ 558 018a 00       		.byte	0
+ 559 018b 00       		.byte	0
+ 560 018c 04       		.uleb128 0x4
+ 561 018d 50030000 		.4byte	.LASF32
+ 562 0191 04       		.byte	0x4
+ 563 0192 0801     		.2byte	0x108
+ 564 0194 75010000 		.4byte	0x175
+ 565 0198 0A       		.uleb128 0xa
+ 566 0199 0A       		.byte	0xa
+ 567 019a 04       		.byte	0x4
+ 568 019b 0E01     		.2byte	0x10e
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 14
+
+
+ 569 019d F0010000 		.4byte	0x1f0
+ 570 01a1 0C       		.uleb128 0xc
+ 571 01a2 72617700 		.ascii	"raw\000"
+ 572 01a6 04       		.byte	0x4
+ 573 01a7 1301     		.2byte	0x113
+ 574 01a9 F0010000 		.4byte	0x1f0
+ 575 01ad 00       		.byte	0
+ 576 01ae 0B       		.uleb128 0xb
+ 577 01af 19000000 		.4byte	.LASF33
+ 578 01b3 04       		.byte	0x4
+ 579 01b4 1801     		.2byte	0x118
+ 580 01b6 F0010000 		.4byte	0x1f0
+ 581 01ba 02       		.byte	0x2
+ 582 01bb 0B       		.uleb128 0xb
+ 583 01bc 67040000 		.4byte	.LASF34
+ 584 01c0 04       		.byte	0x4
+ 585 01c1 1E01     		.2byte	0x11e
+ 586 01c3 CD000000 		.4byte	0xcd
+ 587 01c7 04       		.byte	0x4
+ 588 01c8 0B       		.uleb128 0xb
+ 589 01c9 8D000000 		.4byte	.LASF35
+ 590 01cd 04       		.byte	0x4
+ 591 01ce 2401     		.2byte	0x124
+ 592 01d0 CD000000 		.4byte	0xcd
+ 593 01d4 05       		.byte	0x5
+ 594 01d5 0B       		.uleb128 0xb
+ 595 01d6 4C000000 		.4byte	.LASF36
+ 596 01da 04       		.byte	0x4
+ 597 01db 2901     		.2byte	0x129
+ 598 01dd B7000000 		.4byte	0xb7
+ 599 01e1 06       		.byte	0x6
+ 600 01e2 0B       		.uleb128 0xb
+ 601 01e3 8B040000 		.4byte	.LASF37
+ 602 01e7 04       		.byte	0x4
+ 603 01e8 2E01     		.2byte	0x12e
+ 604 01ea 00020000 		.4byte	0x200
+ 605 01ee 08       		.byte	0x8
+ 606 01ef 00       		.byte	0
+ 607 01f0 06       		.uleb128 0x6
+ 608 01f1 77000000 		.4byte	0x77
+ 609 01f5 00020000 		.4byte	0x200
+ 610 01f9 07       		.uleb128 0x7
+ 611 01fa B0000000 		.4byte	0xb0
+ 612 01fe 00       		.byte	0
+ 613 01ff 00       		.byte	0
+ 614 0200 06       		.uleb128 0x6
+ 615 0201 C2000000 		.4byte	0xc2
+ 616 0205 10020000 		.4byte	0x210
+ 617 0209 07       		.uleb128 0x7
+ 618 020a B0000000 		.4byte	0xb0
+ 619 020e 00       		.byte	0
+ 620 020f 00       		.byte	0
+ 621 0210 04       		.uleb128 0x4
+ 622 0211 D5020000 		.4byte	.LASF38
+ 623 0215 04       		.byte	0x4
+ 624 0216 2F01     		.2byte	0x12f
+ 625 0218 98010000 		.4byte	0x198
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 15
+
+
+ 626 021c 0A       		.uleb128 0xa
+ 627 021d 14       		.byte	0x14
+ 628 021e 04       		.byte	0x4
+ 629 021f 3501     		.2byte	0x135
+ 630 0221 33020000 		.4byte	0x233
+ 631 0225 0B       		.uleb128 0xb
+ 632 0226 99040000 		.4byte	.LASF31
+ 633 022a 04       		.byte	0x4
+ 634 022b 3A01     		.2byte	0x13a
+ 635 022d 33020000 		.4byte	0x233
+ 636 0231 00       		.byte	0
+ 637 0232 00       		.byte	0
+ 638 0233 06       		.uleb128 0x6
+ 639 0234 10020000 		.4byte	0x210
+ 640 0238 43020000 		.4byte	0x243
+ 641 023c 07       		.uleb128 0x7
+ 642 023d B0000000 		.4byte	0xb0
+ 643 0241 01       		.byte	0x1
+ 644 0242 00       		.byte	0
+ 645 0243 04       		.uleb128 0x4
+ 646 0244 E3010000 		.4byte	.LASF39
+ 647 0248 04       		.byte	0x4
+ 648 0249 3B01     		.2byte	0x13b
+ 649 024b 1C020000 		.4byte	0x21c
+ 650 024f 0A       		.uleb128 0xa
+ 651 0250 44       		.byte	0x44
+ 652 0251 04       		.byte	0x4
+ 653 0252 4101     		.2byte	0x141
+ 654 0254 29030000 		.4byte	0x329
+ 655 0258 0B       		.uleb128 0xb
+ 656 0259 7E000000 		.4byte	.LASF40
+ 657 025d 04       		.byte	0x4
+ 658 025e 4701     		.2byte	0x147
+ 659 0260 77000000 		.4byte	0x77
+ 660 0264 00       		.byte	0
+ 661 0265 0B       		.uleb128 0xb
+ 662 0266 DA000000 		.4byte	.LASF41
+ 663 026a 04       		.byte	0x4
+ 664 026b 4C01     		.2byte	0x14c
+ 665 026d 77000000 		.4byte	0x77
+ 666 0271 02       		.byte	0x2
+ 667 0272 0B       		.uleb128 0xb
+ 668 0273 3D020000 		.4byte	.LASF42
+ 669 0277 04       		.byte	0x4
+ 670 0278 5201     		.2byte	0x152
+ 671 027a 77000000 		.4byte	0x77
+ 672 027e 04       		.byte	0x4
+ 673 027f 0B       		.uleb128 0xb
+ 674 0280 13040000 		.4byte	.LASF43
+ 675 0284 04       		.byte	0x4
+ 676 0285 5701     		.2byte	0x157
+ 677 0287 77000000 		.4byte	0x77
+ 678 028b 06       		.byte	0x6
+ 679 028c 0B       		.uleb128 0xb
+ 680 028d 22030000 		.4byte	.LASF44
+ 681 0291 04       		.byte	0x4
+ 682 0292 5C01     		.2byte	0x15c
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 16
+
+
+ 683 0294 83000000 		.4byte	0x83
+ 684 0298 08       		.byte	0x8
+ 685 0299 0B       		.uleb128 0xb
+ 686 029a F2020000 		.4byte	.LASF45
+ 687 029e 04       		.byte	0x4
+ 688 029f 6101     		.2byte	0x161
+ 689 02a1 29030000 		.4byte	0x329
+ 690 02a5 0C       		.byte	0xc
+ 691 02a6 0B       		.uleb128 0xb
+ 692 02a7 28050000 		.4byte	.LASF46
+ 693 02ab 04       		.byte	0x4
+ 694 02ac 6601     		.2byte	0x166
+ 695 02ae 29030000 		.4byte	0x329
+ 696 02b2 10       		.byte	0x10
+ 697 02b3 0B       		.uleb128 0xb
+ 698 02b4 33050000 		.4byte	.LASF47
+ 699 02b8 04       		.byte	0x4
+ 700 02b9 7401     		.2byte	0x174
+ 701 02bb CD000000 		.4byte	0xcd
+ 702 02bf 14       		.byte	0x14
+ 703 02c0 0B       		.uleb128 0xb
+ 704 02c1 96000000 		.4byte	.LASF48
+ 705 02c5 04       		.byte	0x4
+ 706 02c6 7901     		.2byte	0x179
+ 707 02c8 77000000 		.4byte	0x77
+ 708 02cc 16       		.byte	0x16
+ 709 02cd 0B       		.uleb128 0xb
+ 710 02ce 09040000 		.4byte	.LASF49
+ 711 02d2 04       		.byte	0x4
+ 712 02d3 7E01     		.2byte	0x17e
+ 713 02d5 6B000000 		.4byte	0x6b
+ 714 02d9 18       		.byte	0x18
+ 715 02da 0B       		.uleb128 0xb
+ 716 02db 00000000 		.4byte	.LASF50
+ 717 02df 04       		.byte	0x4
+ 718 02e0 8301     		.2byte	0x183
+ 719 02e2 8C010000 		.4byte	0x18c
+ 720 02e6 1A       		.byte	0x1a
+ 721 02e7 0B       		.uleb128 0xb
+ 722 02e8 92030000 		.4byte	.LASF51
+ 723 02ec 04       		.byte	0x4
+ 724 02ed 8801     		.2byte	0x188
+ 725 02ef 43020000 		.4byte	0x243
+ 726 02f3 28       		.byte	0x28
+ 727 02f4 0B       		.uleb128 0xb
+ 728 02f5 D8040000 		.4byte	.LASF52
+ 729 02f9 04       		.byte	0x4
+ 730 02fa 8D01     		.2byte	0x18d
+ 731 02fc 6B000000 		.4byte	0x6b
+ 732 0300 3C       		.byte	0x3c
+ 733 0301 0B       		.uleb128 0xb
+ 734 0302 18050000 		.4byte	.LASF53
+ 735 0306 04       		.byte	0x4
+ 736 0307 9201     		.2byte	0x192
+ 737 0309 6B000000 		.4byte	0x6b
+ 738 030d 3D       		.byte	0x3d
+ 739 030e 0B       		.uleb128 0xb
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 17
+
+
+ 740 030f 3D030000 		.4byte	.LASF54
+ 741 0313 04       		.byte	0x4
+ 742 0314 9701     		.2byte	0x197
+ 743 0316 77000000 		.4byte	0x77
+ 744 031a 3E       		.byte	0x3e
+ 745 031b 0B       		.uleb128 0xb
+ 746 031c 09000000 		.4byte	.LASF55
+ 747 0320 04       		.byte	0x4
+ 748 0321 9C01     		.2byte	0x19c
+ 749 0323 F0010000 		.4byte	0x1f0
+ 750 0327 40       		.byte	0x40
+ 751 0328 00       		.byte	0
+ 752 0329 06       		.uleb128 0x6
+ 753 032a 83000000 		.4byte	0x83
+ 754 032e 39030000 		.4byte	0x339
+ 755 0332 07       		.uleb128 0x7
+ 756 0333 B0000000 		.4byte	0xb0
+ 757 0337 00       		.byte	0
+ 758 0338 00       		.byte	0
+ 759 0339 04       		.uleb128 0x4
+ 760 033a E8040000 		.4byte	.LASF56
+ 761 033e 04       		.byte	0x4
+ 762 033f 9D01     		.2byte	0x19d
+ 763 0341 4F020000 		.4byte	0x24f
+ 764 0345 0D       		.uleb128 0xd
+ 765 0346 2E030000 		.4byte	.LASF74
+ 766 034a 26       		.byte	0x26
+ 767 034b 05       		.byte	0x5
+ 768 034c 5C       		.byte	0x5c
+ 769 034d 36040000 		.4byte	0x436
+ 770 0351 09       		.uleb128 0x9
+ 771 0352 7D030000 		.4byte	.LASF57
+ 772 0356 05       		.byte	0x5
+ 773 0357 5E       		.byte	0x5e
+ 774 0358 77000000 		.4byte	0x77
+ 775 035c 00       		.byte	0
+ 776 035d 0E       		.uleb128 0xe
+ 777 035e 56746800 		.ascii	"Vth\000"
+ 778 0362 05       		.byte	0x5
+ 779 0363 5F       		.byte	0x5f
+ 780 0364 77000000 		.4byte	0x77
+ 781 0368 02       		.byte	0x2
+ 782 0369 0E       		.uleb128 0xe
+ 783 036a 52746800 		.ascii	"Rth\000"
+ 784 036e 05       		.byte	0x5
+ 785 036f 60       		.byte	0x60
+ 786 0370 77000000 		.4byte	0x77
+ 787 0374 04       		.byte	0x4
+ 788 0375 09       		.uleb128 0x9
+ 789 0376 CC040000 		.4byte	.LASF58
+ 790 037a 05       		.byte	0x5
+ 791 037b 61       		.byte	0x61
+ 792 037c 8F000000 		.4byte	0x8f
+ 793 0380 06       		.byte	0x6
+ 794 0381 09       		.uleb128 0x9
+ 795 0382 1F010000 		.4byte	.LASF59
+ 796 0386 05       		.byte	0x5
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 18
+
+
+ 797 0387 62       		.byte	0x62
+ 798 0388 77000000 		.4byte	0x77
+ 799 038c 08       		.byte	0x8
+ 800 038d 09       		.uleb128 0x9
+ 801 038e F7040000 		.4byte	.LASF60
+ 802 0392 05       		.byte	0x5
+ 803 0393 63       		.byte	0x63
+ 804 0394 77000000 		.4byte	0x77
+ 805 0398 0A       		.byte	0xa
+ 806 0399 09       		.uleb128 0x9
+ 807 039a 73020000 		.4byte	.LASF61
+ 808 039e 05       		.byte	0x5
+ 809 039f 64       		.byte	0x64
+ 810 03a0 8F000000 		.4byte	0x8f
+ 811 03a4 0C       		.byte	0xc
+ 812 03a5 09       		.uleb128 0x9
+ 813 03a6 FD020000 		.4byte	.LASF62
+ 814 03aa 05       		.byte	0x5
+ 815 03ab 65       		.byte	0x65
+ 816 03ac 8F000000 		.4byte	0x8f
+ 817 03b0 0E       		.byte	0xe
+ 818 03b1 09       		.uleb128 0x9
+ 819 03b2 14020000 		.4byte	.LASF63
+ 820 03b6 05       		.byte	0x5
+ 821 03b7 66       		.byte	0x66
+ 822 03b8 8F000000 		.4byte	0x8f
+ 823 03bc 10       		.byte	0x10
+ 824 03bd 09       		.uleb128 0x9
+ 825 03be 85030000 		.4byte	.LASF64
+ 826 03c2 05       		.byte	0x5
+ 827 03c3 67       		.byte	0x67
+ 828 03c4 8F000000 		.4byte	0x8f
+ 829 03c8 12       		.byte	0x12
+ 830 03c9 09       		.uleb128 0x9
+ 831 03ca 46020000 		.4byte	.LASF65
+ 832 03ce 05       		.byte	0x5
+ 833 03cf 68       		.byte	0x68
+ 834 03d0 8F000000 		.4byte	0x8f
+ 835 03d4 14       		.byte	0x14
+ 836 03d5 09       		.uleb128 0x9
+ 837 03d6 EA000000 		.4byte	.LASF66
+ 838 03da 05       		.byte	0x5
+ 839 03db 69       		.byte	0x69
+ 840 03dc 8F000000 		.4byte	0x8f
+ 841 03e0 16       		.byte	0x16
+ 842 03e1 09       		.uleb128 0x9
+ 843 03e2 1E000000 		.4byte	.LASF67
+ 844 03e6 05       		.byte	0x5
+ 845 03e7 6A       		.byte	0x6a
+ 846 03e8 8F000000 		.4byte	0x8f
+ 847 03ec 18       		.byte	0x18
+ 848 03ed 09       		.uleb128 0x9
+ 849 03ee A1040000 		.4byte	.LASF68
+ 850 03f2 05       		.byte	0x5
+ 851 03f3 6B       		.byte	0x6b
+ 852 03f4 8F000000 		.4byte	0x8f
+ 853 03f8 1A       		.byte	0x1a
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 19
+
+
+ 854 03f9 09       		.uleb128 0x9
+ 855 03fa 17030000 		.4byte	.LASF69
+ 856 03fe 05       		.byte	0x5
+ 857 03ff 6C       		.byte	0x6c
+ 858 0400 77000000 		.4byte	0x77
+ 859 0404 1C       		.byte	0x1c
+ 860 0405 09       		.uleb128 0x9
+ 861 0406 2D020000 		.4byte	.LASF70
+ 862 040a 05       		.byte	0x5
+ 863 040b 6D       		.byte	0x6d
+ 864 040c 77000000 		.4byte	0x77
+ 865 0410 1E       		.byte	0x1e
+ 866 0411 09       		.uleb128 0x9
+ 867 0412 4E040000 		.4byte	.LASF71
+ 868 0416 05       		.byte	0x5
+ 869 0417 6E       		.byte	0x6e
+ 870 0418 77000000 		.4byte	0x77
+ 871 041c 20       		.byte	0x20
+ 872 041d 09       		.uleb128 0x9
+ 873 041e 06050000 		.4byte	.LASF72
+ 874 0422 05       		.byte	0x5
+ 875 0423 6F       		.byte	0x6f
+ 876 0424 77000000 		.4byte	0x77
+ 877 0428 22       		.byte	0x22
+ 878 0429 09       		.uleb128 0x9
+ 879 042a C9000000 		.4byte	.LASF73
+ 880 042e 05       		.byte	0x5
+ 881 042f 70       		.byte	0x70
+ 882 0430 77000000 		.4byte	0x77
+ 883 0434 24       		.byte	0x24
+ 884 0435 00       		.byte	0
+ 885 0436 05       		.uleb128 0x5
+ 886 0437 2E030000 		.4byte	.LASF74
+ 887 043b 05       		.byte	0x5
+ 888 043c 71       		.byte	0x71
+ 889 043d 45030000 		.4byte	0x345
+ 890 0441 0F       		.uleb128 0xf
+ 891 0442 41040000 		.4byte	.LASF91
+ 892 0446 01       		.byte	0x1
+ 893 0447 3D       		.byte	0x3d
+ 894 0448 00000000 		.4byte	.LFB35
+ 895 044c 68000000 		.4byte	.LFE35-.LFB35
+ 896 0450 01       		.uleb128 0x1
+ 897 0451 9C       		.byte	0x9c
+ 898 0452 73040000 		.4byte	0x473
+ 899 0456 10       		.uleb128 0x10
+ 900 0457 5F020000 		.4byte	.LASF75
+ 901 045b 01       		.byte	0x1
+ 902 045c 40       		.byte	0x40
+ 903 045d 83000000 		.4byte	0x83
+ 904 0461 02       		.uleb128 0x2
+ 905 0462 91       		.byte	0x91
+ 906 0463 70       		.sleb128 -16
+ 907 0464 10       		.uleb128 0x10
+ 908 0465 51000000 		.4byte	.LASF76
+ 909 0469 01       		.byte	0x1
+ 910 046a 41       		.byte	0x41
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 20
+
+
+ 911 046b 83000000 		.4byte	0x83
+ 912 046f 02       		.uleb128 0x2
+ 913 0470 91       		.byte	0x91
+ 914 0471 74       		.sleb128 -12
+ 915 0472 00       		.byte	0
+ 916 0473 11       		.uleb128 0x11
+ 917 0474 B3020000 		.4byte	.LASF79
+ 918 0478 01       		.byte	0x1
+ 919 0479 6D       		.byte	0x6d
+ 920 047a 77000000 		.4byte	0x77
+ 921 047e 00000000 		.4byte	.LFB36
+ 922 0482 68000000 		.4byte	.LFE36-.LFB36
+ 923 0486 01       		.uleb128 0x1
+ 924 0487 9C       		.byte	0x9c
+ 925 0488 A9040000 		.4byte	0x4a9
+ 926 048c 12       		.uleb128 0x12
+ 927 048d 69020000 		.4byte	.LASF77
+ 928 0491 01       		.byte	0x1
+ 929 0492 6D       		.byte	0x6d
+ 930 0493 77000000 		.4byte	0x77
+ 931 0497 02       		.uleb128 0x2
+ 932 0498 91       		.byte	0x91
+ 933 0499 6E       		.sleb128 -18
+ 934 049a 12       		.uleb128 0x12
+ 935 049b 7B040000 		.4byte	.LASF78
+ 936 049f 01       		.byte	0x1
+ 937 04a0 6D       		.byte	0x6d
+ 938 04a1 77000000 		.4byte	0x77
+ 939 04a5 02       		.uleb128 0x2
+ 940 04a6 91       		.byte	0x91
+ 941 04a7 6C       		.sleb128 -20
+ 942 04a8 00       		.byte	0
+ 943 04a9 11       		.uleb128 0x11
+ 944 04aa B7000000 		.4byte	.LASF80
+ 945 04ae 01       		.byte	0x1
+ 946 04af 82       		.byte	0x82
+ 947 04b0 77000000 		.4byte	0x77
+ 948 04b4 00000000 		.4byte	.LFB37
+ 949 04b8 88000000 		.4byte	.LFE37-.LFB37
+ 950 04bc 01       		.uleb128 0x1
+ 951 04bd 9C       		.byte	0x9c
+ 952 04be ED040000 		.4byte	0x4ed
+ 953 04c2 12       		.uleb128 0x12
+ 954 04c3 6F040000 		.4byte	.LASF81
+ 955 04c7 01       		.byte	0x1
+ 956 04c8 82       		.byte	0x82
+ 957 04c9 77000000 		.4byte	0x77
+ 958 04cd 02       		.uleb128 0x2
+ 959 04ce 91       		.byte	0x91
+ 960 04cf 6E       		.sleb128 -18
+ 961 04d0 10       		.uleb128 0x10
+ 962 04d1 AE000000 		.4byte	.LASF82
+ 963 04d5 01       		.byte	0x1
+ 964 04d6 84       		.byte	0x84
+ 965 04d7 8F000000 		.4byte	0x8f
+ 966 04db 02       		.uleb128 0x2
+ 967 04dc 91       		.byte	0x91
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 21
+
+
+ 968 04dd 74       		.sleb128 -12
+ 969 04de 10       		.uleb128 0x10
+ 970 04df 87000000 		.4byte	.LASF83
+ 971 04e3 01       		.byte	0x1
+ 972 04e4 85       		.byte	0x85
+ 973 04e5 8F000000 		.4byte	0x8f
+ 974 04e9 02       		.uleb128 0x2
+ 975 04ea 91       		.byte	0x91
+ 976 04eb 76       		.sleb128 -10
+ 977 04ec 00       		.byte	0
+ 978 04ed 13       		.uleb128 0x13
+ 979 04ee 32000000 		.4byte	.LASF84
+ 980 04f2 01       		.byte	0x1
+ 981 04f3 95       		.byte	0x95
+ 982 04f4 00000000 		.4byte	.LFB38
+ 983 04f8 2C000000 		.4byte	.LFE38-.LFB38
+ 984 04fc 01       		.uleb128 0x1
+ 985 04fd 9C       		.byte	0x9c
+ 986 04fe 13       		.uleb128 0x13
+ 987 04ff 03010000 		.4byte	.LASF85
+ 988 0503 01       		.byte	0x1
+ 989 0504 A2       		.byte	0xa2
+ 990 0505 00000000 		.4byte	.LFB39
+ 991 0509 28000000 		.4byte	.LFE39-.LFB39
+ 992 050d 01       		.uleb128 0x1
+ 993 050e 9C       		.byte	0x9c
+ 994 050f 14       		.uleb128 0x14
+ 995 0510 E8020000 		.4byte	.LASF86
+ 996 0514 04       		.byte	0x4
+ 997 0515 8103     		.2byte	0x381
+ 998 0517 39030000 		.4byte	0x339
+ 999 051b 15       		.uleb128 0x15
+ 1000 051c 11010000 		.4byte	.LASF87
+ 1001 0520 05       		.byte	0x5
+ 1002 0521 78       		.byte	0x78
+ 1003 0522 36040000 		.4byte	0x436
+ 1004 0526 00       		.byte	0
+ 1005              		.section	.debug_abbrev,"",%progbits
+ 1006              	.Ldebug_abbrev0:
+ 1007 0000 01       		.uleb128 0x1
+ 1008 0001 11       		.uleb128 0x11
+ 1009 0002 01       		.byte	0x1
+ 1010 0003 25       		.uleb128 0x25
+ 1011 0004 0E       		.uleb128 0xe
+ 1012 0005 13       		.uleb128 0x13
+ 1013 0006 0B       		.uleb128 0xb
+ 1014 0007 03       		.uleb128 0x3
+ 1015 0008 0E       		.uleb128 0xe
+ 1016 0009 1B       		.uleb128 0x1b
+ 1017 000a 0E       		.uleb128 0xe
+ 1018 000b 55       		.uleb128 0x55
+ 1019 000c 17       		.uleb128 0x17
+ 1020 000d 11       		.uleb128 0x11
+ 1021 000e 01       		.uleb128 0x1
+ 1022 000f 10       		.uleb128 0x10
+ 1023 0010 17       		.uleb128 0x17
+ 1024 0011 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 22
+
+
+ 1025 0012 00       		.byte	0
+ 1026 0013 02       		.uleb128 0x2
+ 1027 0014 24       		.uleb128 0x24
+ 1028 0015 00       		.byte	0
+ 1029 0016 0B       		.uleb128 0xb
+ 1030 0017 0B       		.uleb128 0xb
+ 1031 0018 3E       		.uleb128 0x3e
+ 1032 0019 0B       		.uleb128 0xb
+ 1033 001a 03       		.uleb128 0x3
+ 1034 001b 0E       		.uleb128 0xe
+ 1035 001c 00       		.byte	0
+ 1036 001d 00       		.byte	0
+ 1037 001e 03       		.uleb128 0x3
+ 1038 001f 24       		.uleb128 0x24
+ 1039 0020 00       		.byte	0
+ 1040 0021 0B       		.uleb128 0xb
+ 1041 0022 0B       		.uleb128 0xb
+ 1042 0023 3E       		.uleb128 0x3e
+ 1043 0024 0B       		.uleb128 0xb
+ 1044 0025 03       		.uleb128 0x3
+ 1045 0026 08       		.uleb128 0x8
+ 1046 0027 00       		.byte	0
+ 1047 0028 00       		.byte	0
+ 1048 0029 04       		.uleb128 0x4
+ 1049 002a 16       		.uleb128 0x16
+ 1050 002b 00       		.byte	0
+ 1051 002c 03       		.uleb128 0x3
+ 1052 002d 0E       		.uleb128 0xe
+ 1053 002e 3A       		.uleb128 0x3a
+ 1054 002f 0B       		.uleb128 0xb
+ 1055 0030 3B       		.uleb128 0x3b
+ 1056 0031 05       		.uleb128 0x5
+ 1057 0032 49       		.uleb128 0x49
+ 1058 0033 13       		.uleb128 0x13
+ 1059 0034 00       		.byte	0
+ 1060 0035 00       		.byte	0
+ 1061 0036 05       		.uleb128 0x5
+ 1062 0037 16       		.uleb128 0x16
+ 1063 0038 00       		.byte	0
+ 1064 0039 03       		.uleb128 0x3
+ 1065 003a 0E       		.uleb128 0xe
+ 1066 003b 3A       		.uleb128 0x3a
+ 1067 003c 0B       		.uleb128 0xb
+ 1068 003d 3B       		.uleb128 0x3b
+ 1069 003e 0B       		.uleb128 0xb
+ 1070 003f 49       		.uleb128 0x49
+ 1071 0040 13       		.uleb128 0x13
+ 1072 0041 00       		.byte	0
+ 1073 0042 00       		.byte	0
+ 1074 0043 06       		.uleb128 0x6
+ 1075 0044 01       		.uleb128 0x1
+ 1076 0045 01       		.byte	0x1
+ 1077 0046 49       		.uleb128 0x49
+ 1078 0047 13       		.uleb128 0x13
+ 1079 0048 01       		.uleb128 0x1
+ 1080 0049 13       		.uleb128 0x13
+ 1081 004a 00       		.byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 23
+
+
+ 1082 004b 00       		.byte	0
+ 1083 004c 07       		.uleb128 0x7
+ 1084 004d 21       		.uleb128 0x21
+ 1085 004e 00       		.byte	0
+ 1086 004f 49       		.uleb128 0x49
+ 1087 0050 13       		.uleb128 0x13
+ 1088 0051 2F       		.uleb128 0x2f
+ 1089 0052 0B       		.uleb128 0xb
+ 1090 0053 00       		.byte	0
+ 1091 0054 00       		.byte	0
+ 1092 0055 08       		.uleb128 0x8
+ 1093 0056 13       		.uleb128 0x13
+ 1094 0057 01       		.byte	0x1
+ 1095 0058 0B       		.uleb128 0xb
+ 1096 0059 0B       		.uleb128 0xb
+ 1097 005a 3A       		.uleb128 0x3a
+ 1098 005b 0B       		.uleb128 0xb
+ 1099 005c 3B       		.uleb128 0x3b
+ 1100 005d 0B       		.uleb128 0xb
+ 1101 005e 01       		.uleb128 0x1
+ 1102 005f 13       		.uleb128 0x13
+ 1103 0060 00       		.byte	0
+ 1104 0061 00       		.byte	0
+ 1105 0062 09       		.uleb128 0x9
+ 1106 0063 0D       		.uleb128 0xd
+ 1107 0064 00       		.byte	0
+ 1108 0065 03       		.uleb128 0x3
+ 1109 0066 0E       		.uleb128 0xe
+ 1110 0067 3A       		.uleb128 0x3a
+ 1111 0068 0B       		.uleb128 0xb
+ 1112 0069 3B       		.uleb128 0x3b
+ 1113 006a 0B       		.uleb128 0xb
+ 1114 006b 49       		.uleb128 0x49
+ 1115 006c 13       		.uleb128 0x13
+ 1116 006d 38       		.uleb128 0x38
+ 1117 006e 0B       		.uleb128 0xb
+ 1118 006f 00       		.byte	0
+ 1119 0070 00       		.byte	0
+ 1120 0071 0A       		.uleb128 0xa
+ 1121 0072 13       		.uleb128 0x13
+ 1122 0073 01       		.byte	0x1
+ 1123 0074 0B       		.uleb128 0xb
+ 1124 0075 0B       		.uleb128 0xb
+ 1125 0076 3A       		.uleb128 0x3a
+ 1126 0077 0B       		.uleb128 0xb
+ 1127 0078 3B       		.uleb128 0x3b
+ 1128 0079 05       		.uleb128 0x5
+ 1129 007a 01       		.uleb128 0x1
+ 1130 007b 13       		.uleb128 0x13
+ 1131 007c 00       		.byte	0
+ 1132 007d 00       		.byte	0
+ 1133 007e 0B       		.uleb128 0xb
+ 1134 007f 0D       		.uleb128 0xd
+ 1135 0080 00       		.byte	0
+ 1136 0081 03       		.uleb128 0x3
+ 1137 0082 0E       		.uleb128 0xe
+ 1138 0083 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 24
+
+
+ 1139 0084 0B       		.uleb128 0xb
+ 1140 0085 3B       		.uleb128 0x3b
+ 1141 0086 05       		.uleb128 0x5
+ 1142 0087 49       		.uleb128 0x49
+ 1143 0088 13       		.uleb128 0x13
+ 1144 0089 38       		.uleb128 0x38
+ 1145 008a 0B       		.uleb128 0xb
+ 1146 008b 00       		.byte	0
+ 1147 008c 00       		.byte	0
+ 1148 008d 0C       		.uleb128 0xc
+ 1149 008e 0D       		.uleb128 0xd
+ 1150 008f 00       		.byte	0
+ 1151 0090 03       		.uleb128 0x3
+ 1152 0091 08       		.uleb128 0x8
+ 1153 0092 3A       		.uleb128 0x3a
+ 1154 0093 0B       		.uleb128 0xb
+ 1155 0094 3B       		.uleb128 0x3b
+ 1156 0095 05       		.uleb128 0x5
+ 1157 0096 49       		.uleb128 0x49
+ 1158 0097 13       		.uleb128 0x13
+ 1159 0098 38       		.uleb128 0x38
+ 1160 0099 0B       		.uleb128 0xb
+ 1161 009a 00       		.byte	0
+ 1162 009b 00       		.byte	0
+ 1163 009c 0D       		.uleb128 0xd
+ 1164 009d 13       		.uleb128 0x13
+ 1165 009e 01       		.byte	0x1
+ 1166 009f 03       		.uleb128 0x3
+ 1167 00a0 0E       		.uleb128 0xe
+ 1168 00a1 0B       		.uleb128 0xb
+ 1169 00a2 0B       		.uleb128 0xb
+ 1170 00a3 3A       		.uleb128 0x3a
+ 1171 00a4 0B       		.uleb128 0xb
+ 1172 00a5 3B       		.uleb128 0x3b
+ 1173 00a6 0B       		.uleb128 0xb
+ 1174 00a7 01       		.uleb128 0x1
+ 1175 00a8 13       		.uleb128 0x13
+ 1176 00a9 00       		.byte	0
+ 1177 00aa 00       		.byte	0
+ 1178 00ab 0E       		.uleb128 0xe
+ 1179 00ac 0D       		.uleb128 0xd
+ 1180 00ad 00       		.byte	0
+ 1181 00ae 03       		.uleb128 0x3
+ 1182 00af 08       		.uleb128 0x8
+ 1183 00b0 3A       		.uleb128 0x3a
+ 1184 00b1 0B       		.uleb128 0xb
+ 1185 00b2 3B       		.uleb128 0x3b
+ 1186 00b3 0B       		.uleb128 0xb
+ 1187 00b4 49       		.uleb128 0x49
+ 1188 00b5 13       		.uleb128 0x13
+ 1189 00b6 38       		.uleb128 0x38
+ 1190 00b7 0B       		.uleb128 0xb
+ 1191 00b8 00       		.byte	0
+ 1192 00b9 00       		.byte	0
+ 1193 00ba 0F       		.uleb128 0xf
+ 1194 00bb 2E       		.uleb128 0x2e
+ 1195 00bc 01       		.byte	0x1
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 25
+
+
+ 1196 00bd 3F       		.uleb128 0x3f
+ 1197 00be 19       		.uleb128 0x19
+ 1198 00bf 03       		.uleb128 0x3
+ 1199 00c0 0E       		.uleb128 0xe
+ 1200 00c1 3A       		.uleb128 0x3a
+ 1201 00c2 0B       		.uleb128 0xb
+ 1202 00c3 3B       		.uleb128 0x3b
+ 1203 00c4 0B       		.uleb128 0xb
+ 1204 00c5 27       		.uleb128 0x27
+ 1205 00c6 19       		.uleb128 0x19
+ 1206 00c7 11       		.uleb128 0x11
+ 1207 00c8 01       		.uleb128 0x1
+ 1208 00c9 12       		.uleb128 0x12
+ 1209 00ca 06       		.uleb128 0x6
+ 1210 00cb 40       		.uleb128 0x40
+ 1211 00cc 18       		.uleb128 0x18
+ 1212 00cd 9642     		.uleb128 0x2116
+ 1213 00cf 19       		.uleb128 0x19
+ 1214 00d0 01       		.uleb128 0x1
+ 1215 00d1 13       		.uleb128 0x13
+ 1216 00d2 00       		.byte	0
+ 1217 00d3 00       		.byte	0
+ 1218 00d4 10       		.uleb128 0x10
+ 1219 00d5 34       		.uleb128 0x34
+ 1220 00d6 00       		.byte	0
+ 1221 00d7 03       		.uleb128 0x3
+ 1222 00d8 0E       		.uleb128 0xe
+ 1223 00d9 3A       		.uleb128 0x3a
+ 1224 00da 0B       		.uleb128 0xb
+ 1225 00db 3B       		.uleb128 0x3b
+ 1226 00dc 0B       		.uleb128 0xb
+ 1227 00dd 49       		.uleb128 0x49
+ 1228 00de 13       		.uleb128 0x13
+ 1229 00df 02       		.uleb128 0x2
+ 1230 00e0 18       		.uleb128 0x18
+ 1231 00e1 00       		.byte	0
+ 1232 00e2 00       		.byte	0
+ 1233 00e3 11       		.uleb128 0x11
+ 1234 00e4 2E       		.uleb128 0x2e
+ 1235 00e5 01       		.byte	0x1
+ 1236 00e6 3F       		.uleb128 0x3f
+ 1237 00e7 19       		.uleb128 0x19
+ 1238 00e8 03       		.uleb128 0x3
+ 1239 00e9 0E       		.uleb128 0xe
+ 1240 00ea 3A       		.uleb128 0x3a
+ 1241 00eb 0B       		.uleb128 0xb
+ 1242 00ec 3B       		.uleb128 0x3b
+ 1243 00ed 0B       		.uleb128 0xb
+ 1244 00ee 27       		.uleb128 0x27
+ 1245 00ef 19       		.uleb128 0x19
+ 1246 00f0 49       		.uleb128 0x49
+ 1247 00f1 13       		.uleb128 0x13
+ 1248 00f2 11       		.uleb128 0x11
+ 1249 00f3 01       		.uleb128 0x1
+ 1250 00f4 12       		.uleb128 0x12
+ 1251 00f5 06       		.uleb128 0x6
+ 1252 00f6 40       		.uleb128 0x40
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 26
+
+
+ 1253 00f7 18       		.uleb128 0x18
+ 1254 00f8 9642     		.uleb128 0x2116
+ 1255 00fa 19       		.uleb128 0x19
+ 1256 00fb 01       		.uleb128 0x1
+ 1257 00fc 13       		.uleb128 0x13
+ 1258 00fd 00       		.byte	0
+ 1259 00fe 00       		.byte	0
+ 1260 00ff 12       		.uleb128 0x12
+ 1261 0100 05       		.uleb128 0x5
+ 1262 0101 00       		.byte	0
+ 1263 0102 03       		.uleb128 0x3
+ 1264 0103 0E       		.uleb128 0xe
+ 1265 0104 3A       		.uleb128 0x3a
+ 1266 0105 0B       		.uleb128 0xb
+ 1267 0106 3B       		.uleb128 0x3b
+ 1268 0107 0B       		.uleb128 0xb
+ 1269 0108 49       		.uleb128 0x49
+ 1270 0109 13       		.uleb128 0x13
+ 1271 010a 02       		.uleb128 0x2
+ 1272 010b 18       		.uleb128 0x18
+ 1273 010c 00       		.byte	0
+ 1274 010d 00       		.byte	0
+ 1275 010e 13       		.uleb128 0x13
+ 1276 010f 2E       		.uleb128 0x2e
+ 1277 0110 00       		.byte	0
+ 1278 0111 3F       		.uleb128 0x3f
+ 1279 0112 19       		.uleb128 0x19
+ 1280 0113 03       		.uleb128 0x3
+ 1281 0114 0E       		.uleb128 0xe
+ 1282 0115 3A       		.uleb128 0x3a
+ 1283 0116 0B       		.uleb128 0xb
+ 1284 0117 3B       		.uleb128 0x3b
+ 1285 0118 0B       		.uleb128 0xb
+ 1286 0119 27       		.uleb128 0x27
+ 1287 011a 19       		.uleb128 0x19
+ 1288 011b 11       		.uleb128 0x11
+ 1289 011c 01       		.uleb128 0x1
+ 1290 011d 12       		.uleb128 0x12
+ 1291 011e 06       		.uleb128 0x6
+ 1292 011f 40       		.uleb128 0x40
+ 1293 0120 18       		.uleb128 0x18
+ 1294 0121 9642     		.uleb128 0x2116
+ 1295 0123 19       		.uleb128 0x19
+ 1296 0124 00       		.byte	0
+ 1297 0125 00       		.byte	0
+ 1298 0126 14       		.uleb128 0x14
+ 1299 0127 34       		.uleb128 0x34
+ 1300 0128 00       		.byte	0
+ 1301 0129 03       		.uleb128 0x3
+ 1302 012a 0E       		.uleb128 0xe
+ 1303 012b 3A       		.uleb128 0x3a
+ 1304 012c 0B       		.uleb128 0xb
+ 1305 012d 3B       		.uleb128 0x3b
+ 1306 012e 05       		.uleb128 0x5
+ 1307 012f 49       		.uleb128 0x49
+ 1308 0130 13       		.uleb128 0x13
+ 1309 0131 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 27
+
+
+ 1310 0132 19       		.uleb128 0x19
+ 1311 0133 3C       		.uleb128 0x3c
+ 1312 0134 19       		.uleb128 0x19
+ 1313 0135 00       		.byte	0
+ 1314 0136 00       		.byte	0
+ 1315 0137 15       		.uleb128 0x15
+ 1316 0138 34       		.uleb128 0x34
+ 1317 0139 00       		.byte	0
+ 1318 013a 03       		.uleb128 0x3
+ 1319 013b 0E       		.uleb128 0xe
+ 1320 013c 3A       		.uleb128 0x3a
+ 1321 013d 0B       		.uleb128 0xb
+ 1322 013e 3B       		.uleb128 0x3b
+ 1323 013f 0B       		.uleb128 0xb
+ 1324 0140 49       		.uleb128 0x49
+ 1325 0141 13       		.uleb128 0x13
+ 1326 0142 3F       		.uleb128 0x3f
+ 1327 0143 19       		.uleb128 0x19
+ 1328 0144 3C       		.uleb128 0x3c
+ 1329 0145 19       		.uleb128 0x19
+ 1330 0146 00       		.byte	0
+ 1331 0147 00       		.byte	0
+ 1332 0148 00       		.byte	0
+ 1333              		.section	.debug_aranges,"",%progbits
+ 1334 0000 3C000000 		.4byte	0x3c
+ 1335 0004 0200     		.2byte	0x2
+ 1336 0006 00000000 		.4byte	.Ldebug_info0
+ 1337 000a 04       		.byte	0x4
+ 1338 000b 00       		.byte	0
+ 1339 000c 0000     		.2byte	0
+ 1340 000e 0000     		.2byte	0
+ 1341 0010 00000000 		.4byte	.LFB35
+ 1342 0014 68000000 		.4byte	.LFE35-.LFB35
+ 1343 0018 00000000 		.4byte	.LFB36
+ 1344 001c 68000000 		.4byte	.LFE36-.LFB36
+ 1345 0020 00000000 		.4byte	.LFB37
+ 1346 0024 88000000 		.4byte	.LFE37-.LFB37
+ 1347 0028 00000000 		.4byte	.LFB38
+ 1348 002c 2C000000 		.4byte	.LFE38-.LFB38
+ 1349 0030 00000000 		.4byte	.LFB39
+ 1350 0034 28000000 		.4byte	.LFE39-.LFB39
+ 1351 0038 00000000 		.4byte	0
+ 1352 003c 00000000 		.4byte	0
+ 1353              		.section	.debug_ranges,"",%progbits
+ 1354              	.Ldebug_ranges0:
+ 1355 0000 00000000 		.4byte	.LFB35
+ 1356 0004 68000000 		.4byte	.LFE35
+ 1357 0008 00000000 		.4byte	.LFB36
+ 1358 000c 68000000 		.4byte	.LFE36
+ 1359 0010 00000000 		.4byte	.LFB37
+ 1360 0014 88000000 		.4byte	.LFE37
+ 1361 0018 00000000 		.4byte	.LFB38
+ 1362 001c 2C000000 		.4byte	.LFE38
+ 1363 0020 00000000 		.4byte	.LFB39
+ 1364 0024 28000000 		.4byte	.LFE39
+ 1365 0028 00000000 		.4byte	0
+ 1366 002c 00000000 		.4byte	0
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 28
+
+
+ 1367              		.section	.debug_line,"",%progbits
+ 1368              	.Ldebug_line0:
+ 1369 0000 07010000 		.section	.debug_str,"MS",%progbits,1
+ 1369      02007900 
+ 1369      00000201 
+ 1369      FB0E0D00 
+ 1369      01010101 
+ 1370              	.LASF50:
+ 1371 0000 77646774 		.ascii	"wdgtList\000"
+ 1371      4C697374 
+ 1371      00
+ 1372              	.LASF55:
+ 1373 0009 736E7254 		.ascii	"snrTestRawCount\000"
+ 1373      65737452 
+ 1373      6177436F 
+ 1373      756E7400 
+ 1374              	.LASF33:
+ 1375 0019 62736C6E 		.ascii	"bsln\000"
+ 1375      00
+ 1376              	.LASF67:
+ 1377 001e 49505344 		.ascii	"IPSDifferenceCounts\000"
+ 1377      69666665 
+ 1377      72656E63 
+ 1377      65436F75 
+ 1377      6E747300 
+ 1378              	.LASF84:
+ 1379 0032 48756D69 		.ascii	"Humidity_Start\000"
+ 1379      64697479 
+ 1379      5F537461 
+ 1379      727400
+ 1380              	.LASF25:
+ 1381 0041 6C6F7742 		.ascii	"lowBslnRst\000"
+ 1381      736C6E52 
+ 1381      737400
+ 1382              	.LASF36:
+ 1383 004c 64696666 		.ascii	"diff\000"
+ 1383      00
+ 1384              	.LASF76:
+ 1385 0051 72656672 		.ascii	"refraw\000"
+ 1385      617700
+ 1386              	.LASF27:
+ 1387 0058 69646163 		.ascii	"idacMod\000"
+ 1387      4D6F6400 
+ 1388              	.LASF2:
+ 1389 0060 73686F72 		.ascii	"short int\000"
+ 1389      7420696E 
+ 1389      7400
+ 1390              	.LASF24:
+ 1391 006a 6F6E4465 		.ascii	"onDebounce\000"
+ 1391      626F756E 
+ 1391      636500
+ 1392              	.LASF16:
+ 1393 0075 73697A65 		.ascii	"sizetype\000"
+ 1393      74797065 
+ 1393      00
+ 1394              	.LASF40:
+ 1395 007e 636F6E66 		.ascii	"configId\000"
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 29
+
+
+ 1395      69674964 
+ 1395      00
+ 1396              	.LASF83:
+ 1397 0087 64656C74 		.ascii	"delta\000"
+ 1397      6100
+ 1398              	.LASF35:
+ 1399 008d 69646163 		.ascii	"idacComp\000"
+ 1399      436F6D70 
+ 1399      00
+ 1400              	.LASF48:
+ 1401 0096 63736430 		.ascii	"csd0Config\000"
+ 1401      436F6E66 
+ 1401      696700
+ 1402              	.LASF29:
+ 1403 00a1 736E7343 		.ascii	"snsClkSource\000"
+ 1403      6C6B536F 
+ 1403      75726365 
+ 1403      00
+ 1404              	.LASF82:
+ 1405 00ae 68756D69 		.ascii	"humidity\000"
+ 1405      64697479 
+ 1405      00
+ 1406              	.LASF80:
+ 1407 00b7 43616C63 		.ascii	"CalculateHumidity\000"
+ 1407      756C6174 
+ 1407      6548756D 
+ 1407      69646974 
+ 1407      7900
+ 1408              	.LASF73:
+ 1409 00c9 48756D69 		.ascii	"Humidity\000"
+ 1409      64697479 
+ 1409      00
+ 1410              	.LASF21:
+ 1411 00d2 6E6F6973 		.ascii	"noiseTh\000"
+ 1411      65546800 
+ 1412              	.LASF41:
+ 1413 00da 64657669 		.ascii	"deviceId\000"
+ 1413      63654964 
+ 1413      00
+ 1414              	.LASF10:
+ 1415 00e3 75696E74 		.ascii	"uint16\000"
+ 1415      313600
+ 1416              	.LASF66:
+ 1417 00ea 49505352 		.ascii	"IPSRawCounts\000"
+ 1417      6177436F 
+ 1417      756E7473 
+ 1417      00
+ 1418              	.LASF12:
+ 1419 00f7 696E7431 		.ascii	"int16\000"
+ 1419      3600
+ 1420              	.LASF9:
+ 1421 00fd 75696E74 		.ascii	"uint8\000"
+ 1421      3800
+ 1422              	.LASF85:
+ 1423 0103 48756D69 		.ascii	"Humidity_Stop\000"
+ 1423      64697479 
+ 1423      5F53746F 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 30
+
+
+ 1423      7000
+ 1424              	.LASF87:
+ 1425 0111 50726F63 		.ascii	"ProcessValues\000"
+ 1425      65737356 
+ 1425      616C7565 
+ 1425      7300
+ 1426              	.LASF59:
+ 1427 011f 414C5343 		.ascii	"ALSCurrent\000"
+ 1427      75727265 
+ 1427      6E7400
+ 1428              	.LASF13:
+ 1429 012a 666C6F61 		.ascii	"float\000"
+ 1429      7400
+ 1430              	.LASF88:
+ 1431 0130 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 1431      4320342E 
+ 1431      392E3320 
+ 1431      32303135 
+ 1431      30333033 
+ 1432 0163 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0plus -mthumb -"
+ 1432      20726576 
+ 1432      6973696F 
+ 1432      6E203232 
+ 1432      31323230 
+ 1433 0196 67202D4F 		.ascii	"g -O0 -ffunction-sections -ffat-lto-objects\000"
+ 1433      30202D66 
+ 1433      66756E63 
+ 1433      74696F6E 
+ 1433      2D736563 
+ 1434              	.LASF6:
+ 1435 01c2 6C6F6E67 		.ascii	"long long int\000"
+ 1435      206C6F6E 
+ 1435      6720696E 
+ 1435      7400
+ 1436              	.LASF17:
+ 1437 01d0 4353445F 		.ascii	"CSD_THRESHOLD_TYPE\000"
+ 1437      54485245 
+ 1437      53484F4C 
+ 1437      445F5459 
+ 1437      504500
+ 1438              	.LASF39:
+ 1439 01e3 4353445F 		.ascii	"CSD_RAM_SNS_LIST_STRUCT\000"
+ 1439      52414D5F 
+ 1439      534E535F 
+ 1439      4C495354 
+ 1439      5F535452 
+ 1440              	.LASF4:
+ 1441 01fb 6C6F6E67 		.ascii	"long int\000"
+ 1441      20696E74 
+ 1441      00
+ 1442              	.LASF20:
+ 1443 0204 66696E67 		.ascii	"fingerTh\000"
+ 1443      65725468 
+ 1443      00
+ 1444              	.LASF28:
+ 1445 020d 736E7343 		.ascii	"snsClk\000"
+ 1445      6C6B00
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 31
+
+
+ 1446              	.LASF63:
+ 1447 0214 50495257 		.ascii	"PIRWindowHigh\000"
+ 1447      696E646F 
+ 1447      77486967 
+ 1447      6800
+ 1448              	.LASF23:
+ 1449 0222 68797374 		.ascii	"hysteresis\000"
+ 1449      65726573 
+ 1449      697300
+ 1450              	.LASF70:
+ 1451 022d 52617743 		.ascii	"RawCountsRefCap\000"
+ 1451      6F756E74 
+ 1451      73526566 
+ 1451      43617000 
+ 1452              	.LASF42:
+ 1453 023d 74756E65 		.ascii	"tunerCmd\000"
+ 1453      72436D64 
+ 1453      00
+ 1454              	.LASF65:
+ 1455 0246 50495254 		.ascii	"PIRTrigger\000"
+ 1455      72696767 
+ 1455      657200
+ 1456              	.LASF1:
+ 1457 0251 756E7369 		.ascii	"unsigned char\000"
+ 1457      676E6564 
+ 1457      20636861 
+ 1457      7200
+ 1458              	.LASF75:
+ 1459 025f 73656E73 		.ascii	"sensorraw\000"
+ 1459      6F727261 
+ 1459      7700
+ 1460              	.LASF77:
+ 1461 0269 72617743 		.ascii	"rawCounts\000"
+ 1461      6F756E74 
+ 1461      7300
+ 1462              	.LASF61:
+ 1463 0273 50495252 		.ascii	"PIRRaw\000"
+ 1463      617700
+ 1464              	.LASF18:
+ 1465 027a 4353445F 		.ascii	"CSD_LOW_BSLN_RST_TYPE\000"
+ 1465      4C4F575F 
+ 1465      42534C4E 
+ 1465      5F525354 
+ 1465      5F545950 
+ 1466              	.LASF0:
+ 1467 0290 7369676E 		.ascii	"signed char\000"
+ 1467      65642063 
+ 1467      68617200 
+ 1468              	.LASF7:
+ 1469 029c 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1469      206C6F6E 
+ 1469      6720756E 
+ 1469      7369676E 
+ 1469      65642069 
+ 1470              	.LASF79:
+ 1471 02b3 43616C63 		.ascii	"CalculateCapacitance\000"
+ 1471      756C6174 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 32
+
+
+ 1471      65436170 
+ 1471      61636974 
+ 1471      616E6365 
+ 1472              	.LASF8:
+ 1473 02c8 756E7369 		.ascii	"unsigned int\000"
+ 1473      676E6564 
+ 1473      20696E74 
+ 1473      00
+ 1474              	.LASF38:
+ 1475 02d5 4353445F 		.ascii	"CSD_RAM_SNS_STRUCT\000"
+ 1475      52414D5F 
+ 1475      534E535F 
+ 1475      53545255 
+ 1475      435400
+ 1476              	.LASF86:
+ 1477 02e8 4353445F 		.ascii	"CSD_dsRam\000"
+ 1477      64735261 
+ 1477      6D00
+ 1478              	.LASF45:
+ 1479 02f2 77646774 		.ascii	"wdgtEnable\000"
+ 1479      456E6162 
+ 1479      6C6500
+ 1480              	.LASF62:
+ 1481 02fd 50495248 		.ascii	"PIRHpf\000"
+ 1481      706600
+ 1482              	.LASF3:
+ 1483 0304 73686F72 		.ascii	"short unsigned int\000"
+ 1483      7420756E 
+ 1483      7369676E 
+ 1483      65642069 
+ 1483      6E7400
+ 1484              	.LASF69:
+ 1485 0317 49505354 		.ascii	"IPSTrigger\000"
+ 1485      72696767 
+ 1485      657200
+ 1486              	.LASF44:
+ 1487 0322 73746174 		.ascii	"status\000"
+ 1487      757300
+ 1488              	.LASF15:
+ 1489 0329 63686172 		.ascii	"char\000"
+ 1489      00
+ 1490              	.LASF74:
+ 1491 032e 50524F43 		.ascii	"PROCESS_VALUES\000"
+ 1491      4553535F 
+ 1491      56414C55 
+ 1491      455300
+ 1492              	.LASF54:
+ 1493 033d 736E7254 		.ascii	"snrTestScanCounter\000"
+ 1493      65737453 
+ 1493      63616E43 
+ 1493      6F756E74 
+ 1493      657200
+ 1494              	.LASF32:
+ 1495 0350 4353445F 		.ascii	"CSD_RAM_WD_LIST_STRUCT\000"
+ 1495      52414D5F 
+ 1495      57445F4C 
+ 1495      4953545F 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 33
+
+
+ 1495      53545255 
+ 1496              	.LASF89:
+ 1497 0367 48756D69 		.ascii	"Humidity.c\000"
+ 1497      64697479 
+ 1497      2E6300
+ 1498              	.LASF19:
+ 1499 0372 7265736F 		.ascii	"resolution\000"
+ 1499      6C757469 
+ 1499      6F6E00
+ 1500              	.LASF57:
+ 1501 037d 56657273 		.ascii	"Version\000"
+ 1501      696F6E00 
+ 1502              	.LASF64:
+ 1503 0385 50495257 		.ascii	"PIRWindowLow\000"
+ 1503      696E646F 
+ 1503      774C6F77 
+ 1503      00
+ 1504              	.LASF51:
+ 1505 0392 736E734C 		.ascii	"snsList\000"
+ 1505      69737400 
+ 1506              	.LASF90:
+ 1507 039a 433A5C55 		.ascii	"C:\\Users\\Christopher Kuzma\\Downloads\\Cypress Th"
+ 1507      73657273 
+ 1507      5C436872 
+ 1507      6973746F 
+ 1507      70686572 
+ 1508 03c9 696E675C 		.ascii	"ing\\EnvironmentSensing.cydsn\\EnvironmentSensing.c"
+ 1508      456E7669 
+ 1508      726F6E6D 
+ 1508      656E7453 
+ 1508      656E7369 
+ 1509 03fa 7964736E 		.ascii	"ydsn\000"
+ 1509      00
+ 1510              	.LASF26:
+ 1511 03ff 62736C6E 		.ascii	"bslnCoeff\000"
+ 1511      436F6566 
+ 1511      6600
+ 1512              	.LASF49:
+ 1513 0409 6D6F6443 		.ascii	"modCsdClk\000"
+ 1513      7364436C 
+ 1513      6B00
+ 1514              	.LASF43:
+ 1515 0413 7363616E 		.ascii	"scanCounter\000"
+ 1515      436F756E 
+ 1515      74657200 
+ 1516              	.LASF22:
+ 1517 041f 6E4E6F69 		.ascii	"nNoiseTh\000"
+ 1517      73655468 
+ 1517      00
+ 1518              	.LASF11:
+ 1519 0428 75696E74 		.ascii	"uint32\000"
+ 1519      333200
+ 1520              	.LASF5:
+ 1521 042f 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1521      20756E73 
+ 1521      69676E65 
+ 1521      6420696E 
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 34
+
+
+ 1521      7400
+ 1522              	.LASF91:
+ 1523 0441 48756D69 		.ascii	"HumidityTask\000"
+ 1523      64697479 
+ 1523      5461736B 
+ 1523      00
+ 1524              	.LASF71:
+ 1525 044e 52617743 		.ascii	"RawCountsHumidity\000"
+ 1525      6F756E74 
+ 1525      7348756D 
+ 1525      69646974 
+ 1525      7900
+ 1526              	.LASF14:
+ 1527 0460 646F7562 		.ascii	"double\000"
+ 1527      6C6500
+ 1528              	.LASF34:
+ 1529 0467 62736C6E 		.ascii	"bslnExt\000"
+ 1529      45787400 
+ 1530              	.LASF81:
+ 1531 046f 63617061 		.ascii	"capacitance\000"
+ 1531      63697461 
+ 1531      6E636500 
+ 1532              	.LASF78:
+ 1533 047b 72656673 		.ascii	"refsensorCounts\000"
+ 1533      656E736F 
+ 1533      72436F75 
+ 1533      6E747300 
+ 1534              	.LASF37:
+ 1535 048b 6E656742 		.ascii	"negBslnRstCnt\000"
+ 1535      736C6E52 
+ 1535      7374436E 
+ 1535      7400
+ 1536              	.LASF31:
+ 1537 0499 62757474 		.ascii	"button0\000"
+ 1537      6F6E3000 
+ 1538              	.LASF68:
+ 1539 04a1 49505342 		.ascii	"IPSBaselineCounts\000"
+ 1539      6173656C 
+ 1539      696E6543 
+ 1539      6F756E74 
+ 1539      7300
+ 1540              	.LASF30:
+ 1541 04b3 4353445F 		.ascii	"CSD_RAM_WD_BUTTON_STRUCT\000"
+ 1541      52414D5F 
+ 1541      57445F42 
+ 1541      5554544F 
+ 1541      4E5F5354 
+ 1542              	.LASF58:
+ 1543 04cc 54656D70 		.ascii	"Temperature\000"
+ 1543      65726174 
+ 1543      75726500 
+ 1544              	.LASF52:
+ 1545 04d8 736E7254 		.ascii	"snrTestWidgetId\000"
+ 1545      65737457 
+ 1545      69646765 
+ 1545      74496400 
+ 1546              	.LASF56:
+ARM GAS  C:\Users\CHRIST~1\AppData\Local\Temp\ccYkVB7y.s 			page 35
+
+
+ 1547 04e8 4353445F 		.ascii	"CSD_RAM_STRUCT\000"
+ 1547      52414D5F 
+ 1547      53545255 
+ 1547      435400
+ 1548              	.LASF60:
+ 1549 04f7 4C696768 		.ascii	"LightIntensity\000"
+ 1549      74496E74 
+ 1549      656E7369 
+ 1549      747900
+ 1550              	.LASF72:
+ 1551 0506 53656E73 		.ascii	"SensorCapacitance\000"
+ 1551      6F724361 
+ 1551      70616369 
+ 1551      74616E63 
+ 1551      6500
+ 1552              	.LASF53:
+ 1553 0518 736E7254 		.ascii	"snrTestSensorId\000"
+ 1553      65737453 
+ 1553      656E736F 
+ 1553      72496400 
+ 1554              	.LASF46:
+ 1555 0528 77646774 		.ascii	"wdgtStatus\000"
+ 1555      53746174 
+ 1555      757300
+ 1556              	.LASF47:
+ 1557 0533 736E7353 		.ascii	"snsStatus\000"
+ 1557      74617475 
+ 1557      7300
+ 1558              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br
