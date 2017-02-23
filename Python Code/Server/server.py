@@ -1,6 +1,15 @@
+## Get saved libraries
+import sys
+sys.path.append('./ext')
+
 from datetime import datetime
+import cf_deployment_tracker
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+import os
+
+# Emit Bluemix deployment event
+cf_deployment_tracker.track()
 
 app = Flask(__name__)
 api = Api(app)
@@ -40,4 +49,5 @@ class RootView(Resource):
 api.add_resource(RootView, '/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('VCAP_APP_PORT', 8080))
+    app.run(host='0.0.0.0', port=port, debug=True)

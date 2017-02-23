@@ -1,0 +1,8 @@
+applications:
+- path: .
+  memory: 128M
+  instances: 1
+  domain: mybluemix.net
+  name: cypress-server
+  host: cypress-server
+  disk_quota: 1028M
