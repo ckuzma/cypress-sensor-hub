@@ -19,11 +19,10 @@ void loop() {
   Wire.requestFrom(0x08, 32);    // request 32 bytes from slave device 0x08
 
   while (Wire.available()) {
-    float singleByte = Wire.read(); // receive a byte as a float
+    int singleByte = Wire.read(); // receive a byte as a float
     Serial.print(singleByte);
     Serial.print(",");
   }
   Serial.println();
-  
-  delay(20);
+  delay(1000); // 1 second delay
 }
